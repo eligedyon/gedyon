@@ -949,6 +949,41 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
 .coll-btn:active{background:rgba(255,255,255,.15);}
 .coll-min{display:none;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:10px;cursor:pointer;justify-content:space-between;align-items:center;font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--grey);letter-spacing:1.5px;transition:background .15s;}
 .coll-min:active{background:rgba(255,255,255,.06);}
+
+/* ─── Widget Dashboard System (Phase 3) ─── */
+#pg-dash.on{display:flex!important;flex-direction:column;}
+.wg-customize-bar{display:flex;align-items:center;justify-content:flex-end;margin-bottom:8px;gap:8px;}
+.wg-customize-pill{font-family:'SF Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--grey);background:transparent;border:1px solid var(--border);border-radius:20px;padding:5px 14px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .18s;-webkit-tap-highlight-color:transparent;}
+.wg-customize-pill:hover{border-color:var(--accent);color:var(--accent);}
+.wg-customize-pill:active{background:rgba(201,168,76,.08);transform:scale(.96);}
+.wg-customize-pill svg{opacity:.6;}
+/* Widget wrappers — flex items that can be ordered */
+.wg-wrap{width:100%;min-width:0;}
+/* Overlay */
+#wgOverlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9000;display:flex;align-items:flex-end;backdrop-filter:blur(3px);}
+#wgSheet{background:var(--card2);border-radius:22px 22px 0 0;width:100%;max-height:82vh;overflow-y:auto;transform:translateY(100%);transition:transform .32s cubic-bezier(.32,0,.15,1);border-top:1px solid var(--border);}
+#wgSheet.wg-open{transform:translateY(0);}
+.wg-sheet-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 10px;position:sticky;top:0;background:var(--card2);z-index:1;border-bottom:1px solid var(--border);}
+.wg-sheet-handle{width:36px;height:4px;background:rgba(255,255,255,.18);border-radius:2px;margin:10px auto 0;position:sticky;top:0;z-index:2;}
+.wg-sheet-title{font-family:'SF Mono',monospace;font-size:11px;letter-spacing:.15em;color:var(--white);text-transform:uppercase;}
+.wg-sheet-done{font-family:'SF Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--accent);background:transparent;border:none;cursor:pointer;padding:0;}
+.wg-sheet-sub{font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);padding:8px 20px 2px;letter-spacing:.05em;}
+/* Widget rows */
+.wg-row{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);user-select:none;-webkit-user-select:none;cursor:grab;transition:background .15s;}
+.wg-row:last-child{border-bottom:none;}
+.wg-row.wg-dragging{opacity:.35;background:rgba(255,255,255,.04);}
+.wg-row.wg-drop-target{background:rgba(201,168,76,.09);border-color:rgba(201,168,76,.3);}
+.wg-drag-handle{font-size:16px;color:var(--grey);opacity:.4;flex-shrink:0;letter-spacing:-3px;line-height:1;padding:2px 0;}
+.wg-row-info{flex:1;min-width:0;}
+.wg-row-name{font-family:Impact,'Arial Narrow',sans-serif;font-size:15px;color:var(--white);letter-spacing:.04em;line-height:1.2;}
+.wg-row-desc{font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:2px;letter-spacing:.03em;}
+/* Toggle */
+.wg-tog{position:relative;display:inline-block;width:46px;height:27px;flex-shrink:0;}
+.wg-tog input{opacity:0;width:0;height:0;}
+.wg-tog-sl{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,.12);border-radius:14px;transition:.24s;border:1px solid rgba(255,255,255,.1);}
+.wg-tog-sl:before{content:'';position:absolute;height:21px;width:21px;left:2px;bottom:2px;background:var(--grey);border-radius:50%;transition:.24s;}
+.wg-tog input:checked+.wg-tog-sl{background:rgba(201,168,76,.28);border-color:rgba(201,168,76,.5);}
+.wg-tog input:checked+.wg-tog-sl:before{transform:translateX(19px);background:var(--accent);}
 </style>
 </head>
 <body class="theme-void">
@@ -1233,8 +1268,15 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
 
     <!-- HOME -->
     <div id="pg-dash" class="pg on">
+      <!-- CUSTOMIZE BAR -->
+      <div class="wg-customize-bar">
+        <button class="wg-customize-pill" onclick="openWidgetCustomizer()">
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="2.5" rx="1.25" fill="currentColor"/><rect x="2" y="9" width="10" height="2.5" rx="1.25" fill="currentColor"/><rect x="2" y="13" width="14" height="2.5" rx="1.25" fill="currentColor"/></svg>
+          CUSTOMIZE
+        </button>
+      </div>
       <!-- TOP ROW: Compact stats + Countdown -->
-      <div style="display:grid;grid-template-columns:1fr auto;gap:6px;margin-bottom:8px;align-items:stretch;overflow:hidden;">
+      <div id="dashStatsRow" class="wg-wrap" style="display:grid;grid-template-columns:1fr auto;gap:6px;margin-bottom:8px;align-items:stretch;overflow:hidden;">
 
         <!-- LEFT: Compact GPI/WT/CAL/W1 bar -->
         <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 8px;display:flex;align-items:center;min-width:0;">
@@ -1277,7 +1319,7 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
       </div>
 
       <!-- GEDYON RECOVERY SCORE (TOP OF HOME) -->
-      <div id="grsCard" style="margin-bottom:10px;margin-top:10px;">
+      <div id="grsCard" class="wg-wrap" style="margin-bottom:10px;margin-top:10px;">
         <div class="card">
           <div class="ch">
             <div class="ct">GEDYON RECOVERY SCORE</div>
@@ -1315,23 +1357,23 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
       </div>
 
       <!-- WEIGHT COMMAND CENTER — HOME -->
-      <div id="homeWeightCard" style="margin-bottom:10px;"></div>
+      <div id="homeWeightCard" class="wg-wrap" style="margin-bottom:10px;"></div>
 
 <!-- TRAINING MILEAGE — above today's plan -->
-      <div id="trainingSummaryCard" style="margin-bottom:10px;"></div>
+      <div id="trainingSummaryCard" class="wg-wrap" style="margin-bottom:10px;"></div>
 
-<div id="todayPlanCard"></div>
+<div id="todayPlanCard" class="wg-wrap"></div>
       <!-- DAILY BRIEFING — combined AI + nutrition -->
-      <div id="dailyBriefingWrap" style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;">
+      <div id="dailyBriefingWrap" class="wg-wrap" style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;">
         <div id="dailyIntelCard"></div>
         <div id="chizalBriefCard"></div>
       </div>
 
       <!-- WHOOP RECOVERY DASHBOARD -->
-      <div id="whoopDashCard" style="margin-bottom:10px;"></div>
+      <div id="whoopDashCard" class="wg-wrap" style="margin-bottom:10px;"></div>
 
       <!-- PERFORMANCE CHARTS HUB -->
-      <div id="perfChartsWrap" style="margin-bottom:10px;">
+      <div id="perfChartsWrap" class="wg-wrap" style="margin-bottom:10px;">
       <div class="sh" style="margin-bottom:0;">PERFORMANCE CHARTS</div>
       <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
 
@@ -1380,6 +1422,8 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
         </div>
       </div>
       </div><!-- /perfChartsWrap -->
+      <!-- TRIALS TARGETS -->
+      <div id="trialsTargetsWrap" class="wg-wrap">
       <div class="sh">TRIALS TARGETS</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
         <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;position:relative;overflow:hidden;"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--orange));"></div><div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--grey);">800M</div><div style="font-size:22px;color:var(--gold);">SUB 1:45</div><div style="font-family:'SF Mono',Consolas,monospace;font-size:12px;color:var(--off);">Std: 1:47.50</div></div>
@@ -1387,6 +1431,13 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
         <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;position:relative;overflow:hidden;"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--green));"></div><div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--grey);">MILE</div><div style="font-size:22px;color:var(--gold);">SUB 3:52</div><div style="font-family:'SF Mono',Consolas,monospace;font-size:12px;color:var(--off);">Std: 3:56.00</div></div>
         <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;position:relative;overflow:hidden;"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--teal));"></div><div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--grey);">5K</div><div style="font-size:22px;color:var(--gold);">SUB 13:00</div><div style="font-family:'SF Mono',Consolas,monospace;font-size:12px;color:var(--off);">Std: 13:38.00</div></div>
       </div>
+      </div><!-- /trialsTargetsWrap -->
+
+      <!-- NEW WIDGET PLACEHOLDERS (hidden by default, enabled via Customize) -->
+      <div id="wg-hrv" class="wg-wrap" style="display:none;"></div>
+      <div id="wg-sleep" class="wg-wrap" style="display:none;"></div>
+      <div id="wg-nextRace" class="wg-wrap" style="display:none;"></div>
+      <div id="wg-nutrition" class="wg-wrap" style="display:none;"></div>
     </div>
 
     <!-- TODAY -->
@@ -2780,10 +2831,9 @@ function proceedAfterAuth(){
   updateAuthStatus();
   if(!localStorage.getItem(SETUP_KEY)){
     checkSetup();
-  } else if(!localStorage.getItem(TUT_KEY)){
-    initTutorial();
   } else {
     launchApp();
+    if(!localStorage.getItem(TUT_KEY)) setTimeout(startTutorial, 300);
   }
 }
 function toggleUserMenu(){
@@ -3104,8 +3154,8 @@ function completeSetup(){
   localStorage.setItem(SETUP_KEY,'1');
   $('setupWizard').style.display='none';
   // Continue to tutorial/app
-  if(!localStorage.getItem(TUT_KEY)) initTutorial();
-  else launchApp();
+  launchApp();
+  if(!localStorage.getItem(TUT_KEY)) setTimeout(startTutorial, 300);
 }
 // ═══ UNIVERSAL SEARCH ═══
 var SUPP_DB=[
@@ -6526,7 +6576,221 @@ function renderDash(){
   const wts=D.weights.slice(-20);
   const wtTgts=wts.map(w=>{const wN=getWk(w.date);return+Math.max(D.settings.raceWt,D.settings.startWt-(total/95)*wN).toFixed(1);});
   // wtChart now in renderActiveChart()
+  // Apply widget layout (order + visibility)
+  try{applyWidgetLayout();}catch(e){}
 }
+
+// ═══════════════════════════════════════════════════════════
+// WIDGET DASHBOARD SYSTEM — Phase 3
+// ═══════════════════════════════════════════════════════════
+
+const WIDGET_DEFS = [
+  {id:'dashStatsRow',        name:'Stats Bar',          desc:'GPI · Weight · Calories · Days in program'},
+  {id:'grsCard',             name:'Recovery Score',     desc:'GRS ring + readiness forecast + factors'},
+  {id:'todayPlanCard',       name:"Today's Plan",       desc:'Prescribed workout + LOG TODAY button'},
+  {id:'homeWeightCard',      name:'Weight Tracker',     desc:'Weight trend + race-weight goal progress'},
+  {id:'trainingSummaryCard', name:'Training Mileage',   desc:'Weekly & monthly volume vs targets'},
+  {id:'dailyBriefingWrap',   name:'Daily Briefing',     desc:'Nahcum AI intel + nutrition summary'},
+  {id:'perfChartsWrap',      name:'Performance Charts', desc:'GPI · HR · Miles · Watts · Weight charts'},
+  {id:'whoopDashCard',       name:'WHOOP Recovery',     desc:'Recovery · Strain · Sleep from WHOOP'},
+  {id:'trialsTargetsWrap',   name:'Trials Targets',     desc:'800m · 1500m · Mile · 5K qualifying goals'},
+  {id:'wg-hrv',              name:'HRV Widget',         desc:'Heart rate variability 7-day trend'},
+  {id:'wg-sleep',            name:'Sleep Widget',       desc:'7-day sleep average + goal progress bar'},
+  {id:'wg-nextRace',         name:'Next Race',          desc:'Countdown to your next competition'},
+  {id:'wg-nutrition',        name:'Nutrition Rings',    desc:'Calories · Protein · Carbs · Fat progress'},
+];
+
+const WIDGET_DEFAULT_ORDER = [
+  'dashStatsRow','grsCard','todayPlanCard','homeWeightCard',
+  'trainingSummaryCard','dailyBriefingWrap','perfChartsWrap',
+  'whoopDashCard','trialsTargetsWrap','wg-hrv','wg-sleep','wg-nextRace','wg-nutrition'
+];
+
+const WIDGET_DEFAULT_VISIBLE = {
+  dashStatsRow:true, grsCard:true, todayPlanCard:true, homeWeightCard:true,
+  trainingSummaryCard:true, dailyBriefingWrap:true, perfChartsWrap:true,
+  whoopDashCard:true, trialsTargetsWrap:true,
+  'wg-hrv':false, 'wg-sleep':false, 'wg-nextRace':false, 'wg-nutrition':false
+};
+
+function getWidgetLayout() {
+  // Ensure D.widgetLayout exists and has all widgets
+  if (!Array.isArray(D.widgetLayout) || D.widgetLayout.length < 9) {
+    D.widgetLayout = WIDGET_DEFAULT_ORDER.map(function(id) {
+      var saved = (D.widgetLayout||[]).find(function(w){return w.id===id;});
+      return saved || {id:id, visible:WIDGET_DEFAULT_VISIBLE[id]!==false};
+    });
+  }
+  // Add any new widgets not yet in saved layout
+  WIDGET_DEFAULT_ORDER.forEach(function(id) {
+    if (!D.widgetLayout.find(function(w){return w.id===id;})) {
+      D.widgetLayout.push({id:id, visible:WIDGET_DEFAULT_VISIBLE[id]!==false});
+    }
+  });
+  return D.widgetLayout;
+}
+
+function applyWidgetLayout() {
+  var layout = getWidgetLayout();
+  layout.forEach(function(item, i) {
+    var el = $(item.id);
+    if (!el) return;
+    el.style.order = i;
+    if (item.visible) {
+      el.style.display = '';
+    } else {
+      el.style.display = 'none';
+    }
+  });
+  // Render optional widgets that are now visible
+  layout.forEach(function(item) {
+    if (!item.visible) return;
+    if (item.id === 'wg-hrv')       renderHRVWidget();
+    if (item.id === 'wg-sleep')     renderSleepWidget();
+    if (item.id === 'wg-nextRace')  renderNextRaceWidget();
+    if (item.id === 'wg-nutrition') renderNutritionWidget();
+  });
+}
+
+// ─── New Widget Renderers ───────────────────────────────────
+
+function renderHRVWidget() {
+  var el = $('wg-hrv'); if (!el) return;
+  var logs = D.logs.slice(-7).filter(function(l){return l.hrv>0;});
+  var avg = logs.length ? Math.round(logs.reduce(function(a,l){return a+l.hrv;},0)/logs.length) : null;
+  var last = logs.length ? logs[logs.length-1].hrv : null;
+  var trend = logs.length>2 ? (logs[logs.length-1].hrv>logs[0].hrv?'▲':'▼') : '—';
+  var tCol = trend==='▲'?'var(--green)':trend==='▼'?'var(--red)':'var(--grey)';
+  el.innerHTML = '<div class="card" style="margin-bottom:10px;"><div class="ch"><div class="ct">HRV</div><div style="font-family:\'SF Mono\',monospace;font-size:11px;color:'+tCol+';">'+trend+' '+(last||'—')+' ms</div></div><div class="cb" style="display:flex;align-items:center;gap:18px;padding:14px;"><div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:52px;color:var(--green);line-height:1;">'+(avg||'—')+'</div><div><div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:1px;">7-DAY AVG · ms</div><div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);margin-top:6px;line-height:1.6;">Higher = better recovery<br>Track trend over time</div></div></div></div>';
+}
+
+function renderSleepWidget() {
+  var el = $('wg-sleep'); if (!el) return;
+  var logs = D.logs.slice(-7).filter(function(l){return l.sleep>0;});
+  var avg = logs.length ? (logs.reduce(function(a,l){return a+l.sleep;},0)/logs.length).toFixed(1) : null;
+  var goal = 8;
+  var pct = avg ? Math.min(100,Math.round((avg/goal)*100)) : 0;
+  var col = pct>=87?'var(--green)':pct>=70?'var(--gold)':'var(--red)';
+  el.innerHTML = '<div class="card" style="margin-bottom:10px;"><div class="ch"><div class="ct">SLEEP</div><div style="font-family:\'SF Mono\',monospace;font-size:11px;color:'+col+';">'+(avg||'—')+'h avg</div></div><div class="cb" style="padding:14px;"><div style="display:flex;align-items:center;gap:16px;"><div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:52px;color:'+col+';line-height:1;">'+(avg||'—')+'</div><div style="flex:1;"><div style="height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;margin-bottom:6px;"><div style="height:100%;width:'+pct+'%;background:'+col+';border-radius:4px;transition:width .6s ease;"></div></div><div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);">'+pct+'% of 8h goal · 7-day avg</div></div></div></div></div>';
+}
+
+function renderNextRaceWidget() {
+  var el = $('wg-nextRace'); if (!el) return;
+  var today = td();
+  var upcoming = (D.races||[]).filter(function(r){return r.date>today;}).sort(function(a,b){return a.date.localeCompare(b.date);});
+  if (!upcoming.length) {
+    el.innerHTML = '<div class="card" style="margin-bottom:10px;"><div class="ch"><div class="ct">NEXT RACE</div></div><div class="cb" style="padding:14px;font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);">No upcoming races scheduled. Add races in the PLAN tab.</div></div>';
+    return;
+  }
+  var race = upcoming[0];
+  var days = Math.ceil((parseLocalDate(race.date)-parseLocalDate(today))/86400000);
+  el.innerHTML = '<div class="card" style="margin-bottom:10px;border-color:rgba(201,168,76,.28);"><div class="ch"><div class="ct">NEXT RACE</div></div><div class="cb" style="display:flex;align-items:center;gap:18px;padding:14px;"><div style="text-align:center;min-width:64px;"><div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:52px;color:var(--gold);line-height:1;">'+days+'</div><div style="font-family:\'SF Mono\',monospace;font-size:9px;color:var(--grey);letter-spacing:1px;margin-top:2px;">DAYS</div></div><div><div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:18px;color:var(--white);line-height:1.2;">'+(race.name||race.event||'UPCOMING RACE')+'</div><div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);margin-top:4px;">'+race.date+(race.event?' · '+race.event:'')+'</div></div></div></div>';
+}
+
+function renderNutritionWidget() {
+  var el = $('wg-nutrition'); if (!el) return;
+  var todayFood = (D.food||[]).filter(function(f){return f.date===td();});
+  var cal     = Math.round(todayFood.reduce(function(a,f){return a+(+f.cal||0);},0));
+  var protein = Math.round(todayFood.reduce(function(a,f){return a+(+f.protein||0);},0));
+  var carbs   = Math.round(todayFood.reduce(function(a,f){return a+(+f.carbs||0);},0));
+  var fat     = Math.round(todayFood.reduce(function(a,f){return a+(+f.fat||0);},0));
+  var calGoal=D.settings.calGoal||2800, protGoal=D.settings.protGoal||180, carbGoal=D.settings.carbGoal||350, fatGoal=D.settings.fatGoal||80;
+  function ring(val,goal,color,label) {
+    var pct=Math.min(1,val/goal), r=22, circ=2*Math.PI*r;
+    return '<div style="text-align:center;"><svg width="62" height="62" viewBox="0 0 60 60"><circle cx="30" cy="30" r="'+r+'" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="5"/><circle cx="30" cy="30" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="5" stroke-dasharray="'+circ+'" stroke-dashoffset="'+(circ*(1-pct))+'" stroke-linecap="round" transform="rotate(-90 30 30)"/><text x="30" y="34" text-anchor="middle" font-family="Impact,Arial Narrow,sans-serif" font-size="12" fill="'+color+'">'+(val>0?val:'—')+'</text></svg><div style="font-family:\'SF Mono\',monospace;font-size:9px;color:var(--grey);margin-top:1px;letter-spacing:.5px;">'+label+'</div></div>';
+  }
+  el.innerHTML = '<div class="card" style="margin-bottom:10px;"><div class="ch"><div class="ct">NUTRITION TODAY</div><div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--gold);">'+(cal||'—')+' / '+calGoal+' CAL</div></div><div class="cb" style="padding:14px;"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">'+ring(cal,calGoal,'#F5C400','KCAL')+ring(protein,protGoal,'#00E676','PROTEIN')+ring(carbs,carbGoal,'#00B4FF','CARBS')+ring(fat,fatGoal,'#FF9F40','FAT')+'</div></div></div>';
+}
+
+// ─── Customize Sheet ────────────────────────────────────────
+var _wgDragSrc = -1, _wgDragTgt = -1;
+var _wgTouchSrc = -1, _wgTouchTgt = -1, _wgTouchY0 = 0;
+
+function openWidgetCustomizer() {
+  var layout = getWidgetLayout();
+  var rows = layout.map(function(item, i) {
+    var def = WIDGET_DEFS.find(function(d){return d.id===item.id;}) || {name:item.id, desc:''};
+    return '<div class="wg-row" data-idx="'+i+'" draggable="true"'+
+      ' ondragstart="wgDS(event,'+i+')" ondragover="wgDO(event,'+i+')" ondrop="wgDP(event,'+i+')" ondragend="wgDE()"'+
+      ' ontouchstart="wgTS(event,'+i+')" ontouchmove="wgTM(event,'+i+')" ontouchend="wgTE(event,'+i+')">'+
+      '<div class="wg-drag-handle">⠿</div>'+
+      '<div class="wg-row-info"><div class="wg-row-name">'+def.name+'</div><div class="wg-row-desc">'+def.desc+'</div></div>'+
+      '<label class="wg-tog"><input type="checkbox"'+(item.visible?' checked':'')+' onchange="wgToggle(\''+item.id+'\',this.checked)"><span class="wg-tog-sl"></span></label>'+
+      '</div>';
+  }).join('');
+  var overlay = document.createElement('div');
+  overlay.id = 'wgOverlay';
+  overlay.innerHTML = '<div id="wgSheet"><div class="wg-sheet-handle"></div><div class="wg-sheet-hdr"><span class="wg-sheet-title">CUSTOMIZE DASHBOARD</span><button class="wg-sheet-done" onclick="closeWidgetCustomizer()">DONE</button></div><div class="wg-sheet-sub">Drag rows to reorder · Toggle to show or hide</div><div id="wgList">'+rows+'</div></div>';
+  overlay.addEventListener('click', function(e){if(e.target===overlay)closeWidgetCustomizer();});
+  document.body.appendChild(overlay);
+  setTimeout(function(){var s=$('wgSheet');if(s)s.classList.add('wg-open');},10);
+}
+
+function closeWidgetCustomizer() {
+  var ov = $('wgOverlay');
+  if (!ov) return;
+  var sh = $('wgSheet');
+  if (sh) sh.classList.remove('wg-open');
+  setTimeout(function(){if(ov.parentNode)ov.parentNode.removeChild(ov); applyWidgetLayout();}, 330);
+}
+
+function wgToggle(id, visible) {
+  var layout = getWidgetLayout();
+  var item = layout.find(function(w){return w.id===id;});
+  if (item) item.visible = visible;
+  D.widgetLayout = layout;
+  saveData();
+}
+
+// Desktop drag
+function wgDS(e,i){_wgDragSrc=i;e.dataTransfer.effectAllowed='move';}
+function wgDO(e,i){e.preventDefault();_wgDragTgt=i;_wgHL(i);}
+function wgDP(e,i){e.preventDefault();if(_wgDragSrc>=0&&_wgDragSrc!==i)_wgReo(_wgDragSrc,i);}
+function wgDE(){_wgDragSrc=-1;_wgDragTgt=-1;_wgCHL();}
+
+// Touch drag
+function wgTS(e,i){_wgTouchSrc=i;_wgTouchY0=e.touches[0].clientY;}
+function wgTM(e,i){
+  e.preventDefault();
+  var y=e.touches[0].clientY;
+  var rows=document.querySelectorAll('#wgList .wg-row');
+  rows.forEach(function(row,ri){
+    var r=row.getBoundingClientRect();
+    if(y>r.top&&y<r.bottom){_wgTouchTgt=ri;_wgHL(ri);}
+  });
+}
+function wgTE(e,i){
+  if(_wgTouchTgt>=0&&_wgTouchTgt!==_wgTouchSrc)_wgReo(_wgTouchSrc,_wgTouchTgt);
+  _wgTouchSrc=-1;_wgTouchTgt=-1;_wgCHL();
+}
+
+function _wgHL(i){
+  document.querySelectorAll('#wgList .wg-row').forEach(function(r,ri){
+    r.classList.toggle('wg-drop-target',ri===i);
+  });
+}
+function _wgCHL(){
+  document.querySelectorAll('#wgList .wg-row').forEach(function(r){
+    r.classList.remove('wg-drop-target','wg-dragging');
+  });
+}
+function _wgReo(from,to){
+  var layout = getWidgetLayout();
+  var moved = layout.splice(from,1)[0];
+  layout.splice(to,0,moved);
+  D.widgetLayout = layout;
+  saveData();
+  // Refresh the sheet list
+  var ov=$('wgOverlay');
+  if(ov&&ov.parentNode)ov.parentNode.removeChild(ov);
+  applyWidgetLayout();
+  setTimeout(openWidgetCustomizer,10);
+}
+
+// ─── Hook into renderDash ────────────────────────────────────
+// applyWidgetLayout is called at end of renderDash (see patch below)
+
+// ═══════════════════════════════════════════════════════════
 
 // ═══ TRAIN LOG ═══
 function renderTrainLog(){
