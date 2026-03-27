@@ -2583,6 +2583,17 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
 // ═══════════════════════════════════════════════════════════════════════
 var APP_VERSION = '1.0.0';
 var OTA_SERVER = 'https://gedyon-server-production.up.railway.app';
+async function railwayFetch(path, options){
+  options = options || {};
+  options.headers = options.headers || {};
+  if(sbClient && currentUser){
+    try{
+      var {data} = await sbClient.auth.getSession();
+      if(data && data.session) options.headers['Authorization']='Bearer '+data.session.access_token;
+    }catch(e){}
+  }
+  return fetch(OTA_SERVER + path, options);
+}
 
 function checkForUpdates(){
   fetch(OTA_SERVER + '/app/version', { cache:'no-store' })
@@ -2819,18 +2830,27 @@ async function saveCloudData(){
 }
 async function checkAuth(){
   if(!initSupabase()){
-    // No Supabase configured — show auth screen with skip option
     $('authScreen').style.display='block';
     return true;
   }
   try{
-    var {data}=await sbClient.auth.getSession();
-    if(data&&data.session){
+    // refreshSession() auto-renews expired tokens — stays signed in across app restarts
+    var {data,error}=await sbClient.auth.refreshSession();
+    if(!error && data && data.session){
       currentUser=data.session.user;
+      updateAuthStatus();
       await loadCloudData();
-      return false; // user is logged in, continue
+      return false;
     }
-  }catch(e){}
+    // Fallback: getSession reads cached token (works offline)
+    var {data:d2}=await sbClient.auth.getSession();
+    if(d2&&d2.session){
+      currentUser=d2.session.user;
+      updateAuthStatus();
+      await loadCloudData();
+      return false;
+    }
+  }catch(e){console.log('Auth check:',e);}
   $('authScreen').style.display='block';
   return true;
 }
@@ -2872,8 +2892,7 @@ function updateAuthStatus(){
   if($('setSbKey')) $('setSbKey').value=SUPABASE_KEY;
   updateUserMenu();
 }
-// Auto-save to cloud every 60 seconds if logged in
-setInterval(function(){if(currentUser&&sbClient)saveCloudData();},60000);
+// Cloud sync is now triggered on every saveData() call — no timer needed
 const DEFAULT_PIN = '042028'; // April 2028 — Trials month/year
 
 let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
@@ -2883,9 +2902,15 @@ let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
 }));
 if(!D.actualMeals) D.actualMeals={};
 if(!D.dayScores) D.dayScores={};
-function saveData(){ localStorage.setItem(KEY, JSON.stringify(D)); }
+function saveData(){
+  localStorage.setItem(KEY, JSON.stringify(D));
+  if(currentUser && sbClient){
+    clearTimeout(saveData._t);
+    saveData._t=setTimeout(function(){saveCloudData();},800);
+  }
+}
 if(!D.lactate) D.lactate={};
-const save = () => localStorage.setItem(KEY, JSON.stringify(D));
+const save = () => saveData();
 const $ = id => document.getElementById(id);
 const td = () => {
   const n = new Date();
