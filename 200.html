@@ -2746,9 +2746,12 @@ async function authCreateAccount(){
 }
 function authSkip(){
   $('authScreen').style.display='none';
+  if($('splash'))$('splash').style.display='none';
   proceedAfterAuth();
 }
 function proceedAfterAuth(){
+  if($('splash'))$('splash').style.display='none';
+  if($('authScreen'))$('authScreen').style.display='none';
   if(!localStorage.getItem(SETUP_KEY)){
     checkSetup();
   } else if(!localStorage.getItem(TUT_KEY)){
