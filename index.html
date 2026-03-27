@@ -1091,12 +1091,30 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
       <input id="authPass" type="password" class="setup-input" placeholder="••••••••" autocomplete="current-password">
       <button onclick="authSignIn()" style="width:100%;padding:14px;background:var(--accent,#C9A84C);color:#000;font-family:Impact,Arial Narrow,sans-serif;font-size:18px;letter-spacing:3px;border:none;border-radius:8px;cursor:pointer;margin-top:20px;">SIGN IN</button>
       <div id="authError" style="color:#FF3D57;font-family:'SF Mono',monospace;font-size:11px;text-align:center;margin-top:12px;display:none;"></div>
-      <div style="text-align:center;margin-top:24px;">
+      <div style="text-align:center;margin-top:16px;">
+        <button onclick="showForgotPassword()" style="background:none;border:none;color:#888;font-family:'SF Mono',monospace;font-size:12px;cursor:pointer;text-decoration:underline;">Forgot password?</button>
+      </div>
+      <div style="text-align:center;margin-top:20px;">
         <span style="color:#666;font-size:13px;">No account?</span>
         <button onclick="showAuthSignup()" style="background:none;border:none;color:var(--accent,#C9A84C);font-family:'SF Mono',monospace;font-size:13px;cursor:pointer;text-decoration:underline;">Create one</button>
       </div>
       <div style="text-align:center;margin-top:12px;">
         <button onclick="authSkip()" style="background:none;border:none;color:#444;font-family:'SF Mono',monospace;font-size:11px;cursor:pointer;">Continue without account</button>
+      </div>
+    </div>
+
+    <!-- Forgot Password Form -->
+    <div id="authForgot" style="display:none;">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-family:Impact,Arial Narrow,sans-serif;font-size:22px;color:#fff;letter-spacing:2px;">RESET PASSWORD</div>
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:#666;margin-top:8px;">Enter your email and we'll send a reset link</div>
+      </div>
+      <label class="setup-label">EMAIL</label>
+      <input id="authForgotEmail" type="email" class="setup-input" placeholder="you@email.com" autocomplete="email">
+      <button onclick="authResetPassword()" style="width:100%;padding:14px;background:var(--accent,#C9A84C);color:#000;font-family:Impact,Arial Narrow,sans-serif;font-size:18px;letter-spacing:3px;border:none;border-radius:8px;cursor:pointer;margin-top:20px;">SEND RESET LINK</button>
+      <div id="authForgotMsg" style="font-family:'SF Mono',monospace;font-size:11px;text-align:center;margin-top:12px;display:none;"></div>
+      <div style="text-align:center;margin-top:24px;">
+        <button onclick="showAuthLogin()" style="background:none;border:none;color:var(--accent,#C9A84C);font-family:'SF Mono',monospace;font-size:13px;cursor:pointer;text-decoration:underline;">Back to sign in</button>
       </div>
     </div>
 
@@ -2627,10 +2645,30 @@ function initSupabase(){
 function showAuthLogin(){
   $('authLogin').style.display='block';
   $('authSignup').style.display='none';
+  if($('authForgot'))$('authForgot').style.display='none';
 }
 function showAuthSignup(){
   $('authLogin').style.display='none';
   $('authSignup').style.display='block';
+  if($('authForgot'))$('authForgot').style.display='none';
+}
+function showForgotPassword(){
+  $('authLogin').style.display='none';
+  $('authSignup').style.display='none';
+  $('authForgot').style.display='block';
+  var emailVal=$('authEmail').value;
+  if(emailVal)$('authForgotEmail').value=emailVal;
+}
+async function authResetPassword(){
+  var email=$('authForgotEmail').value.trim();
+  var msgEl=$('authForgotMsg');
+  if(!email){msgEl.style.display='block';msgEl.style.color='#FF3D57';msgEl.textContent='Enter your email address.';return;}
+  if(!sbClient){msgEl.style.display='block';msgEl.style.color='#FF3D57';msgEl.textContent='Supabase not configured.';return;}
+  try{
+    var {error}=await sbClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
+    if(error){msgEl.style.display='block';msgEl.style.color='#FF3D57';msgEl.textContent=error.message;}
+    else{msgEl.style.display='block';msgEl.style.color='#00E676';msgEl.textContent='Reset link sent! Check your email inbox.';}
+  }catch(e){msgEl.style.display='block';msgEl.style.color='#FF3D57';msgEl.textContent='Error: '+e.message;}
 }
 function showAuthError(id,msg){
   var el=$(id);if(!el)return;
