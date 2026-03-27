@@ -246,16 +246,16 @@ body.theme-glass .badge {
 
 /* ── KEYNOTE — Apple Keynote bright light mode ────────── */
 body.theme-keynote {
-  --bg:#F2F2F7; --bg2:#FFFFFF; --card:#FFFFFF; --card2:#F9F9FB; --raised:#FFFFFF;
-  --border:rgba(0,0,0,0.06); --border-hi:rgba(0,0,0,0.12);
-  --gold:#C9A84C; --ice:#007AFF; --steel:#8E8E93; --frost:#F2F2F7;
-  --green:#34C759; --red:#FF3B30; --orange:#FF9500; --teal:#5AC8FA;
-  --blue:#007AFF; --purple:#AF52DE; --olive:#34C759;
-  --muted:rgba(0,0,0,0.35); --off:rgba(0,0,0,0.65); --white:#000000;
-  --grey:#8E8E93;
-  --accent:#007AFF; --accent2:#34C759; --accent3:#AF52DE;
-  --shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 12px rgba(0,0,0,0.04);
-  --shadow-hi:0 4px 20px rgba(0,0,0,0.08);
+  --bg:#F5F5F0; --bg2:#FAFAF8; --card:#FFFFFF; --card2:#F7F7F5; --raised:#FFFFFF;
+  --border:rgba(0,0,0,0.05); --border-hi:rgba(0,0,0,0.10);
+  --gold:#B8860B; --ice:#0A84FF; --steel:#98989D; --frost:#F0F0ED;
+  --green:#30D158; --red:#FF453A; --orange:#FF9F0A; --teal:#64D2FF;
+  --blue:#0A84FF; --purple:#BF5AF2; --olive:#30D158;
+  --muted:rgba(0,0,0,0.30); --off:rgba(0,0,0,0.55); --white:#1D1D1F;
+  --grey:#98989D;
+  --accent:#0A84FF; --accent2:#30D158; --accent3:#BF5AF2;
+  --shadow:0 0.5px 1px rgba(0,0,0,0.04),0 2px 8px rgba(0,0,0,0.03);
+  --shadow-hi:0 2px 12px rgba(0,0,0,0.06);
 }
 body.theme-keynote .topbar { background:rgba(255,255,255,0.92) !important; backdrop-filter:blur(20px) saturate(180%) !important; -webkit-backdrop-filter:blur(20px) saturate(180%) !important; border-bottom:0.5px solid rgba(0,0,0,0.08) !important; }
 body.theme-keynote .bnav { background:rgba(255,255,255,0.92) !important; backdrop-filter:blur(20px) saturate(180%) !important; -webkit-backdrop-filter:blur(20px) saturate(180%) !important; border-top:0.5px solid rgba(0,0,0,0.08) !important; }
@@ -265,7 +265,7 @@ body.theme-keynote .nb .ni { color:rgba(0,0,0,0.5) !important; }
 body.theme-keynote .nb.on .ni { color:#007AFF !important; }
 body.theme-keynote .nb .ni svg { stroke:rgba(0,0,0,0.5) !important; }
 body.theme-keynote .nb.on .ni svg { stroke:#007AFF !important; }
-body.theme-keynote .card { box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.03) !important; border:0.5px solid rgba(0,0,0,0.06) !important; }
+body.theme-keynote .card { box-shadow:0 0.5px 1px rgba(0,0,0,0.02),0 2px 6px rgba(0,0,0,0.03) !important; border:0.5px solid rgba(0,0,0,0.04) !important; background:#FAFAF8 !important; }
 body.theme-keynote .btn { background:#007AFF !important; color:#fff !important; }
 body.theme-keynote .snb { color:rgba(0,0,0,0.5) !important; border-color:rgba(0,0,0,0.1) !important; }
 body.theme-keynote .snb.on { background:#007AFF !important; color:#fff !important; border-color:#007AFF !important; }
@@ -1218,7 +1218,16 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
 <div class="tb-r">
       <div class="badge bw" id="wkBadge">W1</div>
       <div class="badge bd" id="daysBadge">—d</div>
+      <button id="userAvatarBtn" onclick="toggleUserMenu()" style="width:28px;height:28px;border-radius:50%;border:1.5px solid var(--accent,#C9A84C);background:var(--card2,#1a2535);cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:4px;flex-shrink:0;padding:0;">
+        <svg id="userAvatarIcon" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" fill="var(--accent,#C9A84C)"/><path d="M2 14c0-3.3 2.7-5 6-5s6 1.7 6 5" stroke="var(--accent,#C9A84C)" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
     </div>
+  </div>
+  <!-- User quick menu -->
+  <div id="userMenu" style="display:none;position:fixed;top:52px;right:12px;z-index:9999;background:var(--card,#151f2e);border:1px solid var(--border,rgba(255,255,255,0.08));border-radius:12px;padding:8px;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+    <div id="userMenuStatus" style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey,#8899AA);padding:8px 10px 12px;border-bottom:1px solid var(--border,rgba(255,255,255,0.06));margin-bottom:6px;"></div>
+    <button id="userMenuLoginBtn" onclick="closeUserMenu();$('authScreen').style.display='block';" style="width:100%;padding:10px;background:var(--accent,#C9A84C);color:#000;font-family:Impact,Arial Narrow,sans-serif;font-size:14px;letter-spacing:2px;border:none;border-radius:8px;cursor:pointer;margin-bottom:4px;">SIGN IN</button>
+    <button id="userMenuLogoutBtn" onclick="closeUserMenu();authLogout();" style="width:100%;padding:10px;background:var(--red,#FF3D57);color:#fff;font-family:Impact,Arial Narrow,sans-serif;font-size:14px;letter-spacing:2px;border:none;border-radius:8px;cursor:pointer;display:none;">SIGN OUT</button>
   </div>
   <div class="scr" id="scr">
 
@@ -2665,7 +2674,8 @@ async function authResetPassword(){
   if(!email){msgEl.style.display='block';msgEl.style.color='#FF3D57';msgEl.textContent='Enter your email address.';return;}
   if(!sbClient){msgEl.style.display='block';msgEl.style.color='#FF3D57';msgEl.textContent='Supabase not configured.';return;}
   try{
-    var {error}=await sbClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
+    var resetUrl=window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1'?'https://eligedyon.github.io/gedyon/':window.location.origin+window.location.pathname;
+    var {error}=await sbClient.auth.resetPasswordForEmail(email,{redirectTo:resetUrl});
     if(error){msgEl.style.display='block';msgEl.style.color='#FF3D57';msgEl.textContent=error.message;}
     else{msgEl.style.display='block';msgEl.style.color='#00E676';msgEl.textContent='Reset link sent! Check your email inbox.';}
   }catch(e){msgEl.style.display='block';msgEl.style.color='#FF3D57';msgEl.textContent='Error: '+e.message;}
@@ -2723,7 +2733,7 @@ async function authSignIn(){
   }catch(e){showAuthError('authError','Sign in failed: '+e.message);}
 }
 async function authCreateAccount(){
-  if(!supabase){showAuthError('authSignupError','Supabase not configured. Go to Settings → Connect.');return;}
+  if(!sbClient){initSupabase();} if(!sbClient){showAuthError('authSignupError','Supabase not configured. Go to Settings → Connect.');return;}
   var name=$('authSignupName').value.trim();
   var email=$('authSignupEmail').value.trim();
   var pass=$('authSignupPass').value;
@@ -2732,6 +2742,8 @@ async function authCreateAccount(){
   try{
     var {data,error}=await sbClient.auth.signUp({email:email,password:pass,options:{data:{name:name}}});
     if(error){showAuthError('authSignupError',error.message);return;}
+    // If user is null, email already exists — Supabase hides this for security
+    if(!data.user){showAuthError('authSignupError','An account with that email already exists. Try signing in instead.');return;}
     currentUser=data.user;
     if(isBuilder(email)){
       loadBuilderData();
@@ -2752,12 +2764,41 @@ function authSkip(){
 function proceedAfterAuth(){
   if($('splash'))$('splash').style.display='none';
   if($('authScreen'))$('authScreen').style.display='none';
+  updateAuthStatus();
   if(!localStorage.getItem(SETUP_KEY)){
     checkSetup();
   } else if(!localStorage.getItem(TUT_KEY)){
     initTutorial();
   } else {
     launchApp();
+  }
+}
+function toggleUserMenu(){
+  var m=$('userMenu');
+  if(!m) return;
+  if(m.style.display==='none'){
+    updateUserMenu();
+    m.style.display='block';
+    setTimeout(function(){document.addEventListener('click',closeUserMenuOutside,{once:true});},10);
+  } else {
+    m.style.display='none';
+  }
+}
+function closeUserMenu(){var m=$('userMenu');if(m)m.style.display='none';}
+function closeUserMenuOutside(e){if($('userMenu')&&!$('userMenu').contains(e.target)&&e.target!=$('userAvatarBtn'))closeUserMenu();}
+function updateUserMenu(){
+  var s=$('userMenuStatus');
+  var lb=$('userMenuLoginBtn');
+  var lo=$('userMenuLogoutBtn');
+  if(!s) return;
+  if(currentUser){
+    s.textContent='Signed in as '+currentUser.email;
+    if(lb) lb.style.display='none';
+    if(lo) lo.style.display='block';
+  } else {
+    s.textContent='Not signed in — data is local only';
+    if(lb) lb.style.display='block';
+    if(lo) lo.style.display='none';
   }
 }
 async function loadCloudData(){
@@ -2808,7 +2849,7 @@ function saveSbConfig(){
   }
 }
 async function authLogout(){
-  if(supabase){await sbClient.auth.signOut();}
+  if(sbClient){await sbClient.auth.signOut();}
   currentUser=null;
   updateAuthStatus();
   showAlert('setAlert','Signed out','ok');
@@ -2829,6 +2870,7 @@ function updateAuthStatus(){
   }
   if($('setSbUrl')) $('setSbUrl').value=SUPABASE_URL;
   if($('setSbKey')) $('setSbKey').value=SUPABASE_KEY;
+  updateUserMenu();
 }
 // Auto-save to cloud every 60 seconds if logged in
 setInterval(function(){if(currentUser&&sbClient)saveCloudData();},60000);
