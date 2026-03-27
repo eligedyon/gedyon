@@ -7742,7 +7742,27 @@ const SLIDES = [
     snap:'upload'
   },
   {
-    eye:'FEATURE 05',
+    eye:'FEATURE 06',
+    icon:'⊞',
+    head:'YOUR DASHBOARD\nYOUR RULES',
+    sub:'Tap CUSTOMIZE to reorder every card.\nHide what you don\'t need. Unlock HRV,\nSleep, Nutrition, and Next Race widgets.',
+    orb1:'orb-teal', orb2:'orb-blue',
+    bg:'radial-gradient(ellipse at 30% 60%, #001414 0%, #050508 70%)',
+    btn:'NEXT →',
+    snap:'widgets'
+  },
+  {
+    eye:'FEATURE 07',
+    icon:'⟲',
+    head:'CONNECTED\nTO EVERYTHING',
+    sub:'Strava · WHOOP · Garmin · Oura\nApple Health · Nutrition.\nOne tap connects. Data flows in automatically.',
+    orb1:'orb-green', orb2:'orb-teal',
+    bg:'radial-gradient(ellipse at 70% 30%, #001408 0%, #050508 70%)',
+    btn:'NEXT →',
+    snap:'integrations'
+  },
+  {
+    eye:'FEATURE 08',
     icon:'',
     head:'SUPPLEMENT\nCHECKLIST',
     sub:'12 protocols. Tap to check off.\nCreatine · Magnesium · Tart Cherry.\nEvery pill is a tick up on the GPI.',
@@ -7752,7 +7772,7 @@ const SLIDES = [
     snap:'supps'
   },
   {
-    eye:'FEATURE 06',
+    eye:'FEATURE 09',
     icon:'',
     head:'GPI STOCK\nCHART',
     sub:'Execute the plan → stock goes up.\nSkip → it drops.\n110 weeks of data. One score. All yours.',
@@ -7847,6 +7867,26 @@ const SNAPS = {
     </svg>
     <div style="display:flex;justify-content:space-between;font-family:'SF Mono',monospace;font-size:11px;opacity:.3;margin-top:4px;"><span>W1</span><span>W4</span><span>W8</span><span>W12</span></div>
     <div id="gpiDayGrades" style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.08);"></div>
+  </div>`,
+
+  widgets: () => `<div class="snap-inner" style="background:#0F0F1A;border:1px solid rgba(0,229,204,.25);">
+    <div style="font-family:'SF Mono',monospace;font-size:11px;color:rgba(255,255,255,.4);margin-bottom:8px;letter-spacing:1px;">CUSTOMIZE DASHBOARD</div>
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;margin-bottom:4px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);"><div style="flex:1;"><div style="font-family:Impact,sans-serif;font-size:13px;color:#fff;letter-spacing:.5px;">Stats Bar</div><div style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,.35);margin-top:1px;">GPI · Weight · Calories</div></div><div style="width:36px;height:20px;border-radius:10px;background:rgba(0,229,204,.3);border:1px solid rgba(0,229,204,.5);display:flex;align-items:center;padding:2px;"><div style="width:14px;height:14px;border-radius:50%;background:#00E5CC;margin-left:18px;"></div></div></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;margin-bottom:4px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);"><div style="flex:1;"><div style="font-family:Impact,sans-serif;font-size:13px;color:#fff;letter-spacing:.5px;">Recovery Score</div><div style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,.35);margin-top:1px;">GRS ring + readiness</div></div><div style="width:36px;height:20px;border-radius:10px;background:rgba(0,229,204,.3);border:1px solid rgba(0,229,204,.5);display:flex;align-items:center;padding:2px;"><div style="width:14px;height:14px;border-radius:50%;background:#00E5CC;margin-left:18px;"></div></div></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;margin-bottom:4px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);"><div style="flex:1;"><div style="font-family:Impact,sans-serif;font-size:13px;color:#fff;letter-spacing:.5px;">HRV Widget</div><div style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,.35);margin-top:1px;">7-day variability trend</div></div><div style="width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;padding:2px;"><div style="width:14px;height:14px;border-radius:50%;background:#666;margin-left:2px;"></div></div></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);"><div style="flex:1;"><div style="font-family:Impact,sans-serif;font-size:13px;color:#fff;letter-spacing:.5px;">Nutrition Rings</div><div style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,.35);margin-top:1px;">Calories · Protein · Carbs</div></div><div style="width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;padding:2px;"><div style="width:14px;height:14px;border-radius:50%;background:#666;margin-left:2px;"></div></div></div>
+  </div>`,
+
+  integrations: () => `<div class="snap-inner" style="background:#0F0F1A;border:1px solid rgba(0,230,118,.2);">
+    <div style="font-family:'SF Mono',monospace;font-size:11px;color:rgba(255,255,255,.4);margin-bottom:10px;letter-spacing:1px;">INTEGRATIONS HUB</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;">
+      <div style="padding:10px 6px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(0,230,118,.15);text-align:center;"><div style="font-size:18px;margin-bottom:4px;">⚡</div><div style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:.5px;">STRAVA</div><div style="font-family:'SF Mono',monospace;font-size:8px;color:#00E676;margin-top:3px;">CONNECTED</div></div>
+      <div style="padding:10px 6px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(0,230,118,.15);text-align:center;"><div style="font-size:18px;margin-bottom:4px;">●</div><div style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:.5px;">WHOOP</div><div style="font-family:'SF Mono',monospace;font-size:8px;color:#00E676;margin-top:3px;">CONNECTED</div></div>
+      <div style="padding:10px 6px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(0,230,118,.15);text-align:center;"><div style="font-size:18px;margin-bottom:4px;">◆</div><div style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:.5px;">GARMIN</div><div style="font-family:'SF Mono',monospace;font-size:8px;color:#00E676;margin-top:3px;">CONNECTED</div></div>
+      <div style="padding:10px 6px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(0,230,118,.15);text-align:center;"><div style="font-size:18px;margin-bottom:4px;">○</div><div style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:.5px;">OURA</div><div style="font-family:'SF Mono',monospace;font-size:8px;color:#00E676;margin-top:3px;">CONNECTED</div></div>
+      <div style="padding:10px 6px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(0,230,118,.15);text-align:center;"><div style="font-size:18px;margin-bottom:4px;">♥</div><div style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:.5px;line-height:1.3;">APPLE HEALTH</div><div style="font-family:'SF Mono',monospace;font-size:8px;color:#00E676;margin-top:3px;">CONNECTED</div></div>
+      <div style="padding:10px 6px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(0,230,118,.15);text-align:center;"><div style="font-size:18px;margin-bottom:4px;">◉</div><div style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:.5px;">NUTRITION</div><div style="font-family:'SF Mono',monospace;font-size:8px;color:#00E676;margin-top:3px;">CONNECTED</div></div>
+    </div>
   </div>`
 };
 
@@ -8152,6 +8192,7 @@ const TOUR_STEPS = [
   {selector:'#pg-dash > div:first-child', title:'YOUR COMMAND CENTER', desc:'GPI score, weight, calories, and countdown to Trials — your daily snapshot updated every time you log.', position:'below'},
   {selector:'#grsCard', title:'RECOVERY SCORE', desc:'The GRS ring combines sleep, HRV, soreness, and nutrition into one readiness number. Green means go, red means recover.', position:'below'},
   {selector:'#todayPlanCard', title:'TODAY\'S PLAN', desc:'Your prescribed workout from the full 95-week periodization plan. Tap LOG TODAY to record your session.', position:'below'},
+  {selector:'.wg-customize-pill', title:'CUSTOMIZE YOUR DASHBOARD', desc:'Tap CUSTOMIZE to reorder every card, hide sections you don\'t need, and unlock 4 new widgets: HRV, Sleep, Next Race, and Nutrition Rings. Your layout saves to the cloud automatically.', position:'below'},
   {selector:'#dailyIntelCard', title:'NAHCUM DAILY INTEL', desc:'Nahcum-powered readiness analysis. Factors sleep, training load, and recovery to advise how hard to push today.', position:'below'},
   {selector:'#trainingSummaryCard', title:'TRAINING MILEAGE', desc:'Live weekly and monthly mileage synced from Strava. Tracks your actual volume against the planned targets.', position:'below'},
   {selector:'#whoopDashCard', title:'WHOOP RECOVERY', desc:'Recovery, strain, and sleep data pulled from your WHOOP band. Connect it in the MORE tab to activate.', position:'above'},
