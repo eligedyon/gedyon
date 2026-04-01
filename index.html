@@ -469,7 +469,7 @@ body.theme-sandow #gedyon-bg{
 .sglow{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.08)0%,transparent 70%);animation:fpulse 3s ease-in-out infinite;pointer-events:none;}
 @keyframes fpulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.15);opacity:1}}
 .sbolt{font-size:52px;position:relative;z-index:2;filter:drop-shadow(0 0 16px rgba(255,255,255,0.6));animation:fpulse 2s infinite;}
-.sname{font-family:'Barlow Condensed',sans-serif;font-size:80px;color:#fff;letter-spacing:8px;position:relative;z-index:2;line-height:1;font-weight:900;text-transform:uppercase;text-shadow:0 0 40px rgba(255,255,255,0.3);}
+.sname{font-family:'Barlow Condensed',sans-serif;font-size:80px;color:#fff;letter-spacing:8px;position:relative;z-index:2;line-height:1;font-weight:900;text-transform:uppercase;}
 .ssub{font-family:'Share Tech Mono',monospace;font-size:13px;color:rgba(255,255,255,0.5);letter-spacing:4px;position:relative;z-index:2;}
 .sline{width:80px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);position:relative;z-index:2;}
 .sbar{width:160px;height:2px;background:rgba(255,255,255,0.12);border-radius:1px;overflow:hidden;position:relative;z-index:2;margin-top:8px;}
@@ -678,7 +678,7 @@ body.theme-sandow #gedyon-bg{
 /* ── GPI ───────────────────────────────────────────────── */
 .gpi-hero{text-align:center;padding:14px 16px 8px;}
 .gpi-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(255,255,255,0.40);letter-spacing:3px;}
-.gpi-num{font-family:'Barlow Condensed',sans-serif;font-size:72px;color:#fff;line-height:1;transition:all .3s;font-weight:900;text-shadow:0 0 40px rgba(255,255,255,0.25);}
+.gpi-num{font-family:'Barlow Condensed',sans-serif;font-size:72px;color:#fff;line-height:1;transition:all .3s;font-weight:900;}
 .gpi-chg{font-family:'Share Tech Mono',monospace;font-size:11px;margin-top:3px;}
 .gpi-msg{font-family:'Share Tech Mono',monospace;font-size:12px;margin-top:3px;color:rgba(255,255,255,0.55);}
 
@@ -726,7 +726,7 @@ textarea{resize:vertical;min-height:56px;}
 /* ── PLAN LIST ─────────────────────────────────────────── */
 .pw{background:rgba(22,42,58,0.88);border:1px solid rgba(255,255,255,0.14);border-top:2px solid rgba(255,255,255,0.30);border-radius:var(--r-card);padding:14px 16px;margin-bottom:10px;backdrop-filter:blur(28px);box-shadow:0 8px 32px rgba(0,0,0,0.45);}
 .pwh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.pwn{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:2px;text-shadow:0 0 20px rgba(255,255,255,0.2);}
+.pwn{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:2px;}
 .pws{font-family:'Share Tech Mono',monospace;font-size:13px;color:rgba(255,255,255,0.60);letter-spacing:1px;}
 .ds{display:flex;gap:4px;}
 .db{flex:1;border-radius:10px;padding:10px 4px;text-align:center;background:rgba(10,28,44,0.75);cursor:pointer;transition:var(--trans);border:1px solid rgba(255,255,255,0.18);box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);}
@@ -841,7 +841,7 @@ canvas{width:100%;display:block;}
 .orb-red{background:radial-gradient(circle,rgba(232,120,120,.30),transparent 70%);}
 .orb-purple{background:radial-gradient(circle,rgba(184,168,216,.30),transparent 70%);}
 .orb-teal{background:radial-gradient(circle,rgba(120,200,200,.35),transparent 70%);}
-.gpi-counter{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:72px;line-height:1;color:#fff;text-shadow:0 0 40px rgba(255,255,255,0.25);}
+.gpi-counter{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:72px;line-height:1;color:#fff;}
 
 /* ── AI COMPANION ──────────────────────────────────────── */
 @keyframes charFloat{0%,100%{transform:translate(-50%,-50%) translateY(0) scale(1);}50%{transform:translate(-50%,-50%) translateY(-10px) scale(1.02);}}
@@ -1285,41 +1285,46 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
             <div style="padding-right:8px;border-right:1px solid var(--border);">
               <div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--grey);letter-spacing:1px;margin-bottom:3px;">GPI</div>
               <div style="font-family:Impact,'Arial Narrow',Arial,sans-serif;font-size:18px;color:var(--white);line-height:1;" id="gpiNum">100.0</div>
-              <div id="gpiBadge" style="display:inline-block;font-family:'SF Mono',Consolas,monospace;font-size:11px;font-weight:700;background:#0a3d1f;color:#00e676;border-radius:4px;padding:1px 4px;margin-top:3px;border:1px solid #00e67640;">0.0</div>
+              <div id="gpiBadge" style="display:inline-block;font-family:'SF Mono',Consolas,monospace;font-size:11px;font-weight:700;background:rgba(0,230,118,0.12);color:#00e676;border-radius:4px;padding:1px 4px;margin-top:3px;border:1px solid rgba(0,230,118,0.35);">0.0</div>
             </div>
 
             <div style="padding:0 8px;border-right:1px solid var(--border);">
               <div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--grey);letter-spacing:1px;margin-bottom:3px;">WT</div>
               <div style="font-family:Impact,'Arial Narrow',Arial,sans-serif;font-size:18px;color:var(--white);line-height:1;" id="stWt">—</div>
-              <div id="gpiChg" style="display:inline-block;font-family:'SF Mono',Consolas,monospace;font-size:11px;font-weight:700;border-radius:4px;padding:1px 4px;margin-top:3px;background:#0a3d1f;color:#00e676;border:1px solid #00e67640;">—</div>
+              <div id="gpiChg" style="display:inline-block;font-family:'SF Mono',Consolas,monospace;font-size:11px;font-weight:700;border-radius:4px;padding:1px 4px;margin-top:3px;background:rgba(0,230,118,0.12);color:#00e676;border:1px solid rgba(0,230,118,0.35);">—</div>
             </div>
 
             <div style="padding:0 8px;border-right:1px solid var(--border);">
               <div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--grey);letter-spacing:1px;margin-bottom:3px;">CAL</div>
               <div style="font-family:Impact,'Arial Narrow',Arial,sans-serif;font-size:18px;color:var(--white);line-height:1;" id="stCal">—</div>
-              <div id="gpiMsg" style="display:inline-block;font-family:'SF Mono',Consolas,monospace;font-size:11px;font-weight:700;border-radius:4px;padding:1px 4px;margin-top:3px;background:#3d0a0f;color:#ff3d57;border:1px solid #ff3d5740;">—</div>
+              <div id="gpiMsg" style="display:inline-block;font-family:'SF Mono',Consolas,monospace;font-size:11px;font-weight:700;border-radius:4px;padding:1px 4px;margin-top:3px;background:rgba(255,61,87,0.12);color:#ff3d57;border:1px solid rgba(255,61,87,0.35);">—</div>
             </div>
 
             <div style="padding-left:8px;">
               <div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--grey);letter-spacing:1px;margin-bottom:3px;">DAY</div>
               <div style="font-family:Impact,'Arial Narrow',Arial,sans-serif;font-size:18px;color:var(--white);line-height:1;" id="stDaysIn">0</div>
-              <div style="display:inline-block;font-family:'SF Mono',Consolas,monospace;font-size:10px;font-weight:700;border-radius:4px;padding:1px 4px;margin-top:3px;background:#0a3d1f;color:#00e676;border:1px solid #00e67640;" id="dayOfBadge">of 770</div>
+              <div style="display:inline-block;font-family:'SF Mono',Consolas,monospace;font-size:10px;font-weight:700;border-radius:4px;padding:1px 4px;margin-top:3px;background:rgba(0,230,118,0.12);color:#00e676;border:1px solid rgba(0,230,118,0.35);" id="dayOfBadge">of 770</div>
             </div>
 
           </div>
         </div>
 
         <!-- RIGHT: Countdown -->
-        <div style="background:var(--card);border:1px solid rgba(245,196,0,.25);border-radius:10px;padding:8px 10px;text-align:center;display:flex;flex-direction:column;justify-content:center;min-width:80px;box-shadow:0 0 20px rgba(245,196,0,.07);">
+        <div style="background:var(--card);border:1px solid rgba(245,196,0,.25);border-radius:10px;padding:8px 10px;text-align:center;display:flex;flex-direction:column;justify-content:center;min-width:80px;">
           <div style="font-family:'SF Mono',Consolas,monospace;font-size:10px;color:var(--grey);letter-spacing:1.5px;margin-bottom:2px;">DAYS TO<br>TRIALS</div>
-          <div style="font-family:Impact,'Arial Narrow',Arial,sans-serif;font-size:44px;color:var(--gold);line-height:1;text-shadow:0 0 30px rgba(245,196,0,.4);" id="cdNum">—</div>
+          <div style="font-family:Impact,'Arial Narrow',Arial,sans-serif;font-size:44px;color:var(--gold);line-height:1;" id="cdNum">—</div>
           <div id="compDateLabel" style="font-family:'SF Mono',Consolas,monospace;font-size:10px;color:var(--grey);margin-top:3px;letter-spacing:1px;">APR 4 2028<br>EUGENE OR</div>
         </div>
 
       </div>
 
-      <!-- GEDYON RECOVERY SCORE (TOP OF HOME) -->
-      <div id="grsCard" class="wg-wrap" style="margin-bottom:10px;margin-top:10px;">
+      <!-- ── RACE READINESS SYSTEM — top of dash ── -->
+      <div id="raceReadyCard" class="wg-wrap" style="margin-bottom:10px;margin-top:10px;"></div>
+      <div id="raceProgressCard" class="wg-wrap" style="margin-bottom:10px;"></div>
+      <div id="overtrainingCard" class="wg-wrap" style="margin-bottom:10px;"></div>
+
+      <!-- GEDYON RECOVERY SCORE — retired, replaced by raceReadyCard -->
+      <div id="grsCard" class="wg-wrap" style="display:none;margin-bottom:10px;margin-top:10px;">
         <div class="card">
           <div class="ch">
             <div class="ct">GEDYON RECOVERY SCORE</div>
@@ -1356,8 +1361,8 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
         </div>
       </div>
 
-      <!-- WEIGHT COMMAND CENTER — HOME -->
-      <div id="homeWeightCard" class="wg-wrap" style="margin-bottom:10px;"></div>
+      <!-- WEIGHT COMMAND CENTER — retired, weight in stats bar + raceReadyCard -->
+      <div id="homeWeightCard" class="wg-wrap" style="display:none;margin-bottom:10px;"></div>
 
 <!-- TRAINING MILEAGE — above today's plan -->
       <div id="trainingSummaryCard" class="wg-wrap" style="margin-bottom:10px;"></div>
@@ -1369,8 +1374,8 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
         <div id="chizalBriefCard"></div>
       </div>
 
-      <!-- WHOOP RECOVERY DASHBOARD -->
-      <div id="whoopDashCard" class="wg-wrap" style="margin-bottom:10px;"></div>
+      <!-- WHOOP RECOVERY DASHBOARD — retired, WHOOP data surfaces in raceReadyCard -->
+      <div id="whoopDashCard" class="wg-wrap" style="display:none;margin-bottom:10px;"></div>
 
       <!-- PERFORMANCE CHARTS HUB -->
       <div id="perfChartsWrap" class="wg-wrap" style="margin-bottom:10px;">
@@ -1384,7 +1389,7 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
           <button class="chart-tab" onclick="switchChart('dist',this)" style="flex:1;min-width:60px;">MILES</button>
           <button class="chart-tab" onclick="switchChart('watts',this)" style="flex:1;min-width:60px;">WATTS</button>
           <button class="chart-tab" onclick="switchChart('recovery',this)" style="flex:1;min-width:60px;"> RECOV</button>
-          <button class="chart-tab" onclick="switchChart('weight',this)" style="flex:1;min-width:60px;">WEIGHT</button>
+          <!-- WEIGHT tab removed — redundant with stats bar -->
         </div>
 
         <!-- Chart meta row -->
@@ -1418,7 +1423,7 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
 
         <!-- Source badges -->
         <div style="display:flex;gap:6px;padding:0 14px 12px;flex-wrap:wrap;" id="chartSources">
-          <span style="font-family:'SF Mono',monospace;font-size:11px;padding:2px 8px;border-radius:10px;background:#0a3d1f;color:#00e676;border:1px solid #00e67630;">● GPI</span>
+          <span style="font-family:'SF Mono',monospace;font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(0,230,118,0.12);color:rgb(0,230,118);border:1px solid rgba(0,230,118,0.3);letter-spacing:0.08em;font-weight:600;">● GPI</span>
         </div>
       </div>
       </div><!-- /perfChartsWrap -->
@@ -1650,6 +1655,8 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
           </div>
         </div>
       </div>
+      <!-- TRAIL MAP -->
+      <div id="trailMapWrap" style="margin-bottom:10px;"></div>
       <div class="sh" onclick="var wl=document.getElementById('woList');var arrow=this.querySelector('.sh-arrow');if(wl.style.display==='none'){wl.style.display='';arrow.textContent='▾';}else{wl.style.display='none';arrow.textContent='▸';}" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;">WORKOUT HISTORY <span class="sh-arrow" style="font-size:14px;color:var(--grey);">▾</span></div>
       <div id="woList"></div>
     </div>
@@ -1709,6 +1716,10 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
         <div class="supc sol"><div class="sco">$15/mo</div><div class="str2">TIER 3 — WEEK 13+</div><div class="ssn">Beta-Alanine</div><div class="sdo">3.2g daily split</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> Breakfast + pre-PM</div><div class="swy">Buffers lactic acid. Key for 800m/1500m.</div></div>
         <div class="supc srl"><div class="sco">$3/session</div><div class="str2">TIER 3 — HARD SESSIONS + RACES</div><div class="ssn">Beetroot / Nitrates</div><div class="sdo">2 shots 2–3hrs pre</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> Hard sessions + races</div><div class="swy">1–3% proven improvement. Real seconds at your level.</div></div>
         <div class="supc spl"><div class="sco">$20/mo</div><div class="str2">TIER 3 — WEEK 13+</div><div class="ssn">Ashwagandha KSM-66</div><div class="sdo">600mg daily</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> Every morning</div><div class="swy">VO2max +7–12%. Must be KSM-66 form.</div></div>
+        <div id="suppNoMatch" style="display:none;padding:16px;text-align:center;border:1px dashed rgba(255,255,255,0.1);border-radius:10px;margin-top:4px;">
+          <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);letter-spacing:1px;margin-bottom:10px;">NO MATCH IN PROTOCOL</div>
+          <div style="font-family:'SF Mono',monospace;font-size:11px;color:#555;margin-bottom:12px;">Search the full supplement database above for a match to add.</div>
+        </div>
       </div>
       <div id="ms-race" class="msec"><div id="raceTestList"></div></div>
       <div id="ms-wt" class="msec">
@@ -1725,6 +1736,173 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
         </div></div>
       </div>
       <div id="ms-rl" class="msec">
+<!-- ══ ATHLETE PROFILE ══════════════════════════════════════════ -->
+<div style="margin-bottom:16px;perspective:800px;">
+  <div id="athleteProfileCard" style="
+    position:relative;
+    border-radius:18px;
+    overflow:hidden;
+    transform-style:preserve-3d;
+    transform:perspective(800px) rotateX(0deg) rotateY(0deg);
+    transition:transform 0.15s ease,box-shadow 0.15s ease;
+    box-shadow:0 25px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.08),0 0 40px rgba(201,168,76,0.15);
+    cursor:default;
+    min-height:320px;
+    will-change:transform;
+  ">
+
+    <!-- Base card background — deep dark gradient with metallic sheen -->
+    <div style="
+      position:absolute;inset:0;
+      background:linear-gradient(135deg,
+        #0a0f1a 0%,
+        #111827 25%,
+        #0d1520 50%,
+        #1a1208 75%,
+        #0a0f1a 100%);
+      z-index:0;
+    "></div>
+
+    <!-- Foil prismatic layer — moves with tilt -->
+    <div id="holoFoil" style="
+      position:absolute;inset:0;z-index:1;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,0.015) 0px,
+          transparent 1px,
+          transparent 3px,
+          rgba(255,255,255,0.01) 4px
+        ),
+        conic-gradient(
+          from 0deg at 50% 50%,
+          rgba(255,0,128,0.25),
+          rgba(255,180,0,0.25),
+          rgba(0,255,160,0.25),
+          rgba(0,160,255,0.25),
+          rgba(180,0,255,0.25),
+          rgba(255,0,128,0.25)
+        );
+      background-size:100% 100%, 300% 300%;
+      background-position:50% 50%;
+      mix-blend-mode:color-dodge;
+      opacity:0;
+      transition:opacity 0.3s;
+      pointer-events:none;
+    "></div>
+
+    <!-- Specular shine spot — follows pointer/gyro -->
+    <div id="holoShine" style="
+      position:absolute;inset:0;z-index:2;
+      background:radial-gradient(circle at 50% 30%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 30%, transparent 65%);
+      opacity:0;
+      transition:opacity 0.3s;
+      pointer-events:none;
+    "></div>
+
+    <!-- Gold border frame -->
+    <div style="
+      position:absolute;inset:0;z-index:3;
+      border-radius:18px;
+      border:1.5px solid rgba(201,168,76,0.35);
+      pointer-events:none;
+      box-shadow:inset 0 0 30px rgba(201,168,76,0.05);
+    "></div>
+
+    <!-- Card content -->
+    <div style="position:relative;z-index:4;padding:18px 16px 14px;">
+
+      <!-- TOP BANNER -->
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+        <div style="font-family:'SF Mono',monospace;font-size:8px;letter-spacing:3px;color:rgba(201,168,76,0.9);">GEDYON · ATHLETE CARD</div>
+        <div style="font-family:'SF Mono',monospace;font-size:8px;letter-spacing:2px;color:rgba(255,255,255,0.55);">WA <span id="profileWACode" style="color:rgba(201,168,76,0.9);">14329251</span></div>
+      </div>
+
+      <!-- ATHLETE ROW -->
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+        <!-- Avatar glow ring — tap to upload photo -->
+        <div onclick="document.getElementById('avatarFileInput').click()" style="
+          width:58px;height:58px;border-radius:50%;flex-shrink:0;
+          background:radial-gradient(circle,rgba(201,168,76,0.2) 0%,transparent 70%);
+          border:2px solid rgba(201,168,76,0.5);
+          display:flex;align-items:center;justify-content:center;
+          box-shadow:0 0 20px rgba(201,168,76,0.2),inset 0 0 20px rgba(201,168,76,0.05);
+          cursor:pointer;overflow:hidden;position:relative;
+        ">
+          <span id="profileAvatar" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;"><svg viewBox="0 0 24 24" width="32" height="32" fill="rgba(201,168,76,0.7)"><circle cx="12" cy="7" r="4"/><path d="M12 13c-5 0-8 2.5-8 4v1h16v-1c0-1.5-3-4-8-4z"/></svg></span>
+          <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.55);font-family:'SF Mono',monospace;font-size:7px;color:#fff;text-align:center;padding:2px 0;letter-spacing:1px;">PHOTO</div>
+        </div>
+        <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="uploadProfilePhoto(this)">
+        <!-- Name block -->
+        <div style="flex:1;min-width:0;">
+          <div id="profileName" style="
+            font-family:Impact,'Arial Narrow',sans-serif;
+            font-size:26px;color:#fff;
+            letter-spacing:2px;line-height:1;
+            text-transform:uppercase;
+            text-shadow:0 2px 8px rgba(0,0,0,0.8);
+          ">ELIAS GEDYON</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+            <span id="profileFlag" style="font-size:14px;">🇺🇸</span>
+            <span id="profileCountry" style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,0.8);letter-spacing:2px;">UNITED STATES</span>
+          </div>
+        </div>
+        <!-- GPI stat block — like Pokemon HP -->
+        <div style="
+          text-align:center;flex-shrink:0;
+          background:rgba(201,168,76,0.08);
+          border:1px solid rgba(201,168,76,0.2);
+          border-radius:10px;padding:6px 10px;
+          box-shadow:0 0 12px rgba(201,168,76,0.1);
+        ">
+          <div style="font-family:'SF Mono',monospace;font-size:7px;color:var(--grey);letter-spacing:2px;margin-bottom:1px;">GPI</div>
+          <div id="profileGPI" style="font-family:Impact,'Arial Narrow',sans-serif;font-size:26px;color:var(--gold);line-height:1;">—</div>
+        </div>
+      </div>
+
+      <!-- DIVIDER -->
+      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.3),transparent);margin-bottom:12px;"></div>
+
+      <!-- META ROW -->
+      <div style="display:flex;gap:0;margin-bottom:12px;">
+        <div style="flex:1;text-align:center;border-right:1px solid rgba(255,255,255,0.06);">
+          <div style="font-family:'SF Mono',monospace;font-size:8px;color:rgba(255,255,255,0.55);letter-spacing:1px;margin-bottom:2px;">BORN</div>
+          <div id="profileBorn" style="font-family:'SF Mono',monospace;font-size:10px;color:#fff;">04 APR 1993</div>
+        </div>
+        <div style="flex:1;text-align:center;border-right:1px solid rgba(255,255,255,0.06);">
+          <div style="font-family:'SF Mono',monospace;font-size:8px;color:rgba(255,255,255,0.55);letter-spacing:1px;margin-bottom:2px;">TRIALS</div>
+          <div id="profileDaysLeft" style="font-family:'SF Mono',monospace;font-size:10px;color:#6ec6ff;">739d</div>
+        </div>
+        <div style="flex:1;text-align:center;">
+          <div style="font-family:'SF Mono',monospace;font-size:8px;color:rgba(255,255,255,0.55);letter-spacing:1px;margin-bottom:2px;">PHASE</div>
+          <div style="font-family:'SF Mono',monospace;font-size:10px;color:#7dffb0;">FOUNDATION</div>
+        </div>
+      </div>
+
+      <!-- EVENT PILLS -->
+      <div id="profileEvents" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;"></div>
+
+      <!-- PERSONAL BESTS — Pokemon-card stat block -->
+      <div style="background:#0d1520;border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:10px 12px;margin-bottom:10px;">
+        <div style="font-family:'SF Mono',monospace;font-size:8px;color:rgba(201,168,76,1);letter-spacing:3px;margin-bottom:8px;">PERSONAL BESTS</div>
+        <div id="profilePRs"></div>
+      </div>
+
+      <!-- SEASON BESTS -->
+      <div style="background:#0d1520;border:1px solid rgba(110,198,255,0.2);border-radius:12px;padding:10px 12px;">
+        <div style="font-family:'SF Mono',monospace;font-size:8px;color:rgba(110,198,255,1);letter-spacing:3px;margin-bottom:8px;">SEASON BESTS <span id="profileSeasonYear" style="opacity:0.7;"></span></div>
+        <div id="profileSeasonBests"></div>
+      </div>
+
+      <!-- BOTTOM FOOTER -->
+      <div style="margin-top:12px;text-align:center;font-family:'SF Mono',monospace;font-size:8px;color:rgba(255,255,255,0.4);letter-spacing:2px;">
+        GEDYON · 2028 OLYMPIC TRIALS · AI-POWERED TRAINING
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /card -->
+</div>
+<!-- ════════════════════════════════════════════════════════════════ -->
         <div class="sh" style="margin-top:0;">LOG RACE RESULT</div>
         <div class="card"><div class="cb">
           <!-- Race Search -->
@@ -1746,7 +1924,7 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
               <button onclick="clearRaceSelection()" style="background:none;border:none;color:#888;font-size:16px;cursor:pointer;">x</button>
             </div>
           </div>
-          <div class="fr"><div class="fl">DATE</div><input type="date" id="raceDate"></div>
+          <div class="fr"><div class="fl">RACE DATE</div><input type="date" id="raceDate" onchange="autoDetectRaceResult()"></div>
           <div class="fr"><div class="fl">EVENT</div>
             <div id="grp-event" style="display:flex;flex-wrap:wrap;">
               <button class="tog" data-v="800m" onclick="selTog(this,'grp-event')">800m</button>
@@ -1761,12 +1939,25 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
               <button class="tog" data-v="other" onclick="selTog(this,'grp-event')">Other</button>
             </div>
           </div>
-          <div class="fr"><div class="fl">FINISH TIME</div><input type="text" id="raceTime" placeholder="3:45:00 or 1:51.40" style="font-size:28px;color:var(--accent,#C9A84C);letter-spacing:2px;"></div>
-          <div class="fr" id="racePlaceWrap"><div class="fl">PLACE (optional)</div><input type="number" id="racePlace" placeholder="e.g. 142"></div>
+
+          <!-- Auto-detected workout match -->
+          <div id="raceAutoDetect" style="display:none;margin-bottom:12px;"></div>
+
+          <!-- Manual fallback (shown only when no Strava match) -->
+          <div id="raceManualFallback" style="display:none;">
+            <div class="fr"><div class="fl">FINISH TIME</div><input type="text" id="raceTime" placeholder="3:45:00 or 1:51.40" style="font-size:24px;color:var(--accent,#C9A84C);letter-spacing:2px;"></div>
+            <div class="fr" id="racePlaceWrap"><div class="fl">PLACE (optional)</div><input type="number" id="racePlace" placeholder="e.g. 142"></div>
+          </div>
+
+          <!-- Detected result hidden inputs -->
+          <input type="hidden" id="raceDetectedTime" value="">
+          <input type="hidden" id="raceDetectedWorkoutId" value="">
+
           <button class="btn" onclick="logRace()">LOG RACE</button>
           <div class="al" id="raceAlert"></div>
         </div></div>
         <div class="sh">RACE HISTORY</div>
+<div id="importRacesStatus" style="display:none;font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);padding:4px 0 8px;text-align:center;letter-spacing:1px;"></div>
         <div id="raceHistory"></div>
       </div>
       <!-- ═══ SOCIAL FEED ═══ -->
@@ -2312,6 +2503,42 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
         </div></div>
         <div class="sh">INTEGRATIONS</div>
         <div class="card"><div class="cb" style="padding:0;" id="integrationsHub"></div></div>
+        <!-- World Athletics -->
+        <div class="card" style="margin-bottom:10px;">
+          <div class="cb">
+            <div class="fr">
+              <div class="fl" style="font-size:13px;letter-spacing:2px;">WORLD ATHLETICS</div>
+              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);">Official track results</div>
+            </div>
+            <div class="fr">
+              <div class="fl">ATHLETE CODE</div>
+              <input type="text" id="waCodeInput" placeholder="e.g. 14329251"
+                style="width:100%;font-family:'SF Mono',monospace;font-size:12px;"
+                oninput="D.settings.waCode=this.value.trim();save()">
+            </div>
+            <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);padding:4px 0 8px;">
+              Find your code at worldathletics.org → your profile URL → the number at the end.
+            </div>
+          </div>
+        </div>
+        <!-- Athlinks -->
+        <div class="card" style="margin-bottom:10px;">
+          <div class="cb">
+            <div class="fr">
+              <div class="fl" style="font-size:13px;letter-spacing:2px;">ATHLINKS</div>
+              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);">Lifetime race history</div>
+            </div>
+            <div class="fr">
+              <div class="fl">ATHLETE ID</div>
+              <input type="text" id="athlinksIdInput" placeholder="e.g. 12345678"
+                style="width:100%;font-family:'SF Mono',monospace;font-size:12px;"
+                oninput="saveAthlinksId(this.value.trim())">
+            </div>
+            <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);padding:4px 0 8px;">
+              Find at athlinks.com → your profile URL → the number at the end.
+            </div>
+          </div>
+        </div>
         <div class="sh">CLOUD ACCOUNT</div>
         <div class="card"><div class="cb">
           <div id="authStatus" style="font-family:'SF Mono',monospace;font-size:12px;color:var(--grey);margin-bottom:12px;"></div>
@@ -2395,81 +2622,39 @@ details[open]>summary .det-arrow{transform:rotate(180deg);}
 
         <div style="padding:12px 14px 80px;">
 
-          <!-- Pace Progression -->
-          <div class="card" style="margin-bottom:10px;">
-            <div style="font-family:Impact,sans-serif;font-size:13px;letter-spacing:2px;color:var(--gold);padding:10px 14px 4px;">EASY PACE PROGRESSION</div>
-            <div style="padding:6px 14px 12px;">
-              <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);margin-bottom:8px;">FROM PLAYBOOK — 10:30/MI IS CORRECT FOR WK 1-7</div>
-              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;">
-                <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:8px;padding:8px 4px;text-align:center;">
-                  <div style="font-family:Impact,sans-serif;font-size:18px;color:#fff;">10:31</div>
-                  <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">WK 1–2</div>
-                  <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--blue);">6.0 mph</div>
-                </div>
-                <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:8px;padding:8px 4px;text-align:center;">
-                  <div style="font-family:Impact,sans-serif;font-size:18px;color:#fff;">10:20</div>
-                  <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">WK 3–12</div>
-                  <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--blue);">6.1 mph</div>
-                </div>
-                <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:8px;padding:8px 4px;text-align:center;">
-                  <div style="font-family:Impact,sans-serif;font-size:18px;color:var(--gold);">10:00</div>
-                  <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">WK 13+</div>
-                  <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--blue);">6.3 mph</div>
-                </div>
-                <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:8px;padding:8px 4px;text-align:center;">
-                  <div style="font-family:Impact,sans-serif;font-size:18px;color:var(--green);">7:41</div>
-                  <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">THRESH</div>
-                  <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--blue);">7.8 mph</div>
-                </div>
-              </div>
-              <div style="background:rgba(80,180,80,0.08);border:1px solid rgba(80,180,80,0.20);border-radius:8px;padding:9px 12px;margin-top:8px;">
-                <div style="font-family:'SF Mono',monospace;font-size:12px;color:var(--green);line-height:1.8;"> 10:30/mi is EXACTLY RIGHT per playbook through Week 7<br> Drops to 10:10/mi at Week 8 → 6.2 mph<br> Threshold (Tue/Thu) = 7:41/mi — completely separate</div>
-              </div>
-            </div>
-          </div>
+          <!-- Pace Progression — rendered dynamically by renderPlaybook() -->
+          <div id="pb-pace" style="margin-bottom:10px;"></div>
 
-          <!-- Key Rules Phase 1 -->
-          <div class="card" style="margin-bottom:10px;">
-            <div style="font-family:Impact,sans-serif;font-size:13px;letter-spacing:2px;color:var(--gold);padding:10px 14px 6px;">KEY RULES — PHASE 1</div>
-            <div style="padding:0 14px 12px;">
-              <div style="font-family:'SF Mono',monospace;font-size:12px;color:rgba(255,255,255,0.70);line-height:2.2;">
-                <span style="color:var(--grey);"> OVERLOAD</span> &nbsp;Never increase volume + intensity same week<br>
-                <span style="color:var(--grey);"> SLEEP</span> &nbsp;Hard days: bed 9:30pm · Easy days: bed 10pm<br>
-                <span style="color:var(--grey);">LACTATE</span> &nbsp;Threshold cap = 2.0–2.5 mmol/L in Phase 1<br>
-                <span style="color:var(--grey);">HRV</span> &nbsp;10%+ below baseline → convert hard to easy<br>
-                <span style="color:var(--grey);">THRESHOLD</span> &nbsp;Phase 1: ONE session/week only (Tue AM)<br>
-                <span style="color:var(--grey);">DELOAD</span> &nbsp;Every 4th week = 68% volume. Non-negotiable.
-              </div>
-            </div>
-          </div>
+          <!-- Key Rules — rendered dynamically by renderPlaybook() -->
+          <div id="pb-rules" style="margin-bottom:10px;"></div>
 
           <!-- 6-Phase Overview -->
           <div class="card" style="margin-bottom:10px;">
             <div style="font-family:Impact,sans-serif;font-size:13px;letter-spacing:2px;color:var(--gold);padding:10px 14px 4px;">6-PHASE OVERVIEW</div>
             <div>
-              <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <div class="pb-phase-row" data-phase="1" style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.06);border-left:3px solid transparent;transition:background .2s;">
                 <div style="font-family:Impact,sans-serif;font-size:13px;color:var(--blue);width:82px;">WK 1–12</div>
-                <div><div style="font-family:Impact,sans-serif;font-size:14px;color:#fff;letter-spacing:1px;">FOUNDATION</div><div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">44–58 mpw · 177→168 lbs · Single threshold</div></div>
+                <div><div style="font-family:Impact,sans-serif;font-size:14px;color:#fff;letter-spacing:1px;">FOUNDATION <span class="pb-here-badge" style="display:none;font-family:'SF Mono',monospace;font-size:9px;color:var(--gold);background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:4px;padding:1px 5px;letter-spacing:1px;vertical-align:middle;">● YOU ARE HERE</span></div><div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">44–58 mpw · 177→168 lbs · Single threshold</div></div>
               </div>
-              <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <div class="pb-phase-row" data-phase="2" style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.06);border-left:3px solid transparent;transition:background .2s;">
                 <div style="font-family:Impact,sans-serif;font-size:13px;color:var(--green);width:82px;">WK 13–28</div>
-                <div><div style="font-family:Impact,sans-serif;font-size:14px;color:#fff;letter-spacing:1px;">AEROBIC BUILD</div><div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">64–82 mpw · 168→158 lbs · Double threshold begins</div></div>
+                <div><div style="font-family:Impact,sans-serif;font-size:14px;color:#fff;letter-spacing:1px;">AEROBIC BUILD <span class="pb-here-badge" style="display:none;font-family:'SF Mono',monospace;font-size:9px;color:var(--gold);background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:4px;padding:1px 5px;letter-spacing:1px;vertical-align:middle;">● YOU ARE HERE</span></div><div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">64–82 mpw · 168→158 lbs · Double threshold begins</div></div>
               </div>
-              <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <div class="pb-phase-row" data-phase="3" style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.06);border-left:3px solid transparent;transition:background .2s;">
                 <div style="font-family:Impact,sans-serif;font-size:13px;color:var(--gold);width:82px;">WK 29–48</div>
-                <div><div style="font-family:Impact,sans-serif;font-size:14px;color:#fff;letter-spacing:1px;">THRESHOLD PEAK</div><div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">88–108 mpw · 158→151 lbs · 4 threshold/wk</div></div>
+                <div><div style="font-family:Impact,sans-serif;font-size:14px;color:#fff;letter-spacing:1px;">THRESHOLD PEAK <span class="pb-here-badge" style="display:none;font-family:'SF Mono',monospace;font-size:9px;color:var(--gold);background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:4px;padding:1px 5px;letter-spacing:1px;vertical-align:middle;">● YOU ARE HERE</span></div><div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">88–108 mpw · 158→151 lbs · 4 threshold/wk</div></div>
               </div>
-              <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <div class="pb-phase-row" data-phase="4" style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.06);border-left:3px solid transparent;transition:background .2s;">
                 <div style="font-family:Impact,sans-serif;font-size:13px;color:var(--orange);width:82px;">WK 49–68</div>
-                <div><div style="font-family:Impact,sans-serif;font-size:14px;color:#fff;letter-spacing:1px;">RACE SPECIFIC</div><div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">88–92 mpw · 151→148 lbs · Qualifying attempts W60+</div></div>
+                <div><div style="font-family:Impact,sans-serif;font-size:14px;color:#fff;letter-spacing:1px;">RACE SPECIFIC <span class="pb-here-badge" style="display:none;font-family:'SF Mono',monospace;font-size:9px;color:var(--gold);background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:4px;padding:1px 5px;letter-spacing:1px;vertical-align:middle;">● YOU ARE HERE</span></div><div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">88–92 mpw · 151→148 lbs · Qualifying attempts W60+</div></div>
               </div>
-              <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <div class="pb-phase-row" data-phase="5" style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid rgba(255,255,255,0.06);border-left:3px solid transparent;transition:background .2s;">
                 <div style="font-family:Impact,sans-serif;font-size:13px;color:var(--red);width:82px;">WK 69–100</div>
-                <div><div style="font-family:Impact,sans-serif;font-size:14px;color:#fff;letter-spacing:1px;">CHAMPIONSHIP</div><div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">90–92 mpw · 148 lbs · Race season + altitude W84-86</div></div>
+                <div><div style="font-family:Impact,sans-serif;font-size:14px;color:#fff;letter-spacing:1px;">CHAMPIONSHIP <span class="pb-here-badge" style="display:none;font-family:'SF Mono',monospace;font-size:9px;color:var(--gold);background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:4px;padding:1px 5px;letter-spacing:1px;vertical-align:middle;">● YOU ARE HERE</span></div><div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">90–92 mpw · 148 lbs · Race season + altitude W84-86</div></div>
               </div>
-              <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;">
+              <div class="pb-phase-row" data-phase="6" style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-left:3px solid transparent;transition:background .2s;">
                 <div style="font-family:Impact,sans-serif;font-size:13px;color:#c084fc;width:82px;">WK 101–110</div>
-                <div><div style="font-family:Impact,sans-serif;font-size:14px;color:#fff;letter-spacing:1px;">TRIALS TAPER</div><div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">40–88 mpw · April 4, 2028 · ALL EVENTS SHARP</div></div>
+                <div><div style="font-family:Impact,sans-serif;font-size:14px;color:#fff;letter-spacing:1px;">TRIALS TAPER <span class="pb-here-badge" style="display:none;font-family:'SF Mono',monospace;font-size:9px;color:var(--gold);background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:4px;padding:1px 5px;letter-spacing:1px;vertical-align:middle;">● YOU ARE HERE</span></div><div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">40–88 mpw · April 4, 2028 · ALL EVENTS SHARP</div></div>
               </div>
             </div>
           </div>
@@ -2950,7 +3135,7 @@ const DEFAULT_PIN = '042028'; // April 2028 — Trials month/year
 let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
   logs:[], food:[], workouts:[], races:[], weights:[],
   supps:{}, dayScores:{}, lactate:{},
-  settings:{name:'Elias Gedyon', start:'2026-02-23', startWt:177, raceWt:148}
+  settings:{name:'Elias Gedyon', start:'2026-02-23', startWt:177, raceWt:148, waCode:'14329251'}
 }));
 if(!D.actualMeals) D.actualMeals={};
 if(!D.dayScores) D.dayScores={};
@@ -3193,11 +3378,30 @@ var SUPP_DB=[
 
 function handleMoreSearch(q){
   var res=$('moreSearchResults');
-  if(!q||q.length<2){res.style.display='none';return;}
-  q=q.toLowerCase();
   // Determine active tab context
   var activeTab='supps';
   document.querySelectorAll('.msec.on').forEach(function(el){activeTab=el.id.replace('ms-','');});
+  var suppCards=document.querySelectorAll('#ms-supps .supc');
+
+  if(!q||q.length<2){
+    res.style.display='none';
+    suppCards.forEach(function(c){c.style.display='';});
+    var nm=$('suppNoMatch'); if(nm) nm.style.display='none';
+    return;
+  }
+  q=q.toLowerCase();
+
+  // Filter existing .supc cards live when on Protocol tab
+  if(activeTab==='supps'){
+    var visCount=0;
+    suppCards.forEach(function(card){
+      var match=card.textContent.toLowerCase().includes(q);
+      card.style.display=match?'':'none';
+      if(match) visCount++;
+    });
+    var nm=$('suppNoMatch');
+    if(nm) nm.style.display=visCount===0?'block':'none';
+  }
 
   var html='';
   if(activeTab==='supps'||q.match(/supp|vitamin|protein|creat|magn|omega|iron|zinc/i)){
@@ -3250,6 +3454,8 @@ function launchApp(){
   $('setName').value=D.settings.name;
   $('setCurWt').value=D.settings.startWt;
   $('setRaceWt').value=D.settings.raceWt;
+  loadWACode();
+  loadAthlinksId();
   initLacRows();
   renderDash(); renderWtHero(t); renderPlanCard(t);
   renderSuppGrid(t); renderTodayFood(t);
@@ -3279,9 +3485,10 @@ function goPage(id,btn){
   $('scr').scrollTop=0;
   if(id==='dash')renderDash();
   else if(id==='today'){const d=$('docDate').value||td();renderWtHero(d);renderPlanCard(d);renderTodayFood(d);renderSuppGrid(d);restoreToggles(d);}
-  else if(id==='train'){renderTrainLog();setTimeout(renderTrainingLoad,80);}
+  else if(id==='train'){renderTrailMap();renderTrainLog();setTimeout(renderTrainingLoad,80);}
   else if(id==='plan'){filtPlan('all',$('#phFilter .tog'));setTimeout(renderPlanMileage,80);setTimeout(renderPlanTodayBox,80);}
   else if(id==='more'){renderRaceTests();initIntegrationsHub();updateAuthStatus();}
+  else if(id==='playbook'){renderPlaybook();}
   else if(id==='atlas')initAtlasPage();
   setTimeout(initCollapsibles,150);
 }
@@ -3290,7 +3497,7 @@ function showMore(tab){
   document.querySelectorAll('.snb').forEach(b=>b.classList.remove('on'));
   $('ms-'+tab).classList.add('on'); $('snb-'+tab).classList.add('on');
   if(tab==='wt')renderWeightMore();
-  else if(tab==='rl')renderRaceHistory();
+  else if(tab==='rl'){renderAthleteProfile();renderRaceHistory();autoSyncRaces();}
   else if(tab==='social')setTimeout(renderSocialFeed,50);
   else if(tab==='ai')setTimeout(renderAIComp,50);
   else if(tab==='connect')setTimeout(renderConnectPage,60);
@@ -4224,9 +4431,9 @@ function formatSteps(steps, totalMi){
   if(!steps) return '';
   // If already has [AM]/[PM] labels, render with colored badges
   if(steps.indexOf('[AM]')>-1 || steps.indexOf('[PM]')>-1){
-    return steps.replace(/\[AM\]/g,'<span style="display:inline-block;background:#1565C0;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;letter-spacing:1px;">AM</span>')
-                .replace(/\[PM\]/g,'<br><span style="display:inline-block;background:#6A1B9A;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;letter-spacing:1px;margin-top:6px;">PM</span>')
-                .replace(/\[CORE\]/g,'<br><span style="display:inline-block;background:#E65100;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;letter-spacing:1px;margin-top:6px;">CORE</span>');
+    return steps.replace(/\[AM\]/g,'<span style="display:inline-block;background:rgba(21,101,192,0.85);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;letter-spacing:1px;">AM</span>')
+                .replace(/\[PM\]/g,'<br><span style="display:inline-block;background:rgba(106,27,154,0.85);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;letter-spacing:1px;margin-top:6px;">PM</span>')
+                .replace(/\[CORE\]/g,'<br><span style="display:inline-block;background:rgba(230,81,0,0.85);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;letter-spacing:1px;margin-top:6px;">CORE</span>');
   }
   // Auto-format "AM/PM split" pattern into labeled sections
   if(steps.indexOf('AM/PM split')>-1){
@@ -4244,11 +4451,11 @@ function formatSteps(steps, totalMi){
       else if(section==='pm') pm.push(p);
       else core.push(p);
     });
-    var h = '<span style="display:inline-block;background:#1565C0;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;letter-spacing:1px;">AM RUN</span> '+amMi+'mi easy at 10:00/mi conversational';
+    var h = '<span style="display:inline-block;background:rgba(21,101,192,0.85);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;letter-spacing:1px;">AM RUN</span> '+amMi+'mi easy at 10:00/mi conversational';
     if(am.some(function(s){return s.match(/strides/i);})) h += '. 6x20s strides at 8.5mph w/ 75s recovery';
-    h += '<br><span style="display:inline-block;background:#6A1B9A;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;letter-spacing:1px;margin-top:6px;">PM RUN</span> '+pmMi+'mi easy shake-out at 10:30/mi';
-    if(core.length) h += '<br><span style="display:inline-block;background:#E65100;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;letter-spacing:1px;margin-top:6px;">CORE</span> '+core.join('. ');
-    else h += '<br><span style="display:inline-block;background:#E65100;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;letter-spacing:1px;margin-top:6px;">CORE</span> 8min circuit';
+    h += '<br><span style="display:inline-block;background:rgba(106,27,154,0.85);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;letter-spacing:1px;margin-top:6px;">PM RUN</span> '+pmMi+'mi easy shake-out at 10:30/mi';
+    if(core.length) h += '<br><span style="display:inline-block;background:rgba(230,81,0,0.85);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;letter-spacing:1px;margin-top:6px;">CORE</span> '+core.join('. ');
+    else h += '<br><span style="display:inline-block;background:rgba(230,81,0,0.85);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;letter-spacing:1px;margin-top:6px;">CORE</span> 8min circuit';
     return h;
   }
   // Default: just replace dots with line breaks
@@ -4956,7 +5163,7 @@ async function scoreWorkout(wo, date, plan, ai, aib, ail){
   const maxP=rows.reduce((a,r)=>a+r.max,0)||80;
   const pct=Math.min(100,Math.round(total/maxP*100));
   const grade=pct>=95?'S':pct>=90?'A+':pct>=80?'A':pct>=70?'B':pct>=60?'C':pct>=50?'D':'F';
-  const emoji=pct>=90?'':pct>=80?'':pct>=70?'':pct>=60?'':pct>=50?'':'';
+  const emoji='';
   const gcol=pct>=80?'var(--green)':pct>=65?'var(--gold)':pct>=50?'var(--orange)':'var(--red)';
   const gpiD=pct>=90?8:pct>=80?5:pct>=70?2:pct>=50?0:-4;
 
@@ -6518,11 +6725,12 @@ function logWeightHome(){
 }
 
 function renderDash(){
-  renderHomeWeight();
   renderDashPlanCard();
   renderChizalBrief();
   renderDailyIntel(td());
-  renderGRS();
+  renderRaceReadyCard();
+  renderRaceProgressCard();
+  renderOvertrainingCard();
   renderTrainingSummary();
   renderWhoopDash();
   const days=getDaysToComp();
@@ -6554,11 +6762,11 @@ function renderDash(){
     const l=hist[hist.length-1],prev=hist.length>1?hist[hist.length-2].idx:100;
     const chg=l.idx-prev;
     const col=chg>=10?'var(--green)':chg>=0?'var(--gold)':chg>=-8?'var(--orange)':'var(--red)';
-    $('gpiNum').textContent=l.idx.toFixed(1);$('gpiNum').style.color=col;$('gpiNum').style.textShadow='0 0 40px '+col;
-    $('gpiChg').textContent=(chg>=0?'▲ +':'▼ ')+chg.toFixed(2)+' points';$('gpiChg').style.color=chg>=0?'#00e676':'#ff3d57';$('gpiChg').style.background=chg>=0?'#0a3d1f':'#3d0a0f';$('gpiChg').style.border=chg>=0?'1px solid #00e67640':'1px solid #ff3d5740';
-    $('gpiBadge').textContent=(chg>=0?'▲ +':'▼ ')+chg.toFixed(2);$('gpiBadge').style.color=chg>=0?'#00e676':'#ff3d57';$('gpiBadge').style.background=chg>=0?'#0a3d1f':'#3d0a0f';$('gpiBadge').style.border=chg>=0?'1px solid #00e67640':'1px solid #ff3d5740';
-    const msgs={6:' Full session executed — earnings beat.',5:'Good session — stock gains.',4:'Partial — held support.',3:'Modified — minor dip.',2:'Skipped — sell-off.',1:' MISSED — do NOT miss tomorrow.',0:' No data.'};
-    $('gpiMsg').textContent=msgs[l.sc]||'';$('gpiMsg').style.color=chg>=0?'#00e676':'#ff3d57';$('gpiMsg').style.background=chg>=0?'#0a3d1f':'#3d0a0f';$('gpiMsg').style.border=chg>=0?'1px solid #00e67640':'1px solid #ff3d5740';
+    $('gpiNum').textContent=l.idx.toFixed(1);$('gpiNum').style.color=col;$('gpiNum').style.textShadow='none';
+    $('gpiChg').textContent=(chg>=0?'▲ +':'▼ ')+chg.toFixed(2)+' points';$('gpiChg').style.color=chg>=0?'#00e676':'#ff3d57';$('gpiChg').style.background=chg>=0?'rgba(0,230,118,0.12)':'rgba(255,61,87,0.12)';$('gpiChg').style.border=chg>=0?'1px solid rgba(0,230,118,0.35)':'1px solid rgba(255,61,87,0.35)';
+    $('gpiBadge').textContent=(chg>=0?'▲ +':'▼ ')+chg.toFixed(2);$('gpiBadge').style.color=chg>=0?'#00e676':'#ff3d57';$('gpiBadge').style.background=chg>=0?'rgba(0,230,118,0.12)':'rgba(255,61,87,0.12)';$('gpiBadge').style.border=chg>=0?'1px solid rgba(0,230,118,0.35)':'1px solid rgba(255,61,87,0.35)';
+    const msgs={6:'Full session executed.',5:'Good session.',4:'Partial — held support.',3:'Modified — minor dip.',2:'Skipped — sell-off.',1:'MISSED — do not miss tomorrow.',0:'No data.'};
+    $('gpiMsg').textContent=msgs[l.sc]||'';$('gpiMsg').style.color=chg>=0?'#00e676':'#ff3d57';$('gpiMsg').style.background=chg>=0?'rgba(0,230,118,0.12)':'rgba(255,61,87,0.12)';$('gpiMsg').style.border=chg>=0?'1px solid rgba(0,230,118,0.35)':'1px solid rgba(255,61,87,0.35)';
   }
   const wtTgt=getWeekTarget(td());
   const gLast=hist.length?hist[hist.length-1].idx:100,gPrev=hist.length>1?hist[hist.length-2].idx:100;
@@ -6632,16 +6840,33 @@ function getWidgetLayout() {
 
 function applyWidgetLayout() {
   var layout = getWidgetLayout();
+  var dash = document.getElementById('pg-dash');
+  if (!dash) return;
+
   layout.forEach(function(item, i) {
-    var el = $(item.id);
+    var el = document.getElementById(item.id);
     if (!el) return;
-    el.style.order = i;
+
+    // Walk up to the direct child of #pg-dash.
+    // wrapColl() moves widget elements inside <div class="coll"> wrappers —
+    // CSS `order` only works on direct flex children, so we must target the wrapper.
+    var target = el;
+    while (target.parentNode && target.parentNode !== dash) {
+      target = target.parentNode;
+    }
+    if (target.parentNode !== dash) return;
+
+    target.style.order = i;
+
     if (item.visible) {
-      el.style.display = '';
+      // Only un-hide if we explicitly hid it — never wipe inline display values
+      // like the display:grid on dashStatsRow or the collapsible state on coll wrappers.
+      if (target.style.display === 'none') target.style.display = '';
     } else {
-      el.style.display = 'none';
+      target.style.display = 'none';
     }
   });
+
   // Render optional widgets that are now visible
   layout.forEach(function(item) {
     if (!item.visible) return;
@@ -6708,16 +6933,7 @@ var _wgTouchSrc = -1, _wgTouchTgt = -1, _wgTouchY0 = 0;
 
 function openWidgetCustomizer() {
   var layout = getWidgetLayout();
-  var rows = layout.map(function(item, i) {
-    var def = WIDGET_DEFS.find(function(d){return d.id===item.id;}) || {name:item.id, desc:''};
-    return '<div class="wg-row" data-idx="'+i+'" draggable="true"'+
-      ' ondragstart="wgDS(event,'+i+')" ondragover="wgDO(event,'+i+')" ondrop="wgDP(event,'+i+')" ondragend="wgDE()"'+
-      ' ontouchstart="wgTS(event,'+i+')" ontouchmove="wgTM(event,'+i+')" ontouchend="wgTE(event,'+i+')">'+
-      '<div class="wg-drag-handle">⠿</div>'+
-      '<div class="wg-row-info"><div class="wg-row-name">'+def.name+'</div><div class="wg-row-desc">'+def.desc+'</div></div>'+
-      '<label class="wg-tog"><input type="checkbox"'+(item.visible?' checked':'')+' onchange="wgToggle(\''+item.id+'\',this.checked)"><span class="wg-tog-sl"></span></label>'+
-      '</div>';
-  }).join('');
+  var rows = _buildWgRows(layout);
   var overlay = document.createElement('div');
   overlay.id = 'wgOverlay';
   overlay.innerHTML = '<div id="wgSheet"><div class="wg-sheet-handle"></div><div class="wg-sheet-hdr"><span class="wg-sheet-title">CUSTOMIZE DASHBOARD</span><button class="wg-sheet-done" onclick="closeWidgetCustomizer()">DONE</button></div><div class="wg-sheet-sub">Drag rows to reorder · Toggle to show or hide</div><div id="wgList">'+rows+'</div></div>';
@@ -6774,23 +6990,249 @@ function _wgCHL(){
     r.classList.remove('wg-drop-target','wg-dragging');
   });
 }
+function _buildWgRows(layout){
+  return layout.map(function(item,i){
+    var def=WIDGET_DEFS.find(function(d){return d.id===item.id;})||{name:item.id,desc:''};
+    return '<div class="wg-row" data-idx="'+i+'" draggable="true"'+
+      ' ondragstart="wgDS(event,'+i+')" ondragover="wgDO(event,'+i+')" ondrop="wgDP(event,'+i+')" ondragend="wgDE()"'+
+      ' ontouchstart="wgTS(event,'+i+')" ontouchmove="wgTM(event,'+i+')" ontouchend="wgTE(event,'+i+')">'+
+      '<div class="wg-drag-handle">⠿</div>'+
+      '<div class="wg-row-info"><div class="wg-row-name">'+def.name+'</div><div class="wg-row-desc">'+def.desc+'</div></div>'+
+      '<label class="wg-tog"><input type="checkbox"'+(item.visible?' checked':'')+' onchange="wgToggle(\''+item.id+'\',this.checked)"><span class="wg-tog-sl"></span></label>'+
+      '</div>';
+  }).join('');
+}
+
 function _wgReo(from,to){
   var layout = getWidgetLayout();
   var moved = layout.splice(from,1)[0];
   layout.splice(to,0,moved);
   D.widgetLayout = layout;
   saveData();
-  // Refresh the sheet list
-  var ov=$('wgOverlay');
-  if(ov&&ov.parentNode)ov.parentNode.removeChild(ov);
   applyWidgetLayout();
-  setTimeout(openWidgetCustomizer,10);
+  // Update list rows in-place — no overlay destroy/recreate (prevents flash/glitch)
+  var list=document.getElementById('wgList');
+  if(list) list.innerHTML=_buildWgRows(layout);
+  _wgDragSrc=-1;_wgDragTgt=-1;_wgTouchSrc=-1;_wgTouchTgt=-1;
 }
 
 // ─── Hook into renderDash ────────────────────────────────────
 // applyWidgetLayout is called at end of renderDash (see patch below)
 
 // ═══════════════════════════════════════════════════════════
+
+// ═══ PLAYBOOK — dynamic renderer ═══════════════════════════════
+function renderPlaybook() {
+  var wk = getWk(td());
+  var phase = getPhase(wk);
+
+  // ── Pace bands ────────────────────────────────────────────────
+  var PB_PACES = [
+    {wkStart:1,  wkEnd:2,   easy:'10:31', mph:'6.0', label:'WK 1–2'},
+    {wkStart:3,  wkEnd:12,  easy:'10:20', mph:'6.1', label:'WK 3–12'},
+    {wkStart:13, wkEnd:28,  easy:'10:00', mph:'6.3', label:'WK 13–28'},
+    {wkStart:29, wkEnd:48,  easy:'9:30',  mph:'6.6', label:'WK 29–48'},
+    {wkStart:49, wkEnd:68,  easy:'9:00',  mph:'6.7', label:'WK 49–68'},
+    {wkStart:69, wkEnd:110, easy:'8:30',  mph:'7.1', label:'WK 69–110'},
+  ];
+  var curBand = PB_PACES.find(function(b){return wk>=b.wkStart && wk<=b.wkEnd;}) || PB_PACES[0];
+
+  var paceGrid = PB_PACES.map(function(b) {  // stays as array — sliced below
+    var active = b === curBand;
+    var bg = active ? 'background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.45);' : 'background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);';
+    var col = active ? 'var(--gold)' : '#fff';
+    var badge = active ? '<div style="font-family:\'SF Mono\',monospace;font-size:8px;color:var(--gold);letter-spacing:1px;margin-top:2px;">● NOW</div>' : '';
+    return '<div style="'+bg+'border-radius:8px;padding:8px 4px;text-align:center;">'
+      + '<div style="font-family:Impact,sans-serif;font-size:18px;color:'+col+';">'+b.easy+'</div>'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);">'+b.label+'</div>'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--blue);">'+b.mph+' mph</div>'
+      + badge
+      + '</div>';
+  }); // array — NOT joined yet
+
+  // Threshold pace (stays from PRs if available, else playbook default)
+  var prs = typeof getPRs === 'function' ? getPRs() : {};
+  var tPaces = (D.settings && D.settings.trainingPaces) || {};
+  var threshDisplay = tPaces.threshold ? secToTime(tPaces.threshold) : '7:41';
+
+  var noteText = 'WEEK '+wk+' · '+phase.name.toUpperCase()+' · Easy = <strong>'+curBand.easy+'/mi</strong> ('+curBand.mph+' mph)';
+  if (wk < curBand.wkEnd) {
+    noteText += '<br>Pace upgrades at Week '+(curBand.wkEnd+1)+' → '+(PB_PACES[PB_PACES.indexOf(curBand)+1]||{easy:'race pace'}).easy+'/mi';
+  } else {
+    noteText += '<br>You\'re at the top of this pace band. Next phase begins now.';
+  }
+  noteText += '<br>Threshold = '+threshDisplay+'/mi — completely separate from easy runs';
+
+  var paceEl = document.getElementById('pb-pace');
+  if (paceEl) paceEl.innerHTML = '<div class="card">'
+    + '<div style="font-family:Impact,sans-serif;font-size:13px;letter-spacing:2px;color:var(--gold);padding:10px 14px 4px;">EASY PACE PROGRESSION</div>'
+    + '<div style="padding:6px 14px 12px;">'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);margin-bottom:8px;">WEEK '+wk+' OF 110 · '+phase.name.toUpperCase()+'</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:5px;">'+paceGrid.slice(0,3).join('')+'</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;">'
+    + paceGrid.slice(3,5).join('')
+    + '<div style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.25);border-radius:8px;padding:8px 4px;text-align:center;">'
+    + '<div style="font-family:Impact,sans-serif;font-size:18px;color:var(--green);">'+threshDisplay+'</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);">THRESH</div>'
+    + '</div>'
+    + '</div>'
+    + '<div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.18);border-radius:8px;padding:9px 12px;margin-top:8px;">'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:var(--gold);line-height:1.9;">'+noteText+'</div>'
+    + '</div>'
+    + '</div></div>';
+
+  // ── Phase key rules ────────────────────────────────────────────
+  var PB_RULES = {
+    1: [
+      ['OVERLOAD',   'Never increase volume + intensity same week'],
+      ['SLEEP',      'Hard days: bed 9:30pm · Easy days: bed 10pm'],
+      ['LACTATE',    'Threshold cap = 2.0–2.5 mmol/L in Phase 1'],
+      ['HRV',        '10%+ below baseline → convert hard to easy'],
+      ['THRESHOLD',  'ONE session/week only (Tue AM)'],
+      ['DELOAD',     'Every 4th week = 68% volume. Non-negotiable.'],
+    ],
+    2: [
+      ['VOLUME',     'Push to 60–70 mpw by Week 28'],
+      ['THRESHOLD',  '2× per week now allowed — Tue + Thu'],
+      ['LACTATE',    'Cap extends to 3.0–3.5 mmol/L'],
+      ['DOUBLES',    'Introduce morning/afternoon splits on high-volume days'],
+      ['HRV',        'Trend line must stay above Week 12 baseline'],
+      ['DELOAD',     'Every 4th week = 72% volume'],
+    ],
+    3: [
+      ['INTENSITY',  'Threshold becomes the primary training stressor'],
+      ['VOLUME',     'Maintain 65–75 mpw steady — no new peaks'],
+      ['LACTATE',    'Target 4.0 mmol/L during threshold sessions'],
+      ['RACES',      '5K–10K tune-ups every 3–4 weeks start now'],
+      ['HRV',        'Daily tracking mandatory — dictates intensity days'],
+      ['DELOAD',     'Every 3rd week = 70% volume'],
+    ],
+    4: [
+      ['SPECIFICITY','Train exact race distances and target paces'],
+      ['VOLUME',     'Begin tapering from peak — 65 → 55 mpw'],
+      ['RACES',      'Race every 2–3 weeks at your target distance'],
+      ['LACTATE',    'Pre-race testing protocol active before each race'],
+      ['HRV',        '≥ 95% of baseline required before hard workouts'],
+      ['DELOAD',     'Every 3rd week = 65% volume'],
+    ],
+    5: [
+      ['SHARPENING', '10-day pre-competition taper for each major race'],
+      ['VOLUME',     'Controlled 50–60 mpw with race-week drops'],
+      ['RACES',      'Peak 2–3 championship races — choose targets carefully'],
+      ['LACTATE',    'Performance test monthly, not before race weeks'],
+      ['HRV',        'Baseline protects every key race — honor it'],
+      ['RECOVERY',   'Full recovery week after each major championship'],
+    ],
+    6: [
+      ['TAPER',      '40% volume reduction over 3 weeks into Trials'],
+      ['INTENSITY',  'Race-pace strides + short threshold only — no new stress'],
+      ['SLEEP',      '9 hours minimum every single night'],
+      ['HRV',        'Daily — any meaningful drop = full rest, no exceptions'],
+      ['RACES',      'One final tune-up race at Week 105–106 only'],
+      ['FOCUS',      'Mental prep + logistics locked in by Week 108'],
+    ],
+  };
+
+  var rules = PB_RULES[phase.n] || PB_RULES[1];
+  var rulesHtml = rules.map(function(r) {
+    return '<span style="color:var(--grey);letter-spacing:1px;">'+r[0]+'</span>&nbsp;&nbsp;'+r[1]+'<br>';
+  }).join('');
+
+  var rulesEl = document.getElementById('pb-rules');
+  if (rulesEl) rulesEl.innerHTML = '<div class="card">'
+    + '<div style="font-family:Impact,sans-serif;font-size:13px;letter-spacing:2px;color:'+phase.color+';padding:10px 14px 6px;">KEY RULES — PHASE '+phase.n+': '+phase.name.toUpperCase()+'</div>'
+    + '<div style="padding:0 14px 12px;font-family:\'SF Mono\',monospace;font-size:12px;color:rgba(255,255,255,0.70);line-height:2.3;">'+rulesHtml+'</div>'
+    + '</div>';
+
+  // ── Highlight current phase in 6-phase overview (add YOU ARE HERE marker) ──
+  document.querySelectorAll('.pb-phase-row').forEach(function(el) {
+    var ph = +el.dataset.phase;
+    el.style.background = ph===phase.n ? 'rgba(201,168,76,0.07)' : '';
+    el.style.borderLeft  = ph===phase.n ? '3px solid var(--gold)' : '3px solid transparent';
+    var badge = el.querySelector('.pb-here-badge');
+    if (badge) badge.style.display = ph===phase.n ? 'inline' : 'none';
+  });
+}
+// ═══════════════════════════════════════════════════════════════
+
+// ═══ TRAIL MAP ══════════════════════════════════════════════════
+function renderTrailMap() {
+  var el = document.getElementById('trailMapWrap');
+  if (!el) return;
+
+  var runs = (D.workouts || []).filter(function(w) { return w.polyline && w.polyline.length > 3; });
+
+  if (!runs.length) {
+    el.innerHTML = '<div class="card" style="margin-bottom:10px;"><div style="padding:16px 14px;text-align:center;font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);">Sync Strava runs to see your trail map.</div></div>';
+    return;
+  }
+
+  // Decode all polylines and collect all coords
+  var allCoords = [];
+  var routeData = runs.slice(0, 50).map(function(w) {
+    var coords = decodePolyline(w.polyline);
+    allCoords = allCoords.concat(coords);
+    return { coords: coords, type: w.type || '', source: w.source || '', name: w.name || '' };
+  });
+
+  if (allCoords.length < 2) { el.innerHTML = ''; return; }
+
+  // Find global bounds
+  var lats = allCoords.map(function(c) { return c[0]; });
+  var lngs = allCoords.map(function(c) { return c[1]; });
+  var minLat = Math.min.apply(null, lats), maxLat = Math.max.apply(null, lats);
+  var minLng = Math.min.apply(null, lngs), maxLng = Math.max.apply(null, lngs);
+
+  var W = 340, H = 220, pad = 14;
+  var dLat = maxLat - minLat || 0.001, dLng = maxLng - minLng || 0.001;
+  var scale = Math.min((W - pad * 2) / dLng, (H - pad * 2) / dLat);
+
+  function project(c) {
+    return [(pad + (c[1] - minLng) * scale).toFixed(1), (pad + (maxLat - c[0]) * scale).toFixed(1)];
+  }
+
+  // Color by type
+  function routeColor(type, source) {
+    if (type === 'threshold' || type === 'tempo') return 'rgba(245,196,0,0.7)';
+    if (type === 'long') return 'rgba(0,180,255,0.6)';
+    if (type === 'race') return 'rgba(255,61,87,0.85)';
+    if (source === 'whoop') return 'rgba(0,241,159,0.5)';
+    return 'rgba(0,230,118,0.55)'; // easy / default
+  }
+
+  var paths = routeData.map(function(r) {
+    if (r.coords.length < 2) return '';
+    var pts = r.coords.map(project).map(function(p) { return p[0] + ',' + p[1]; }).join(' ');
+    var col = routeColor(r.type, r.source);
+    return '<polyline points="' + pts + '" fill="none" stroke="' + col + '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>';
+  }).join('');
+
+  // Count by type for legend
+  var easy = runs.filter(function(w) { return !w.type || (w.type !== 'threshold' && w.type !== 'long' && w.type !== 'race'); }).length;
+  var thresh = runs.filter(function(w) { return w.type === 'threshold' || w.type === 'tempo'; }).length;
+  var longR = runs.filter(function(w) { return w.type === 'long'; }).length;
+  var race = runs.filter(function(w) { return w.type === 'race'; }).length;
+
+  var legend = [
+    easy   ? '<span style="color:rgba(0,230,118,0.9);">━</span> Easy ×'+easy : '',
+    thresh ? '<span style="color:var(--gold);">━</span> Threshold ×'+thresh : '',
+    longR  ? '<span style="color:var(--blue);">━</span> Long ×'+longR : '',
+    race   ? '<span style="color:var(--red);">━</span> Race ×'+race : '',
+  ].filter(Boolean).join('  ');
+
+  el.innerHTML = '<div class="card" style="margin-bottom:10px;overflow:hidden;">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px 6px;">'
+    + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:13px;letter-spacing:2px;color:var(--gold);">TRAIL MAP</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);">' + runs.length + ' ROUTES</div>'
+    + '</div>'
+    + '<svg width="100%" viewBox="0 0 ' + W + ' ' + H + '" style="display:block;background:rgba(0,0,0,0.25);">'
+    + '<rect width="' + W + '" height="' + H + '" fill="rgba(10,15,25,0.6)"/>'
+    + paths
+    + '</svg>'
+    + '<div style="padding:8px 14px;font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.5px;">' + legend + '</div>'
+    + '</div>';
+}
+// ════════════════════════════════════════════════════════════════
 
 // ═══ TRAIN LOG ═══
 function renderTrainLog(){
@@ -7096,7 +7538,7 @@ function filtPlan(ph,btn){
       const _dow2=dayDate.getDay(); // 0=Sun,1=Mon...6=Sat
       const _dayLbl=['MON','TUE','WED','THU','FRI','SAT','SUN'][(_dow2+6)%7].slice(0,2);
       const _isRest=p.type==='rest';
-      const _emoji=_isRest?'':hasWoDay?'':p.type==='threshold'?'':p.type==='long'?'':'';
+      const _emoji=_isRest?'–':hasWoDay?'✓':p.type==='threshold'?'T':p.type==='long'?'L':'E';
       const _isToday=ds2===today;
       const _dbBg=_isToday?'background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.55);':p.type==='threshold'?'background:rgba(232,120,120,0.12);border-color:rgba(232,120,120,0.25);':p.type==='long'?'background:rgba(120,200,200,0.10);border-color:rgba(120,200,200,0.20);':''
       html+='<div class="db" style="'+_dbBg+'" onclick="openDayDetail(\''+ds2+'\')"><div class="dbd">'+_dayLbl+'</div><div class="dbt">'+_emoji+'</div><div class="dbm" style="color:'+miCol2+';">'+miDisp+'mi</div></div>';
@@ -7539,6 +7981,7 @@ function renderRaceSearch(q){
 }
 function selectRace(name,loc,dist,sport){
   $('raceSelectedName').value=name;
+  autoDetectRaceResult();
   $('raceSelectedDist').value=dist;
   $('raceSelName').textContent=name;
   $('raceSelInfo').textContent=loc+' · '+dist+' · '+sport;
@@ -7559,6 +8002,9 @@ function clearRaceSelection(){
 }
 
 // ═══ RACE LOG + PR SYSTEM ═══
+function hesc(s) {
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 function timeToSec(t){
   if(!t) return 99999;
   var p=t.replace(/[^\d:\.]/g,'').split(':');
@@ -7608,15 +8054,257 @@ function getTrainingPaces(prs){
   paces.interval=Math.round(vdot*0.90);
   return paces;
 }
+function autoDetectRaceResult() {
+  var date = (document.getElementById('raceDate') || {}).value || '';
+  var raceName = ((document.getElementById('raceSelectedName') || {}).value || (document.getElementById('raceSearchInput') || {}).value || '').trim();
+  var detect   = document.getElementById('raceAutoDetect');
+  var fallback = document.getElementById('raceManualFallback');
+  var detTime  = document.getElementById('raceDetectedTime');
+  var detId    = document.getElementById('raceDetectedWorkoutId');
+  if (!detect || !fallback) return;
+  if (!date) { detect.style.display='none'; fallback.style.display='none'; return; }
+  if (!raceName) { autoDetectFromLocalWorkouts(date); return; }
+  var year = date.split('-')[0];
+  var fn = (D.settings.firstName || (D.settings.name||'').split(' ')[0] || '').trim();
+  var ln = (D.settings.lastName  || (D.settings.name||'').split(' ').slice(1).join(' ') || '').trim();
+  if (!fn) { autoDetectFromLocalWorkouts(date); return; }
+  detect.textContent = 'Searching official results for ' + raceName + ' ' + year + '...';
+  detect.style.display = 'block';
+  fallback.style.display = 'none';
+  var srv = (localStorage.getItem('gedyon_server_url') || 'https://gedyon-server-production.up.railway.app').replace(/\/+$/, '');
+  var qs = 'race=' + encodeURIComponent(raceName) + '&year=' + encodeURIComponent(year) + '&first_name=' + encodeURIComponent(fn) + '&last_name=' + encodeURIComponent(ln);
+  if (D.settings.athlinksId) qs += '&athlinks_id=' + encodeURIComponent(D.settings.athlinksId);
+  fetch(srv + '/api/race-results?' + qs)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.error) { autoDetectFromLocalWorkouts(date); return; }
+      if (detTime) detTime.value = data.time || '';
+      if (detId) detId.value = '';
+      detect.innerHTML = buildResultCard(data);
+    })
+    .catch(function() { autoDetectFromLocalWorkouts(date); });
+}
+
+function autoDetectFromLocalWorkouts(date) {
+  var detect   = document.getElementById('raceAutoDetect');
+  var fallback = document.getElementById('raceManualFallback');
+  var detTime  = document.getElementById('raceDetectedTime');
+  if (!detect || !fallback) return;
+  if (!date) { detect.style.display='none'; fallback.style.display='none'; return; }
+  var matches = (D.workouts||[]).filter(function(w){ return w.date === date; });
+  if (!matches.length) { detect.style.display='none'; fallback.style.display='block'; if(detTime) detTime.value=''; return; }
+  function durToTime(m) { if(!m) return '—'; m=Math.round(m); var h=Math.floor(m/60),rm=m%60; return h+':'+(rm<10?'0':'')+rm+':00'; }
+  var items = matches.map(function(w) {
+    var time = durToTime(w.dur||w.duration);
+    var mapHtml = w.polyline ? renderRouteMap(w.polyline,280,100,'var(--gold)') : '';
+    return '<div onclick="selectDetectedWorkout('+w.id+',\''+time+'\')" id="raceMatch-'+hesc(w.id)+'" style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;">'
+      +(mapHtml?'<div style="margin-bottom:8px;border-radius:8px;overflow:hidden;">'+mapHtml+'</div>':'')
+      +'<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:16px;color:#fff;margin-bottom:4px;">'+hesc(w.name||'Workout')+'</div>'
+      +'<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--gold);">'+hesc(time)+'</div>'
+      +'<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);margin-top:4px;">TAP TO USE THIS TIME</div>'
+      +'</div>';
+  }).join('');
+  detect.innerHTML = '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:1px;margin-bottom:8px;">FOUND '+matches.length+' STRAVA WORKOUT'+(matches.length>1?'S':'')+' ON THIS DATE:</div>'+items;
+  detect.style.display='block'; fallback.style.display='none'; if(detTime) detTime.value='';
+}
+
+function selectDetectedWorkout(id, time) {
+  // Highlight selected
+  document.querySelectorAll('[id^="raceMatch-"]').forEach(function(el){
+    el.style.borderColor = 'rgba(201,168,76,0.2)';
+    el.style.background = 'rgba(201,168,76,0.06)';
+  });
+  var sel = document.getElementById('raceMatch-'+id);
+  if (sel) { sel.style.borderColor='rgba(201,168,76,0.6)'; sel.style.background='rgba(201,168,76,0.12)'; }
+  document.getElementById('raceDetectedTime').value = time;
+  document.getElementById('raceDetectedWorkoutId').value = id;
+}
+
+function buildResultCard(data) {
+  var src = hesc((data.source||'OFFICIAL').toUpperCase());
+  var time = hesc(data.time||'—');
+  var name = hesc(data.name||'');
+  var stats = [
+    data.place ? '#'+hesc(data.place) : '',
+    data.ageGroupPlace ? 'AG: #'+hesc(data.ageGroupPlace) : '',
+    data.pace ? hesc(data.pace)+'/mi' : '',
+    data.bib ? 'Bib '+hesc(data.bib) : ''
+  ].filter(Boolean).join('  ·  ');
+  return '<div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.4);border-radius:10px;padding:14px;">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+    +'<span style="background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:4px;padding:2px 7px;font-size:10px;letter-spacing:1px;color:var(--gold);">'+src+'</span>'
+    +'<span style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);">OFFICIAL RESULT</span>'
+    +'</div>'
+    +'<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:36px;color:var(--gold);letter-spacing:2px;">'+time+'</div>'
+    +(stats?'<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:#fff;margin-top:6px;">'+stats+'</div>':'')
+    +'<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);margin-top:6px;">'+name+'</div>'
+    +'</div>';
+}
+function autoSyncRaces() {
+  var today = td();
+  if (D.settings.lastRaceSync === today) return;
+  D.settings.lastRaceSync = today;
+  saveData();
+  importWorldAthleticsRaces();
+  setTimeout(function(){ importAllRaces(true); }, 3000);
+}
+
+function importAllRaces(silent) {
+  var fn = (D.settings.firstName || (D.settings.name||'').split(' ')[0] || '').trim();
+  var ln = (D.settings.lastName  || (D.settings.name||'').split(' ').slice(1).join(' ') || '').trim();
+  var status = document.getElementById('importRacesStatus');
+  if (!fn || !ln) {
+    if (!silent) showToast('Add your name in Settings first', 'err');
+    return;
+  }
+  if (status) { status.style.display='block'; status.textContent='Searching Athlinks for ' + fn + ' ' + ln + '...'; }
+
+  var srv = (localStorage.getItem('gedyon_server_url') || 'https://gedyon-server-production.up.railway.app').replace(/\/+$/, '');
+  var qs = 'first_name=' + encodeURIComponent(fn) + '&last_name=' + encodeURIComponent(ln);
+  if (D.settings.athlinksId) qs += '&athlinks_id=' + encodeURIComponent(D.settings.athlinksId);
+
+  fetch(srv + '/api/athlete-races?' + qs)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.error) {
+        if (status) status.textContent = data.error;
+        if (!silent) showToast(data.error, 'err');
+        return;
+      }
+      if (!data.races || !data.races.length) {
+        if (status) status.textContent = 'No races found on Athlinks.';
+        return;
+      }
+
+      // Merge — skip duplicates by meet+date
+      var existing = new Set((D.races||[]).map(function(r){ return (r.meet||'')+'|'+(r.date||''); }));
+      var added = 0;
+      data.races.forEach(function(r) {
+        var key = (r.meet||'') + '|' + (r.date||'');
+        if (!existing.has(key)) {
+          r.id = Date.now() + Math.random();
+          D.races.push(r);
+          existing.add(key);
+          added++;
+        }
+      });
+
+      // Sort races by date descending
+      D.races.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+      save();
+      renderRaceHistory();
+
+      if (status) { status.textContent = '✓ Imported ' + added + ' races (' + data.count + ' found on Athlinks)'; status.style.color='var(--green)'; }
+      if (!silent) showToast('Imported ' + added + ' races from Athlinks!', 'ok');
+    })
+    .catch(function(e) {
+      if (status) status.textContent = 'Import failed — check your connection.';
+      if (!silent) showToast('Import failed', 'err');
+    });
+}
+
+function importWorldAthleticsRaces() {
+  var waCode = D.settings.waCode || '14329251'; // Elias's known code as default
+  var status = document.getElementById('importRacesStatus');
+  if (status) { status.style.display='block'; status.style.color='var(--grey)'; status.textContent='Fetching World Athletics results for code '+waCode+'...'; }
+
+  var srv = (localStorage.getItem('gedyon_server_url') || 'https://gedyon-server-production.up.railway.app').replace(/\/+$/, '');
+
+  fetch(srv + '/api/world-athletics?athlete_id=' + encodeURIComponent(waCode))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.error) {
+        if (status) { status.style.display = 'none'; }
+        // silent — backend not deployed yet
+        return;
+      }
+
+      // Import personal bests as PRs
+      if (data.personalBests && data.personalBests.length) {
+        if (!D.settings.prs) D.settings.prs = {};
+        data.personalBests.forEach(function(pb) {
+          var ev = normalizeDisciplineClient(pb.discipline);
+          if (ev && pb.mark) {
+            // Only update if this is faster than existing PR
+            if (!D.settings.prs[ev] || timeToSecClient(pb.mark) < timeToSecClient(D.settings.prs[ev].time)) {
+              D.settings.prs[ev] = { time: pb.mark, date: pb.date || '', venue: pb.venue || '', source: 'worldathletics' };
+            }
+          }
+        });
+        D.settings.trainingPaces = getTrainingPaces(getPRs());
+      }
+
+      // Import race results
+      var existing = new Set((D.races||[]).map(function(r){ return (r.meet||'')+'|'+(r.date||''); }));
+      var added = 0;
+      (data.races || []).forEach(function(r) {
+        var key = (r.meet||'') + '|' + (r.date||'');
+        if (!existing.has(key)) {
+          r.id = Date.now() + Math.random();
+          D.races.push(r);
+          existing.add(key);
+          added++;
+        }
+      });
+      D.races.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+      save();
+      renderRaceHistory();
+
+      if (status) {
+        status.style.color = 'var(--green,#00e676)';
+        status.textContent = '\u2713 SYNCED';
+        setTimeout(function(){ status.style.display='none'; }, 3000);
+      }
+    })
+    .catch(function(e) {
+      if (status) { status.style.display = 'none'; }
+      // silent — backend not deployed yet
+    });
+}
+
+function normalizeDisciplineClient(d) {
+  d = (d||'').toLowerCase();
+  if (/5000|5,000/.test(d)) return '5k';
+  if (/3000|3,000/.test(d)) return '3k';
+  if (/1500/.test(d)) return '1500m';
+  if (/1000/.test(d)) return '1500m';
+  if (/mile/.test(d)) return 'mile';
+  if (/800/.test(d)) return '800m';
+  return null;
+}
+
+function timeToSecClient(t) {
+  if (!t) return 99999;
+  var parts = String(t).split(':').map(Number);
+  if (parts.length === 3) return parts[0]*3600 + parts[1]*60 + parts[2];
+  if (parts.length === 2) return parts[0]*60 + parts[1];
+  return parseFloat(t) || 99999;
+}
+
 function logRace(){
-  const ev=getV('grp-event'),time=$('raceTime').value.trim(),date=$('raceDate').value||td();
+  var ev=getV('grp-event');
+  var date=$('raceDate').value||td();
   var meet=$('raceSelectedName').value||$('raceSearchInput').value.trim()||'';
   var place=$('racePlace')?+$('racePlace').value:0;
-  if(!ev||!time){showAlert('raceAlert','Select event and enter time','err');return;}
+
+  // Prefer auto-detected time over manual entry
+  var detectedTime = $('raceDetectedTime') ? $('raceDetectedTime').value.trim() : '';
+  var manualTime = $('raceTime') ? $('raceTime').value.trim() : '';
+  var time = detectedTime || manualTime;
+
+  var detectedWoId = $('raceDetectedWorkoutId') ? +$('raceDetectedWorkoutId').value : null;
+
+  if(!ev||!time){showAlert('raceAlert','Select event, date, and confirm your result','err');return;}
   if(!meet){showAlert('raceAlert','Search and select a real race first','err');return;}
+
   var isNewPR=isPR(ev,time);
-  D.races.unshift({id:Date.now(),date,ev,time,meet,place:place||null,dist:$('raceSelectedDist').value||ev,pr:isNewPR});save();
-  // Update training paces if PR
+  var raceObj = {id:Date.now(),date:date,ev:ev,time:time,meet:meet,place:place||null,dist:$('raceSelectedDist').value||ev,pr:isNewPR};
+  if (detectedWoId) {
+    var wo = (D.workouts||[]).find(function(w){return w.id===detectedWoId;});
+    if (wo) { raceObj.polyline = wo.polyline||null; raceObj.hr = wo.hr||null; raceObj.dist = wo.dist||raceObj.dist; raceObj.elevation = wo.elevation||null; }
+  }
+  D.races.unshift(raceObj); save();
+
   if(isNewPR){
     if(!D.settings.prs) D.settings.prs={};
     D.settings.prs[ev]={time:time,date:date};
@@ -7624,10 +8312,243 @@ function logRace(){
     save();
   }
   renderRaceHistory();
-  $('raceTime').value='';$('raceMeet').value='';
+  if($('raceTime')) $('raceTime').value='';
+  if($('raceDetectedTime')) $('raceDetectedTime').value='';
+  if($('raceDetectedWorkoutId')) $('raceDetectedWorkoutId').value='';
+  if($('raceAutoDetect')) {$('raceAutoDetect').innerHTML='';$('raceAutoDetect').style.display='none';}
+  if($('raceManualFallback')) $('raceManualFallback').style.display='none';
   showAlert('raceAlert',isNewPR?'NEW PR! Training paces updated!':'Race logged!','ok');
 }
 function delRace(id){D.races=D.races.filter(r=>r.id!==id);save();renderRaceHistory();}
+// ═══ ATHLETE PROFILE CARD ════════════════════════════════════════════════════
+function initHoloCard() {
+  var card = document.getElementById('athleteProfileCard');
+  if (!card) return;
+  var foil  = document.getElementById('holoFoil');
+  var shine = document.getElementById('holoShine');
+  var active = false;
+
+  function applyTilt(mx, my) {
+    // mx, my are 0–1 (position within card)
+    var rotX = (my - 0.5) * -18;
+    var rotY = (mx - 0.5) * 22;
+    card.style.transform = 'perspective(800px) rotateX(' + rotX.toFixed(2) + 'deg) rotateY(' + rotY.toFixed(2) + 'deg) scale3d(1.02,1.02,1.02)';
+    card.style.boxShadow = '0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.1), 0 0 60px rgba(201,168,76,0.2)';
+    if (foil) {
+      var bx = (mx * 120 - 10).toFixed(1) + '%';
+      var by = (my * 120 - 10).toFixed(1) + '%';
+      foil.style.backgroundPosition = '50% 50%, ' + bx + ' ' + by;
+      foil.style.opacity = '0.85';
+    }
+    if (shine) {
+      shine.style.background = 'radial-gradient(circle at ' + (mx*100).toFixed(1) + '% ' + (my*100).toFixed(1) + '%, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.07) 35%, transparent 65%)';
+      shine.style.opacity = '1';
+    }
+  }
+
+  function resetTilt() {
+    card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
+    card.style.boxShadow = '0 25px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.08),0 0 40px rgba(201,168,76,0.15)';
+    if (foil)  foil.style.opacity  = '0';
+    if (shine) shine.style.opacity = '0';
+  }
+
+  // Mouse (desktop)
+  card.addEventListener('mouseenter', function() { active = true; });
+  card.addEventListener('mouseleave', function() { active = false; resetTilt(); });
+  card.addEventListener('mousemove', function(e) {
+    if (!active) return;
+    var r = card.getBoundingClientRect();
+    applyTilt((e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height);
+  });
+
+  // Touch (mobile)
+  card.addEventListener('touchmove', function(e) {
+    var t = e.touches[0];
+    var r = card.getBoundingClientRect();
+    applyTilt((t.clientX - r.left) / r.width, (t.clientY - r.top) / r.height);
+  }, { passive: true });
+  card.addEventListener('touchend', resetTilt);
+
+  // Gyroscope (phone tilt)
+  if (window.DeviceOrientationEvent) {
+    var gyroHandler = function(e) {
+      var cardRect = card.getBoundingClientRect();
+      var inView = cardRect.top < window.innerHeight && cardRect.bottom > 0;
+      if (!inView) return;
+      var gamma = Math.max(-35, Math.min(35, e.gamma || 0));
+      var beta  = Math.max(-35, Math.min(35, (e.beta  || 45) - 45));
+      var mx = (gamma + 35) / 70;
+      var my = (beta  + 35) / 70;
+      applyTilt(mx, my);
+    };
+    window.addEventListener('deviceorientation', gyroHandler, { passive: true });
+  }
+}
+
+function holoIn(el) {
+  var f = el.querySelector('.holo-foil'), s = el.querySelector('.holo-shine');
+  if (f) f.style.opacity = '0.7';
+  if (s) s.style.opacity = '1';
+}
+function holoOut(el) {
+  el.style.transform = 'perspective(600px) rotateX(0deg) rotateY(0deg)';
+  el.style.boxShadow = '0 15px 40px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.07)';
+  var f = el.querySelector('.holo-foil'), s = el.querySelector('.holo-shine');
+  if (f) f.style.opacity = '0';
+  if (s) s.style.opacity = '0';
+}
+function holoMove(el, e) {
+  var r = el.getBoundingClientRect();
+  var mx = (e.clientX - r.left) / r.width;
+  var my = (e.clientY - r.top)  / r.height;
+  var rx = (my - 0.5) * -14, ry = (mx - 0.5) * 18;
+  el.style.transform = 'perspective(600px) rotateX(' + rx.toFixed(1) + 'deg) rotateY(' + ry.toFixed(1) + 'deg) scale3d(1.02,1.02,1.02)';
+  el.style.boxShadow = '0 20px 50px rgba(0,0,0,0.65),0 0 0 1px rgba(255,255,255,0.1)';
+  var f = el.querySelector('.holo-foil');
+  if (f) f.style.backgroundPosition = '50% 50%, ' + (mx*120-10).toFixed(0) + '% ' + (my*120-10).toFixed(0) + '%';
+  var s = el.querySelector('.holo-shine');
+  if (s) s.style.background = 'radial-gradient(circle at '+(mx*100).toFixed(0)+'% '+(my*100).toFixed(0)+'%, rgba(255,255,255,0.22) 0%, transparent 55%)';
+}
+
+function uploadProfilePhoto(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    D.settings.profilePhoto = e.target.result;
+    saveData();
+    // Update avatar immediately
+    var av = document.getElementById('profileAvatar');
+    if (av) {
+      av.style.fontSize = '0';
+      av.style.backgroundImage = 'url(' + e.target.result + ')';
+      av.style.backgroundSize = 'cover';
+      av.style.backgroundPosition = 'center';
+      av.style.width = '100%';
+      av.style.height = '100%';
+      av.style.borderRadius = '50%';
+      av.style.display = 'block';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderAthleteProfile() {
+  var card = document.getElementById('athleteProfileCard');
+  if (!card) return;
+
+  // Avatar — custom photo or emoji
+  var av = document.getElementById('profileAvatar');
+  if (av) {
+    if (D.settings.profilePhoto) {
+      av.style.fontSize = '0';
+      av.style.backgroundImage = 'url(' + D.settings.profilePhoto + ')';
+      av.style.backgroundSize = 'cover';
+      av.style.backgroundPosition = 'center';
+      av.style.width = '100%';
+      av.style.height = '100%';
+      av.style.borderRadius = '50%';
+      av.style.display = 'block';
+    } else {
+      av.innerHTML = '<svg viewBox="0 0 24 24" width="32" height="32" fill="rgba(201,168,76,0.7)"><circle cx="12" cy="7" r="4"/><path d="M12 13c-5 0-8 2.5-8 4v1h16v-1c0-1.5-3-4-8-4z"/></svg>';
+      av.style.fontSize = '';
+      av.style.backgroundImage = '';
+      av.style.fontSize = '28px';
+      av.style.backgroundImage = '';
+    }
+  }
+
+  // Name
+  var name = D.settings.name || 'Elias Gedyon';
+  var nameParts = name.toUpperCase().split(' ');
+  var el = document.getElementById('profileName');
+  if (el) el.textContent = nameParts.join(' ');
+
+  // WA Code
+  var waEl = document.getElementById('profileWACode');
+  if (waEl) waEl.textContent = D.settings.waCode || '14329251';
+
+  // GPI
+  var gpiEl = document.getElementById('profileGPI');
+  if (gpiEl) {
+    var gpi = typeof calcGPI === 'function' ? calcGPI() : (D.gpi || null);
+    gpiEl.textContent = gpi ? Number(gpi).toFixed(1) : '—';
+  }
+
+  // Days to trials
+  var dEl = document.getElementById('profileDaysLeft');
+  if (dEl) {
+    var trials = new Date('2028-04-04');
+    var today = new Date();
+    var diff = Math.ceil((trials - today) / 86400000);
+    dEl.textContent = diff > 0 ? diff + 'd' : 'RACE DAY';
+  }
+
+  // Season year
+  var syEl = document.getElementById('profileSeasonYear');
+  if (syEl) syEl.textContent = new Date().getFullYear();
+
+  // Event pills — from D.settings.events or D.settings.sport
+  var eventsEl = document.getElementById('profileEvents');
+  if (eventsEl) {
+    var events = D.settings.events || [];
+    if (!events.length && D.settings.prs) {
+      var evMap = { '800m':'800m', '1500m':'1500m', 'mile':'Mile', '3k':'3000m', '5k':'5000m', '10k':'10K', 'half':'Half', 'marathon':'Marathon' };
+      events = Object.keys(D.settings.prs).filter(function(k){ return evMap[k]; }).map(function(k){ return evMap[k]; });
+    }
+    if (!events.length) events = ['Mile', '5000m', '1500m', '800m'];
+    eventsEl.innerHTML = events.map(function(ev) {
+      return '<span style="padding:3px 10px;border:1px solid rgba(255,255,255,0.35);border-radius:4px;font-family:\'SF Mono\',monospace;font-size:10px;color:#fff;background:rgba(255,255,255,0.08);">' + hesc(ev) + '</span>';
+    }).join('');
+  }
+
+  // Personal Bests
+  var prsEl = document.getElementById('profilePRs');
+  if (prsEl) {
+    var prs = D.settings.prs || {};
+    var prOrder = ['800m','1500m','mile','3k','5k','10k','half','marathon'];
+    var prLabels = { '800m':'800 Metres','1500m':'1500 Metres','mile':'Mile','3k':'3000 Metres','5k':'5000 Metres','10k':'10,000 Metres','half':'Half Marathon','marathon':'Marathon' };
+    var rows = prOrder.filter(function(k){ return prs[k] && prs[k].time; }).map(function(k) {
+      var pr = prs[k];
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);">'
+        + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:rgba(255,255,255,0.9);">' + hesc(prLabels[k]||k) + '</div>'
+        + '<div style="text-align:right;">'
+        + '<span style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:16px;color:var(--gold);letter-spacing:1px;">' + hesc(pr.time) + '</span>'
+        + (pr.date ? '<span style="font-family:\'SF Mono\',monospace;font-size:9px;color:var(--grey);margin-left:8px;">' + hesc(pr.date) + '</span>' : '')
+        + '</div>'
+        + '</div>';
+    });
+    prsEl.innerHTML = rows.length ? rows.join('') : '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:rgba(255,255,255,0.5);">Syncing from World Athletics...</div>';
+  }
+
+  // Season Bests — best performance per event from D.races this year
+  var sbEl = document.getElementById('profileSeasonBests');
+  if (sbEl) {
+    var year = String(new Date().getFullYear());
+    var seasonRaces = (D.races||[]).filter(function(r){ return (r.date||'').startsWith(year); });
+    var bests = {};
+    seasonRaces.forEach(function(r) {
+      if (!r.ev || !r.time) return;
+      if (!bests[r.ev] || timeToSecClient(r.time) < timeToSecClient(bests[r.ev].time)) bests[r.ev] = r;
+    });
+    var sbKeys = Object.keys(bests);
+    if (sbKeys.length) {
+      sbEl.innerHTML = sbKeys.map(function(k) {
+        var r = bests[k];
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);">'
+          + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:rgba(255,255,255,0.9);">' + hesc(k) + '</div>'
+          + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:16px;color:var(--blue);letter-spacing:1px;">' + hesc(r.time) + '</div>'
+          + '</div>';
+      }).join('');
+    } else {
+      sbEl.innerHTML = '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:rgba(255,255,255,0.45);">No races logged this season.</div>';
+    }
+  }
+  initHoloCard();
+}
+// ═════════════════════════════════════════════════════════════════════════════
+
 function renderRaceHistory(){
   const el=$('raceHistory');if(!el)return;
   var prs=getPRs();
@@ -7669,9 +8590,24 @@ function renderRaceHistory(){
     +'<div style="display:flex;justify-content:space-between;align-items:center;"><div>'
     +'<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:24px;color:'+(isPr?'var(--accent,#C9A84C)':'#fff')+';">'+r.time+'</div>'
     +'<div style="font-family:SF Mono,monospace;font-size:12px;color:var(--off);">'+r.ev.toUpperCase()+' · '+r.date+(r.meet?' · '+r.meet:'')+'</div>'
-    +'</div><button class="del" onclick="delRace('+r.id+')">x</button></div></div>';
+    +'</div><button class="del" onclick="delRace('+r.id+')">x</button></div>'
+    +(r.polyline?'<div style="margin:8px 0 4px;border-radius:8px;overflow:hidden;">'+renderRouteMap(r.polyline,280,90,'var(--gold)')+'</div>':'')
+    +'</div>';
   }).join(''):'<div style="padding:16px;text-align:center;font-family:monospace;font-size:13px;color:var(--grey);">No races yet. Log your first race above.</div>';
   el.innerHTML=h;
+}
+
+function loadWACode() {
+  var el = document.getElementById('waCodeInput');
+  if (el) el.value = D.settings.waCode || '14329251';
+}
+function saveAthlinksId(val) {
+  D.settings.athlinksId = val;
+  saveData();
+}
+function loadAthlinksId() {
+  var el = document.getElementById('athlinksIdInput');
+  if (el && D.settings.athlinksId) el.value = D.settings.athlinksId;
 }
 
 // ═══ SETTINGS ═══
@@ -7880,7 +8816,7 @@ const SNAPS = {
   integrations: () => `<div class="snap-inner" style="background:#0F0F1A;border:1px solid rgba(0,230,118,.2);">
     <div style="font-family:'SF Mono',monospace;font-size:11px;color:rgba(255,255,255,.4);margin-bottom:10px;letter-spacing:1px;">INTEGRATIONS HUB</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;">
-      <div style="padding:10px 6px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(0,230,118,.15);text-align:center;"><div style="font-size:18px;margin-bottom:4px;">⚡</div><div style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:.5px;">STRAVA</div><div style="font-family:'SF Mono',monospace;font-size:8px;color:#00E676;margin-top:3px;">CONNECTED</div></div>
+      <div style="padding:10px 6px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(0,230,118,.15);text-align:center;"><div style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:.5px;margin-bottom:4px;">STRAVA</div><div style="font-family:'SF Mono',monospace;font-size:8px;color:#00E676;margin-top:3px;">CONNECTED</div></div>
       <div style="padding:10px 6px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(0,230,118,.15);text-align:center;"><div style="font-size:18px;margin-bottom:4px;">●</div><div style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:.5px;">WHOOP</div><div style="font-family:'SF Mono',monospace;font-size:8px;color:#00E676;margin-top:3px;">CONNECTED</div></div>
       <div style="padding:10px 6px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(0,230,118,.15);text-align:center;"><div style="font-size:18px;margin-bottom:4px;">◆</div><div style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:.5px;">GARMIN</div><div style="font-family:'SF Mono',monospace;font-size:8px;color:#00E676;margin-top:3px;">CONNECTED</div></div>
       <div style="padding:10px 6px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(0,230,118,.15);text-align:center;"><div style="font-size:18px;margin-bottom:4px;">○</div><div style="font-family:'SF Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:.5px;">OURA</div><div style="font-family:'SF Mono',monospace;font-size:8px;color:#00E676;margin-top:3px;">CONNECTED</div></div>
@@ -8401,7 +9337,7 @@ function renderPlanMileage(){
 
   el.innerHTML=`
   <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
-    <div style="background:rgba(245,196,0,.05);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="background:rgba(245,196,0,.05);border-bottom:1px solid var(--border);padding:10px 40px 10px 14px;display:flex;align-items:center;justify-content:space-between;">
       <div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--gold);letter-spacing:2px;">MILEAGE TRACKER</div>
       <div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--grey);">WEEK ${wkNum} / 110</div>
     </div>
@@ -8490,7 +9426,7 @@ function renderTrainingSummary(){
   var mPct=mP>0?Math.min(100,Math.round(mA/mP*100)):0;
   function col(pct){return pct>=90?'var(--green)':pct>=60?'var(--gold)':'var(--off)';}
   el.innerHTML='<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;">'
-  +'<div style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(252,76,2,.04);">'
+  +'<div style="padding:12px 40px 12px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(252,76,2,.04);">'
   +'<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:16px;"></span><div style="font-family:Share Tech Mono,monospace;font-size:12px;color:#fc4c02;letter-spacing:2px;">TRAINING MILEAGE</div></div>'
   +'<div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--grey);">'+totalMi.toFixed(1)+' TOTAL MI</div></div>'
   +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">'
@@ -8567,12 +9503,12 @@ function wrapColl(id,title){
   applyColl(id);
 }
 function initCollapsibles(){
-  wrapColl('grsCard','RECOVERY SCORE');
-  wrapColl('homeWeightCard','WEIGHT');
+  wrapColl('raceReadyCard','RACE READY');
+  wrapColl('raceProgressCard','14-DAY PROGRESS');
+  wrapColl('overtrainingCard','OVERTRAINING MONITOR');
   wrapColl('trainingSummaryCard','TRAINING MILEAGE');
   wrapColl('todayPlanCard','TODAY\'S PLAN');
   wrapColl('dailyBriefingWrap','DAILY BRIEFING');
-  wrapColl('whoopDashCard','WHOOP RECOVERY');
   wrapColl('perfChartsWrap','PERFORMANCE CHARTS');
   wrapColl('planMileageSummary','MILEAGE TRACKER');
   wrapColl('planTodayBox','TODAY\'S PLAN');
@@ -8747,7 +9683,7 @@ function renderTrainingLoad(){
     // Planned bar (ghost)
     h += '<div style="flex:1;background:var(--border);border-radius:3px 3px 0 0;height:'+plannedH+'px;"></div>';
     // Actual bar
-    h += '<div style="flex:1;background:'+barColor+(isCur?'':'99')+';border-radius:3px 3px 0 0;height:'+actualH+'px;'+(isCur?'box-shadow:0 0 8px '+barColor+'66;':'')+'"></div>';
+    h += '<div style="flex:1;background:'+barColor+(isCur?'':'99')+';border-radius:3px 3px 0 0;height:'+actualH+'px;'+(isCur?'box-shadow:inset 0 0 0 1px rgba(255,255,255,0.2);':'')+'"></div>';
     h += '</div>';
     h += '<div style="font-family:SF Mono,monospace;font-size:11px;color:'+(isCur?'#fff':'#444')+';margin-top:2px;">W'+w.wNum+'</div>';
     h += '</div>';
@@ -10896,9 +11832,11 @@ async function autoSyncOnLaunch(){
     console.log('[AUTO-SYNC] Syncing Strava + WHOOP + Peloton data...');
     // Fire all three in parallel
     const promises = [];
-    if(suid) promises.push(loadServerWorkouts(suid).then(()=>{ renderTrainingSummary(); }));
-    if(wuid) promises.push(loadServerWhoopData(wuid).then(()=>{ renderWhoopDash(); }));
+    if(suid) promises.push(loadServerWorkouts(suid).then(()=>{ renderTrainingSummary(); renderRaceReadyCard(); renderRaceProgressCard(); renderOvertrainingCard(); }));
+    if(wuid) promises.push(loadServerWhoopData(wuid).then(()=>{ renderWhoopDash(); renderRaceReadyCard(); renderOvertrainingCard(); }));
     if(puid) promises.push(loadPelotonWorkouts().then(()=>{ renderTrainingSummary(); }));
+    const ouraToken = localStorage.getItem('gedyon_oura_token');
+    if(ouraToken) promises.push(syncOuraData().then(()=>{ renderRaceReadyCard(); }));
     await Promise.allSettled(promises);
     console.log('[AUTO-SYNC] Complete');
   } catch(e){
@@ -11582,7 +12520,7 @@ function renderActiveChart(){
     }
     // Source badges with MA values
     if(srcEl){
-      let html='<span style="font-family:SF Mono,monospace;font-size:11px;padding:2px 8px;border-radius:10px;background:#0a3d1f;color:#00e676;border:1px solid #00e67630;">● GPI</span>';
+      let html='<span style="font-family:SF Mono,monospace;font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(0,230,118,0.12);color:rgb(0,230,118);border:1px solid rgba(0,230,118,0.3);letter-spacing:0.08em;font-weight:600;">● GPI</span>';
       if(cur3!=null) html+='<span style="font-family:SF Mono,monospace;font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(0,180,255,.1);color:#00B4FF;border:1px solid rgba(0,180,255,.2);">3D: '+cur3.toFixed(1)+'</span>';
       if(cur5!=null) html+='<span style="font-family:SF Mono,monospace;font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(180,0,255,.1);color:#B060FF;border:1px solid rgba(180,0,255,.2);">5D: '+cur5.toFixed(1)+'</span>';
       if(cur10!=null) html+='<span style="font-family:SF Mono,monospace;font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(255,140,0,.1);color:#FF8C00;border:1px solid rgba(255,140,0,.2);">10D: '+cur10.toFixed(1)+'</span>';
@@ -11645,7 +12583,7 @@ function renderActiveChart(){
     if(subVal){ subVal.textContent='AVG WATTS · Peloton power output'; }
     const chg=vals.length>1?vals[vals.length-1]-vals[0]:0;
     if(deltaEl){ deltaEl.textContent=(chg>=0?'▲ +':'▼ ')+Math.abs(chg)+'w trend'; deltaEl.style.color=chg>=0?'var(--green)':'var(--red)'; }
-    if(srcEl) srcEl.innerHTML='<span style="font-family:SF Mono,monospace;font-size:11px;padding:2px 8px;border-radius:10px;background:#3d0a0f;color:#ff3d57;border:1px solid rgba(255,61,87,.2);">● PELOTON</span>';
+    if(srcEl) srcEl.innerHTML='<span style="font-family:SF Mono,monospace;font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(255,61,87,0.12);color:rgb(255,61,87);border:1px solid rgba(255,61,87,0.3);letter-spacing:0.08em;font-weight:600;">● PELOTON</span>';
     const ds=[{data:vals,color:'#F5C400',fill:'rgba(245,196,0,.07)',ptSize:3,lw:2}];
     const cadence=wos.map(w=>w.cadence||w.avgCadence||null);
     if(cadence.some(Boolean)) ds.push({data:cadence,color:'rgba(0,229,204,.5)',dash:true,ptSize:2,lw:1});
@@ -11674,7 +12612,7 @@ function renderActiveChart(){
     if(bigVal){ bigVal.textContent=(lastGRS||lastWhoop||'—')+'%'; bigVal.style.color=(lastGRS||lastWhoop||0)>=67?'var(--green)':(lastGRS||lastWhoop||0)>=34?'var(--gold)':'var(--red)'; }
     if(subVal){ subVal.textContent='RECOVERY SCORE · GRS + WHOOP blend'; }
     if(deltaEl){ const chg=grsVals.length>1?grsVals[grsVals.length-1]-grsVals[0]:0; deltaEl.textContent=(chg>=0?'▲ +':'▼ ')+Math.abs(chg).toFixed(0)+'% trend'; deltaEl.style.color=chg>=0?'var(--green)':'var(--red)'; }
-    if(srcEl) srcEl.innerHTML='<span style="font-family:SF Mono,monospace;font-size:11px;padding:2px 8px;border-radius:10px;background:#0a1a3d;color:#00e5cc;border:1px solid rgba(0,229,204,.2);">● WHOOP</span><span style="font-family:SF Mono,monospace;font-size:11px;padding:2px 8px;border-radius:10px;background:#0a3d1f;color:#00e676;border:1px solid #00e67630;margin-left:4px;">● GRS</span>';
+    if(srcEl) srcEl.innerHTML='<span style="font-family:SF Mono,monospace;font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(0,229,204,0.12);color:rgb(0,229,204);border:1px solid rgba(0,229,204,0.3);letter-spacing:0.08em;font-weight:600;">● WHOOP</span><span style="font-family:SF Mono,monospace;font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(0,230,118,0.12);color:rgb(0,230,118);border:1px solid rgba(0,230,118,0.3);letter-spacing:0.08em;font-weight:600;margin-left:4px;">● GRS</span>';
     const ds=[];
     if(grsVals.length) ds.push({data:scores.map(s=>s.grs||null),color:'#00E676',fill:'rgba(0,230,118,.06)',ptSize:3,lw:2});
     if(whoopVals.length) ds.push({data:scores.map(s=>s.whoop||null),color:'#00E5CC',dash:true,ptSize:2,lw:1.5});
@@ -11690,7 +12628,7 @@ function renderActiveChart(){
     if(bigVal){ bigVal.textContent=last.wt+'lb'; bigVal.style.color='var(--gold)'; }
     if(subVal){ subVal.textContent='CURRENT WEIGHT · Target: '+D.settings.raceWt+'lb race weight'; }
     if(deltaEl){ deltaEl.textContent=(chg>=0?'▲ +':'▼ ')+Math.abs(chg).toFixed(1)+'lb'; deltaEl.style.color=chg<=0?'var(--green)':'var(--red)'; }
-    if(srcEl) srcEl.innerHTML='<span style="font-family:SF Mono,monospace;font-size:11px;padding:2px 8px;border-radius:10px;background:#1a1a0a;color:var(--gold);border:1px solid rgba(245,196,0,.2);">● MANUAL LOG</span>';
+    if(srcEl) srcEl.innerHTML='<span style="font-family:SF Mono,monospace;font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(255,183,0,0.12);color:rgb(255,183,0);border:1px solid rgba(255,183,0,0.3);letter-spacing:0.08em;font-weight:600;">● MANUAL LOG</span>';
     const start=parseLocalDate(D.settings.start),total=D.settings.startWt-D.settings.raceWt;
     const wtTgts=wts.map(w=>{const wN=getWk(w.date);return+Math.max(D.settings.raceWt,D.settings.startWt-(total/95)*wN).toFixed(1);});
     drawChart('wtChart',wts.map(w=>w.date.slice(5)),[
@@ -11980,31 +12918,80 @@ function renderBenchmarkBar(){
   }
 }
 
+function buildHoloBenchmarkCard(a) {
+  // Normalize data: era -> tier, event string -> events array, pb -> pbs
+  var tierMap = {legend:'LEGEND', current:'ELITE', rising:'RISING STAR'};
+  var tier = tierMap[a.era] || 'ELITE';
+  var events = a.events || (a.event ? a.event.split('/') : []);
+  var pbs = a.pbs || a.pb || {};
+  var isSelected = selectedAthletes.includes(a.id);
+
+  var evPills = events.map(function(ev) {
+    return '<span style="padding:2px 8px;border:1px solid rgba(255,255,255,0.18);border-radius:4px;font-family:\'SF Mono\',monospace;font-size:9px;color:rgba(255,255,255,0.65);background:rgba(255,255,255,0.04);">' + hesc(ev) + '</span>';
+  }).join('');
+
+  var pbRows = Object.keys(pbs).slice(0, 4).map(function(ev) {
+    return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">'
+      + '<span style="font-family:\'SF Mono\',monospace;font-size:9px;color:rgba(255,255,255,0.5);">' + hesc(ev) + '</span>'
+      + '<span style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:13px;color:var(--gold);letter-spacing:.5px;">' + hesc(pbs[ev]) + '</span>'
+      + '</div>';
+  }).join('');
+
+  var tierColor = tier === 'LEGEND' ? 'rgba(255,61,87,0.8)' : tier === 'ELITE' ? 'rgba(201,168,76,0.8)' : 'rgba(0,200,150,0.8)';
+  var cardId = 'hbc-' + (a.name||'').replace(/\s+/g,'-').toLowerCase();
+  var selRing = isSelected ? 'box-shadow:0 15px 40px rgba(0,0,0,0.55),0 0 0 2px ' + a.color + ';' : 'box-shadow:0 15px 40px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.07);';
+
+  return '<div id="' + cardId + '" onclick="toggleAthleteSelect(\'' + hesc(a.id) + '\',this)" style="\
+    position:relative;border-radius:16px;overflow:hidden;\
+    transform-style:preserve-3d;\
+    transform:perspective(600px) rotateX(0deg) rotateY(0deg);\
+    transition:transform 0.12s ease,box-shadow 0.12s ease;\
+    ' + selRing + '\
+    margin-bottom:10px;cursor:pointer;will-change:transform;\
+    " onmouseenter="holoIn(this)" onmouseleave="holoOut(this)" onmousemove="holoMove(this,event)">'
+    /* Dark base */
+    + '<div style="position:absolute;inset:0;background:linear-gradient(145deg,#0c1220 0%,#111827 40%,#0f1a10 70%,#0c1220 100%);"></div>'
+    /* Foil layer */
+    + '<div class="holo-foil" style="position:absolute;inset:0;z-index:1;background:repeating-linear-gradient(0deg,rgba(255,255,255,0.012) 0px,transparent 1px,transparent 3px,rgba(255,255,255,0.008) 4px),conic-gradient(from 0deg at 50% 50%,rgba(255,0,128,0.2),rgba(255,180,0,0.2),rgba(0,255,160,0.2),rgba(0,160,255,0.2),rgba(180,0,255,0.2),rgba(255,0,128,0.2));background-size:100% 100%,300% 300%;background-position:50% 50%;mix-blend-mode:color-dodge;opacity:0;transition:opacity 0.2s;pointer-events:none;"></div>'
+    /* Shine */
+    + '<div class="holo-shine" style="position:absolute;inset:0;z-index:2;background:radial-gradient(circle at 50% 30%,rgba(255,255,255,0.18) 0%,transparent 60%);opacity:0;transition:opacity 0.2s;pointer-events:none;"></div>'
+    /* Selected indicator */
+    + (isSelected ? '<div style="position:absolute;top:10px;right:10px;z-index:5;width:16px;height:16px;border-radius:50%;background:' + a.color + ';display:flex;align-items:center;justify-content:center;font-size:11px;color:#000;font-weight:700;box-shadow:0 0 8px ' + a.color + '80;"></div>' : '')
+    /* Border */
+    + '<div style="position:absolute;inset:0;z-index:3;border-radius:16px;border:1px solid rgba(201,168,76,0.25);pointer-events:none;"></div>'
+    /* Content */
+    + '<div style="position:relative;z-index:4;padding:14px 13px 12px;">'
+    /* Top row: flag + name + GPI */
+    + '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;">'
+    + '<div style="width:36px;height:36px;border-radius:50%;background:rgba(201,168,76,0.1);border:1.5px solid rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;">' + a.flag + '</div>'
+    + '<div style="flex:1;min-width:0;">'
+    + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:17px;color:#fff;letter-spacing:1px;line-height:1;">' + hesc(a.name||'') + '</div>'
+    + '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;">'
+    + '<span style="font-family:\'SF Mono\',monospace;font-size:8px;color:' + tierColor + ';letter-spacing:1px;">' + hesc(tier) + '</span>'
+    + '<span style="color:rgba(255,255,255,0.2);font-size:8px;">·</span>'
+    + '<span style="font-family:\'SF Mono\',monospace;font-size:8px;color:rgba(255,255,255,0.4);">' + hesc(events.join('/')) + '</span>'
+    + '</div></div>'
+    + '<div style="text-align:center;flex-shrink:0;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:4px 8px;">'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:7px;color:var(--grey);letter-spacing:1px;">GPI</div>'
+    + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:22px;color:var(--gold);line-height:1;">' + (a.gpi||'—') + '</div>'
+    + '</div></div>'
+    /* Divider */
+    + '<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.2),transparent);margin-bottom:8px;"></div>'
+    /* Event pills */
+    + (evPills ? '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;">' + evPills + '</div>' : '')
+    /* PBs */
+    + '<div style="background:rgba(0,0,0,0.25);border-radius:8px;padding:6px 8px;">'
+    + pbRows
+    + '</div>'
+    /* View profile button */
+    + '<div onclick="event.stopPropagation();openAthleteProfile(\'' + hesc(a.id) + '\')" style="margin-top:8px;padding:7px;text-align:center;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);border-radius:8px;font-family:\'SF Mono\',monospace;font-size:9px;color:rgba(201,168,76,0.7);letter-spacing:2px;cursor:pointer;">VIEW PROFILE →</div>'
+    + '</div></div>';
+}
+
 function renderAthleteGrid(athletes){
   const grid=document.getElementById('athleteGrid');
   if(!grid) return;
-  const eraColors={legend:'var(--gold)',current:'var(--green)',rising:'var(--blue)'};
-  const eraLabels={legend:'LEGEND',current:'CURRENT ELITE',rising:'RISING STAR'};
-  grid.innerHTML=athletes.map(a=>{
-    const isSelected=selectedAthletes.includes(a.id);
-    const pb=Object.entries(a.pb||{}).slice(0,2).map(([e,t])=>`${e}: ${t}`).join(' · ');
-    return`<div onclick="toggleAthleteSelect('${a.id}',this)" style="background:var(--card);border:1px solid ${isSelected?a.color:'var(--border)'};border-radius:12px;padding:10px 12px;cursor:pointer;position:relative;transition:border-color .2s;${isSelected?`box-shadow:0 0 12px ${a.color}40`:''}">
-      ${isSelected?`<div style="position:absolute;top:6px;right:8px;width:16px;height:16px;border-radius:50%;background:${a.color};display:flex;align-items:center;justify-content:center;font-size:11px;color:#000;font-weight:700;"></div>`:''}
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <span style="font-size:18px;">${a.flag}</span>
-        <div>
-          <div style="font-family:Impact,sans-serif;font-size:14px;color:var(--white);line-height:1;">${a.name}</div>
-          <div style="font-family:'SF Mono',monospace;font-size:11px;color:${eraColors[a.era]||'var(--grey)'};">${eraLabels[a.era]||''} · ${a.event}</div>
-        </div>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <div style="font-family:Impact,sans-serif;font-size:22px;color:${a.color};text-shadow:0 0 10px ${a.color}60;line-height:1;">${a.gpi}</div>
-        <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);text-align:right;">GPI</div>
-      </div>
-      <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);line-height:1.8;">${pb}</div>
-      <button onclick="event.stopPropagation();openAthleteProfile('${a.id}')" style="margin-top:6px;width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:4px;font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);cursor:pointer;">VIEW PROFILE →</button>
-    </div>`;
-  }).join('');
+  grid.innerHTML=athletes.map(a => buildHoloBenchmarkCard(a)).join('');
 }
 
 function filterAthletes(){
@@ -12060,7 +13047,7 @@ function openAthleteProfile(id){
       <div style="display:flex;gap:12px;margin-bottom:14px;">
         <div style="flex:1;background:#0a0a14;border-radius:10px;padding:10px;text-align:center;">
           <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">THEIR GPI</div>
-          <div style="font-family:Impact,sans-serif;font-size:32px;color:${a.color};text-shadow:0 0 15px ${a.color}60;line-height:1;">${a.gpi}</div>
+          <div style="font-family:Impact,sans-serif;font-size:32px;color:${a.color};line-height:1;">${a.gpi}</div>
         </div>
         <div style="flex:1;background:#0a0a14;border-radius:10px;padding:10px;text-align:center;">
           <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">YOUR GPI</div>
@@ -12892,6 +13879,14 @@ function atlasAnimate(ts){
   ctx.clearRect(0,0,W,H);
   const mc = ATLAS_ORB.moodColors[ATLAS_ORB.mood]||ATLAS_ORB.moodColors.idle;
 
+  // ── CHARACTER BACKING — subtle vignette ──
+  const backG = ctx.createRadialGradient(cx, H*0.5, H*0.15, cx, H*0.5, H*0.6);
+  backG.addColorStop(0, 'rgba(0,0,0,0)');
+  backG.addColorStop(0.7, 'rgba(0,0,0,0)');
+  backG.addColorStop(1, 'rgba(0,0,0,0.18)');
+  ctx.fillStyle = backG;
+  ctx.fillRect(0, 0, W, H);
+
   // ── DIRECTION FLIP ──
   ctx.save();
   if(ATLAS_ORB.facing < 0){ ctx.translate(W, 0); ctx.scale(-1, 1); }
@@ -13247,6 +14242,48 @@ function atlasAnimate(ts){
     ctx.globalAlpha=1;
   }
 
+  // ── CHAIN NECKLACE — streetwear accessory ──
+  const chainY = neckY + 14;
+  const chainR = 22;
+  // Chain arc
+  ctx.strokeStyle = 'rgba(210,185,100,0.0)'; // start transparent
+  ctx.lineWidth = 2.5;
+  // Draw chain links as alternating small ovals
+  const chainLinks = 14;
+  for(let i = 0; i <= chainLinks; i++){
+    const angle = Math.PI + (i / chainLinks) * Math.PI;
+    const lx = cx + Math.cos(angle) * chainR;
+    const ly = chainY + Math.sin(angle) * chainR * 0.45;
+    const isHoriz = i % 2 === 0;
+    ctx.fillStyle = i % 3 === 0 ? 'rgba(255,220,80,0.75)' : 'rgba(200,170,60,0.65)';
+    ctx.beginPath();
+    if(isHoriz){
+      ctx.ellipse(lx, ly, 3.5, 1.8, 0, 0, Math.PI*2);
+    } else {
+      ctx.ellipse(lx, ly, 1.8, 3.5, 0, 0, Math.PI*2);
+    }
+    ctx.fill();
+    // Highlight on each link
+    ctx.fillStyle = 'rgba(255,245,150,0.4)';
+    ctx.beginPath();ctx.arc(lx-0.5, ly-0.8, 0.8, 0, Math.PI*2);ctx.fill();
+  }
+  // Pendant — mood-colored diamond
+  const pendX = cx;
+  const pendY = chainY + chainR * 0.45 + 4;
+  ctx.fillStyle = mc.accent;
+  ctx.globalAlpha = 0.9;
+  ctx.beginPath();
+  ctx.moveTo(pendX, pendY - 5);
+  ctx.lineTo(pendX + 4, pendY);
+  ctx.lineTo(pendX, pendY + 5);
+  ctx.lineTo(pendX - 4, pendY);
+  ctx.closePath();
+  ctx.fill();
+  ctx.globalAlpha = 1;
+  // Pendant highlight
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.beginPath();ctx.moveTo(pendX,pendY-4);ctx.lineTo(pendX+2,pendY);ctx.lineTo(pendX,pendY-1);ctx.closePath();ctx.fill();
+
   // ── HOOD (behind head) — sphere-lit ──
   const hoodTop = headCy - headR - 10;
   const hg2 = sphereGrad(cx-8, hoodTop+8, 50, '#C8C4C0', '#E0DCD8', '#8A8682');
@@ -13472,6 +14509,96 @@ function atlasAnimate(ts){
     cg.addColorStop(0,'rgba(255,140,120,.08)');cg.addColorStop(1,'rgba(255,140,120,0)');
     ctx.fillStyle=cg;ctx.beginPath();ctx.arc(cx+side*16,headCy+8,10,0,Math.PI*2);ctx.fill();
   }
+
+  // ── SNAPBACK CAP — flat-brim streetwear ──
+  const capBrimY = headCy - headR + 4;
+  const capTopY = headCy - headR - 28;
+  const capCx = cx - 2; // slight left offset for character look
+
+  // Cap body — cylinder-lit
+  const capBodyG = cylGrad(capCx - 38, 0, capCx + 38, 0, '#3A3840', '#262430', '#141218', '#1E1C24');
+  ctx.fillStyle = capBodyG;
+  ctx.beginPath();
+  ctx.moveTo(capCx - 34, capBrimY);
+  ctx.lineTo(capCx - 30, capTopY + 6);
+  ctx.quadraticCurveTo(capCx, capTopY, capCx + 30, capTopY + 6);
+  ctx.lineTo(capCx + 34, capBrimY);
+  ctx.quadraticCurveTo(capCx, capBrimY + 8, capCx - 34, capBrimY);
+  ctx.closePath();
+  ctx.fill();
+
+  // Cap crown — sphere lit
+  const capTopG = sphereGrad(capCx - 8, capTopY + 8, 28, '#3A3840', '#4A4850', '#141218');
+  ctx.fillStyle = capTopG;
+  ctx.beginPath();
+  ctx.moveTo(capCx - 30, capTopY + 6);
+  ctx.quadraticCurveTo(capCx, capTopY - 8, capCx + 30, capTopY + 6);
+  ctx.quadraticCurveTo(capCx + 34, capBrimY, capCx - 34, capBrimY);
+  ctx.quadraticCurveTo(capCx, capBrimY + 8, capCx - 30, capTopY + 6);
+  ctx.fill();
+
+  // Cap panel seams — 6-panel construction lines
+  for(let p = -2; p <= 2; p++){
+    if(p === 0) continue;
+    const seamX = capCx + p * 12;
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)';ctx.lineWidth = 0.7;
+    ctx.beginPath();ctx.moveTo(seamX, capBrimY - 2);ctx.lineTo(seamX + p * 2, capTopY + 4);ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';ctx.lineWidth = 0.5;
+    ctx.beginPath();ctx.moveTo(seamX + 0.5, capBrimY - 2);ctx.lineTo(seamX + p * 2 + 0.5, capTopY + 4);ctx.stroke();
+  }
+
+  // Top button (cap button)
+  ctx.fillStyle = mc.accent;ctx.globalAlpha = 0.8;
+  ctx.beginPath();ctx.arc(capCx, capTopY - 2, 3.5, 0, Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.4)';
+  ctx.beginPath();ctx.arc(capCx - 1, capTopY - 3, 1.5, 0, Math.PI*2);ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // Sweat band — visible at bottom edge of cap
+  const sweatG = ctx.createLinearGradient(capCx, capBrimY, capCx, capBrimY + 5);
+  sweatG.addColorStop(0, '#1A1820');sweatG.addColorStop(1, '#0E0C14');
+  ctx.fillStyle = sweatG;
+  ctx.beginPath();
+  ctx.moveTo(capCx - 34, capBrimY);
+  ctx.quadraticCurveTo(capCx, capBrimY + 8, capCx + 34, capBrimY);
+  ctx.lineTo(capCx + 32, capBrimY + 5);
+  ctx.quadraticCurveTo(capCx, capBrimY + 12, capCx - 32, capBrimY + 5);
+  ctx.closePath();ctx.fill();
+
+  // Accent stripe on cap — mood-colored
+  ctx.strokeStyle = mc.accent;ctx.lineWidth = 1.5;ctx.globalAlpha = 0.5;
+  ctx.beginPath();ctx.moveTo(capCx - 33, capBrimY + 1);ctx.quadraticCurveTo(capCx, capBrimY + 9, capCx + 33, capBrimY + 1);ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  // FLAT BRIM — the key Fortnite/streetwear detail
+  const brimY = capBrimY + 6;
+  // Brim underside (darker)
+  ctx.fillStyle = '#0E0C14';
+  ctx.beginPath();
+  ctx.moveTo(capCx - 48, brimY + 1);
+  ctx.quadraticCurveTo(capCx, brimY + 6, capCx + 48, brimY + 1);
+  ctx.lineTo(capCx + 48, brimY + 5);
+  ctx.quadraticCurveTo(capCx, brimY + 10, capCx - 48, brimY + 5);
+  ctx.closePath();ctx.fill();
+  // Brim top surface
+  const brimG = cylGrad(capCx - 46, 0, capCx + 46, 0, '#3A3840', '#262430', '#141218', '#202028');
+  ctx.fillStyle = brimG;
+  ctx.beginPath();
+  ctx.moveTo(capCx - 48, brimY);
+  ctx.quadraticCurveTo(capCx, brimY + 5, capCx + 48, brimY);
+  ctx.lineTo(capCx + 48, brimY + 1);
+  ctx.quadraticCurveTo(capCx, brimY + 6, capCx - 48, brimY + 1);
+  ctx.closePath();ctx.fill();
+  // Brim edge highlight
+  ctx.strokeStyle = 'rgba(255,252,240,0.08)';ctx.lineWidth = 0.8;
+  ctx.beginPath();ctx.moveTo(capCx - 48, brimY);ctx.quadraticCurveTo(capCx, brimY + 5, capCx + 48, brimY);ctx.stroke();
+  // Brim stitching
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';ctx.lineWidth = 0.6;ctx.setLineDash([2,2]);
+  ctx.beginPath();ctx.moveTo(capCx - 44, brimY + 0.5);ctx.quadraticCurveTo(capCx, brimY + 4.5, capCx + 44, brimY + 0.5);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Cap rim light
+  rimLight(capCx, capTopY + 6, 28, -1.8, -0.2, 0.12);
 
   // ── AMBIENT GLOW — double layer ──
   const [gr,gg,gb] = mc.glow;
@@ -14277,6 +15404,15 @@ function initIntegrationsHub(){var el=$('integrationsHub');if(el)el.innerHTML=re
 // ═══════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function() {
   try {
+    // Dev bypass: ?dev=1 skips all auth/setup/tour gates
+    if(new URLSearchParams(window.location.search).get('dev') === '1') {
+      localStorage.setItem(SETUP_KEY,'1');
+      localStorage.setItem(TUT_KEY,'1');
+      if(!D.settings.isBuilder) Object.assign(D.settings, BUILDER_DEFAULTS);
+      saveData();
+      launchApp();
+      return;
+    }
     // Check auth first (async), then setup
     if(SUPABASE_URL && SUPABASE_KEY){
       checkAuth().then(function(showed){ if(!showed) { if(!checkSetup()) proceedAfterAuth(); } });
@@ -14343,8 +15479,234 @@ function computeDailyReadiness(date) {
   const tmrw = new Date(today); tmrw.setDate(tmrw.getDate()+1);
   const tmrwDate = tmrw.toISOString().split('T')[0];
   const tmrwPlan = getDayPlan(tmrwDate);
-  const tmrwEmoji = {rest:'',easy:'',long:'',threshold:''}[tmrwPlan.type]||'';
+  const tmrwEmoji = '';
   return {score, ability, abilityColor, icon, coaching, factors, plan, tmrwPlan, tmrwDate, tmrwEmoji, whoopRec, hrv};
+}
+
+// ══════════════════════════════════════════════════════════════
+// RACE READINESS SYSTEM — 3 Separate Cards
+// ══════════════════════════════════════════════════════════════
+
+function computeRaceReadiness() {
+  var date = td();
+  var R = computeDailyReadiness(date);
+
+  // Gather all available signals
+  var whoop = D.whoopData || {};
+  var oura = (D.ouraData && D.ouraData.readiness && D.ouraData.readiness[0]) || null;
+  var ouraScore = oura ? (oura.score || null) : null;
+  var whoopRec = parseFloat(whoop.recovery) || null;
+  var hrv = parseFloat(D.dayScores?.[date]?.appleHRV) || parseFloat(whoop.hrv) || null;
+  var strain = parseFloat(whoop.strain) || null;
+  // Sleep: WHOOP → Oura → manual log → Apple
+  var ouraSleep = (D.ouraData && D.ouraData.sleep && D.ouraData.sleep[0]) || null;
+  var ouraSleepHrs = ouraSleep ? (parseFloat(ouraSleep.contributors?.total_sleep_duration || ouraSleep.score) || null) : null;
+  var logSleep = (D.logs && D.logs.find && D.logs.find(function(l){ return l.date===date; }));
+  var sleep = parseFloat(whoop.sleep) || (ouraSleepHrs && ouraSleepHrs > 3 ? ouraSleepHrs : null) || (logSleep ? parseFloat(logSleep.sleep) : null) || parseFloat(D.dayScores?.[date]?.sleep) || null;
+
+  // Last 7 days of workouts for load calc
+  var now = new Date();
+  var recent = (D.workouts||[]).filter(function(w){
+    var d = new Date(w.date+'T12:00:00');
+    return (now - d) < 7*86400000;
+  });
+  var last7mi = recent.reduce(function(s,w){ return s+(w.dist||0); }, 0);
+
+  // Weight progress toward race weight
+  var curWt = D.weights.length ? D.weights[D.weights.length-1].wt : D.settings.startWt;
+  var _wtDenom = (D.settings.startWt || 0) - (D.settings.raceWt || 0);
+  var wtProgress = (D.settings.raceWt && D.settings.startWt && _wtDenom !== 0)
+    ? Math.min(100, Math.max(0, Math.round(((D.settings.startWt - curWt) / _wtDenom) * 100)))
+    : null;
+
+  // Composite race ready score (0-100)
+  var sig = 0, sigCount = 0;
+  if (whoopRec !== null) { sig += whoopRec; sigCount++; }
+  if (ouraScore !== null) { sig += ouraScore; sigCount++; }
+  if (hrv !== null) { sig += Math.min(100, hrv * 1.5); sigCount++; }
+  if (wtProgress !== null && !isNaN(wtProgress)) { sig += wtProgress; sigCount++; }
+  // Sleep quality: 8h = 100, 7h = 85, 6h = 60, <6h = 30
+  var sleepScore = null;
+  if (sleep !== null) {
+    sleepScore = sleep >= 8 ? 100 : sleep >= 7 ? 85 : sleep >= 6 ? 60 : 30;
+    sig += sleepScore; sigCount++;
+  }
+  var recoveryBase = sigCount ? sig / sigCount : (isNaN(R.score) ? 50 : R.score);
+
+  // Training compliance (last 7 days planned vs actual)
+  var wk = getWk(date);
+  var planned7 = 0;
+  for (var i=0; i<7; i++) {
+    var d2 = new Date(now); d2.setDate(d2.getDate()-i);
+    var dp = d2.toISOString().split('T')[0];
+    planned7 += getDayPlan(dp).mi || 0;
+  }
+  var compliance = planned7 > 0 ? Math.min(110, Math.round((last7mi / planned7) * 100)) : 100;
+
+  // Final race ready score
+  var rrs = Math.round(recoveryBase * 0.6 + compliance * 0.4);
+  if (!isFinite(rrs)) rrs = 50;
+  rrs = Math.max(10, Math.min(100, rrs));
+
+  var verdict, verdictColor, verdictIcon;
+  if (rrs >= 85) { verdict='RACE READY'; verdictColor='#00e676'; verdictIcon='✓'; }
+  else if (rrs >= 70) { verdict='GETTING THERE'; verdictColor='#6ec6ff'; verdictIcon='↑'; }
+  else if (rrs >= 50) { verdict='BUILD MODE'; verdictColor='#f5c400'; verdictIcon='▲'; }
+  else { verdict='RECOVER FIRST'; verdictColor='#ff3d57'; verdictIcon='!'; }
+
+  return { rrs, verdict, verdictColor, verdictIcon, whoopRec, ouraScore, hrv, strain, sleep, sleepScore, compliance, wtProgress, last7mi, planned7, recoveryBase };
+}
+
+function renderRaceReadyCard() {
+  var el = document.getElementById('raceReadyCard');
+  if (!el) return;
+  var C = computeRaceReadiness();
+  var ringColor = C.verdictColor;
+  var circumference = 2 * Math.PI * 44; // r=44
+  var dash = (C.rrs / 100) * circumference;
+
+  el.innerHTML =
+    '<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;overflow:hidden;position:relative;">' +
+    '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,'+ringColor+',transparent);"></div>' +
+    '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:3px;margin-bottom:14px;">RACE READY?</div>' +
+    '<div style="display:flex;align-items:center;gap:16px;">' +
+    // Ring
+    '<div style="flex-shrink:0;">' +
+    '<svg width="100" height="100" viewBox="0 0 100 100">' +
+    '<circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/>' +
+    '<circle cx="50" cy="50" r="44" fill="none" stroke="'+ringColor+'" stroke-width="8" stroke-linecap="round"' +
+    ' stroke-dasharray="'+dash+' '+circumference+'" stroke-dashoffset="'+circumference*0.25+'" transform="rotate(-90 50 50)"' +
+    ' style="transition:stroke-dasharray 0.8s ease;"/>' +
+    '<text x="50" y="46" text-anchor="middle" font-family="Impact,Arial Narrow,sans-serif" font-size="22" fill="'+ringColor+'">'+C.rrs+'</text>' +
+    '<text x="50" y="60" text-anchor="middle" font-family="SF Mono,monospace" font-size="8" fill="rgba(255,255,255,0.4)">/100</text>' +
+    '</svg></div>' +
+    // Verdict
+    '<div style="flex:1;">' +
+    '<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:28px;color:'+ringColor+';letter-spacing:2px;line-height:1;">'+C.verdict+'</div>' +
+    '<div style="height:6px;background:rgba(255,255,255,0.06);border-radius:3px;margin:10px 0;overflow:hidden;">' +
+    '<div style="height:100%;width:'+C.rrs+'%;background:'+ringColor+';border-radius:3px;transition:width 0.8s ease;"></div></div>' +
+    // Signal pills
+    '<div style="display:flex;flex-wrap:wrap;gap:5px;">' +
+    (C.sleep!==null ? (function(){ var sc=C.sleepScore; var col=sc>=85?'#00e676':sc>=60?'#f5c400':'#ff3d57'; return '<span style="font-family:\'SF Mono\',monospace;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba('+( sc>=85?'0,230,118':sc>=60?'245,196,0':'255,61,87' )+',0.12);border:1px solid rgba('+(sc>=85?'0,230,118':sc>=60?'245,196,0':'255,61,87')+',0.3);color:'+col+';">SLEEP '+C.sleep.toFixed(1)+'h</span>'; })() : '<span style="font-family:\'SF Mono\',monospace;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);">SLEEP --</span>') +
+    (C.whoopRec!==null ? '<span style="font-family:\'SF Mono\',monospace;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.25);color:#00e676;">WHOOP '+C.whoopRec+'%</span>' : '') +
+    (C.ouraScore!==null ? '<span style="font-family:\'SF Mono\',monospace;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(110,198,255,0.1);border:1px solid rgba(110,198,255,0.25);color:#6ec6ff;">OURA '+C.ouraScore+'</span>' : '') +
+    (C.hrv!==null ? '<span style="font-family:\'SF Mono\',monospace;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(180,0,255,0.1);border:1px solid rgba(180,0,255,0.25);color:#cc80ff;">HRV '+Math.round(C.hrv)+'ms</span>' : '') +
+    (C.wtProgress!==null ? '<span style="font-family:\'SF Mono\',monospace;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);color:var(--gold);">WT '+C.wtProgress+'%→goal</span>' : '') +
+    '</div></div></div></div>';
+}
+
+function renderRaceProgressCard() {
+  var el = document.getElementById('raceProgressCard');
+  if (!el) return;
+  // Last 14 days readiness trend
+  var days = [];
+  var now = new Date();
+  for (var i=13; i>=0; i--) {
+    var d = new Date(now); d.setDate(d.getDate()-i);
+    var ds = d.toISOString().split('T')[0];
+    var R = computeDailyReadiness(ds);
+    days.push({ date:ds, score:R.score, label:d.toLocaleDateString('en',{weekday:'short'}).charAt(0) });
+  }
+  var maxScore = 100;
+  var barH = 40;
+  var w = Math.floor(260 / 14);
+
+  var bars = days.map(function(d, i) {
+    var h = Math.round((d.score / maxScore) * barH);
+    var col = d.score>=85?'#00e676':d.score>=70?'#6ec6ff':d.score>=50?'#f5c400':'#ff3d57';
+    var isToday = i===13;
+    return '<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;">' +
+      '<div style="width:100%;max-width:16px;border-radius:3px 3px 0 0;background:'+(isToday?col:'rgba(255,255,255,0.15)')+';height:'+h+'px;' +
+      (isToday?'outline:1px solid '+col+'60;':'')+'" title="'+d.date+' · '+d.score+'"></div>' +
+      '<div style="font-family:\'SF Mono\',monospace;font-size:8px;color:'+(isToday?col:'rgba(255,255,255,0.3)')+';">'+d.label+'</div>' +
+      '</div>';
+  });
+
+  var trend = days[13].score - days[0].score;
+  var trendStr = trend > 5 ? '↑ IMPROVING +'+Math.round(trend) : trend < -5 ? '↓ DECLINING '+Math.round(trend) : '→ STEADY';
+  var trendCol = trend > 5 ? '#00e676' : trend < -5 ? '#ff3d57' : '#f5c400';
+
+  el.innerHTML =
+    '<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+    '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:3px;">RACE READY PROGRESS · 14 DAYS</div>' +
+    '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:'+trendCol+';">'+trendStr+'</div>' +
+    '</div>' +
+    '<div style="display:flex;align-items:flex-end;height:'+(barH+16)+'px;gap:2px;">'+bars.join('')+'</div>' +
+    '</div>';
+}
+
+function renderOvertrainingCard() {
+  var el = document.getElementById('overtrainingCard');
+  if (!el) return;
+
+  var now = new Date();
+  var workouts7 = [], workouts14 = [], workouts28 = [];
+  (D.workouts||[]).forEach(function(w) {
+    var age = (now - new Date(w.date+'T12:00:00')) / 86400000;
+    if (age <= 7)  workouts7.push(w);
+    if (age <= 14) workouts14.push(w);
+    if (age <= 28) workouts28.push(w);
+  });
+
+  // ATL (acute training load) = 7-day avg miles, CTL (chronic) = 28-day avg
+  var atl = workouts7.reduce(function(s,w){ return s+(w.dist||0); },0) / 7;
+  var ctl = workouts28.reduce(function(s,w){ return s+(w.dist||0); },0) / 28;
+  // TSB (training stress balance) — negative = fatigued, positive = fresh
+  var tsb = ctl - atl;
+
+  // Strain accumulation: avg WHOOP strain, missed days, high-load days
+  var whoop = D.whoopData || {};
+  var strain = parseFloat(whoop.strain) || null;
+  var highLoadDays = workouts7.filter(function(w){ return (w.dist||0) > 8; }).length;
+  var restDays = 7 - workouts7.length;
+
+  // Overtraining score 0-100 (higher = more overtrained)
+  var ots = 0;
+  if (atl > 0 && ctl > 0) {
+    var ratio = atl / Math.max(ctl, 0.1);
+    if (ratio > 1.3) ots += 40; // acute spike
+    else if (ratio > 1.1) ots += 20;
+  }
+  if (strain !== null && strain > 18) ots += 25;
+  else if (strain !== null && strain > 15) ots += 12;
+  if (highLoadDays >= 4) ots += 20;
+  else if (highLoadDays >= 2) ots += 8;
+  if (restDays === 0) ots += 15;
+  ots = Math.min(100, ots);
+
+  var status, statusColor, advice;
+  if (ots <= 20) { status='WELL BALANCED'; statusColor='#00e676'; advice='Load and recovery in sync. Keep executing.'; }
+  else if (ots <= 45) { status='WATCH YOUR LOAD'; statusColor='#f5c400'; advice='Slight stress accumulation. Prioritize sleep tonight.'; }
+  else if (ots <= 70) { status='OVERREACHING'; statusColor='#ff8c42'; advice='Back off 20–30% volume today. Hard day tomorrow not recommended.'; }
+  else { status='OVERTRAINED'; statusColor='#ff3d57'; advice='Full rest or easy jog only. Digging deeper now will cost you next week.'; }
+
+  var fatBar = Math.min(100, ots);
+
+  el.innerHTML =
+    '<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden;">' +
+    '<div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,'+statusColor+',transparent);"></div>' +
+    '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:3px;margin-bottom:12px;">OVERTRAINING MONITOR</div>' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
+    '<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:22px;color:'+statusColor+';letter-spacing:2px;">'+status+'</div>' +
+    '<div style="font-family:\'SF Mono\',monospace;font-size:28px;color:'+statusColor+';line-height:1;">'+ots+'<span style="font-size:11px;opacity:0.5;">/100</span></div>' +
+    '</div>' +
+    // Stress bar
+    '<div style="height:8px;background:rgba(255,255,255,0.06);border-radius:4px;margin-bottom:10px;overflow:hidden;">' +
+    '<div style="height:100%;width:'+fatBar+'%;background:linear-gradient(90deg,#00e676,#f5c400 50%,#ff3d57);border-radius:4px;transition:width 0.8s ease;"></div></div>' +
+    '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:rgba(255,255,255,0.7);padding:8px;background:rgba(255,255,255,0.03);border-left:3px solid '+statusColor+';border-radius:0 6px 6px 0;margin-bottom:10px;">'+advice+'</div>' +
+    // Stats row
+    '<div style="display:flex;gap:8px;">' +
+    '<div style="flex:1;text-align:center;background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;">' +
+    '<div style="font-family:\'SF Mono\',monospace;font-size:9px;color:var(--grey);letter-spacing:1px;">7D LOAD</div>' +
+    '<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:18px;color:#fff;">'+atl.toFixed(1)+'<span style="font-size:10px;opacity:0.5;">mi/d</span></div></div>' +
+    '<div style="flex:1;text-align:center;background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;">' +
+    '<div style="font-family:\'SF Mono\',monospace;font-size:9px;color:var(--grey);letter-spacing:1px;">28D BASE</div>' +
+    '<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:18px;color:#fff;">'+ctl.toFixed(1)+'<span style="font-size:10px;opacity:0.5;">mi/d</span></div></div>' +
+    '<div style="flex:1;text-align:center;background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;">' +
+    '<div style="font-family:\'SF Mono\',monospace;font-size:9px;color:var(--grey);letter-spacing:1px;">REST DAYS</div>' +
+    '<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:18px;color:'+(restDays>=1?'#00e676':'#ff3d57')+';">'+restDays+'<span style="font-size:10px;opacity:0.5;">/7</span></div></div>' +
+    '</div></div>';
 }
 
 function renderDailyIntel(date) {
