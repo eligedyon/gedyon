@@ -3,6 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+window.onerror = function(msg, src, line, col, err) {
+  console.error('[GEDYON CRASH]', msg, 'at', src, line + ':' + col, err);
+  try {
+    var app = document.getElementById('app');
+    if (app && app.style.display === 'none') app.style.display = 'flex';
+  } catch(e) {}
+  return false;
+};
+window.onunhandledrejection = function(ev) {
+  console.error('[GEDYON UNHANDLED PROMISE]', ev.reason);
+};
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Rajdhani:wght@400;500;600;700&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=Barlow:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" media="print" onload="this.media='all'"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -4975,7 +4988,7 @@ function updateAuthStatus(){
 // Cloud sync is now triggered on every saveData() call — no timer needed
 const DEFAULT_PIN = '042028'; // April 2028 — Trials month/year
 
-let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
+const _DEFAULT_D = {
   logs:[], food:[], workouts:[], weights:[],
   races:[
     {id:1006,date:'2026-04-26',ev:'10k',time:'37:53',meet:'Pueblo Spring Runoff',location:'Pueblo, CO',pr:true,priority:'A',place:4,ageGroup:'1st/3 AG 30-34'},
@@ -4995,9 +5008,6 @@ let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
       '5k':    {time:'13:45.66',date:'2019-04-18', meet:'Azusa Pacific Invitational'},
       '3k':    {time:'8:05.90', date:'2019-03-09', meet:'Pittsburg State Invitational'}
     },
-    // VDOT 55.4 — calibrated from 37:53 10k (aerobic base, NOT speed ceiling)
-    // Speed ceiling: VDOT 77.7 from 1:51.91 800m at age 15 → adult ceiling VDOT 83–87
-    // College comeback: 3:45 1500m at Azusa — speed returns after every gap
     currentFitness: {ev:'10k', time:'37:53', date:'2026-04-26'},
     athleteProfile: {
       juniorPR_800m: '1:51.91',
@@ -5016,7 +5026,16 @@ let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
       note: 'Speed has never been the question. The aerobic base is being built now for the first time properly.'
     }
   }
-}));
+};
+let D;
+try {
+  var _raw = localStorage.getItem(KEY);
+  D = _raw ? JSON.parse(_raw) : JSON.parse(JSON.stringify(_DEFAULT_D));
+} catch(e) {
+  console.error('[GEDYON] localStorage corrupted — resetting to defaults:', e);
+  D = JSON.parse(JSON.stringify(_DEFAULT_D));
+  try { localStorage.removeItem(KEY); } catch(e2) {}
+}
 if(!D.actualMeals) D.actualMeals={};
 if(!D.dayScores) D.dayScores={};
 // Guard: start date must never be later than 2026-03-01 (training began Feb 23)
@@ -5346,14 +5365,16 @@ function checkSetup(){
 
 // ═══ LAUNCH ═══
 function launchApp(){
-  $('app').style.display='flex';
+  var _el=function(id){return document.getElementById(id);};
+  var _app=_el('app'); if(_app) _app.style.display='flex';
   const t=td();
-  $('docDate').value=t;
-  $('raceDate').value=t; $('pastWtDate').value=t;
-  $('setStart').value=D.settings.start;
-  $('setName').value=D.settings.name;
-  $('setCurWt').value=D.settings.startWt;
-  $('setRaceWt').value=D.settings.raceWt;
+  if(_el('docDate')) _el('docDate').value=t;
+  if(_el('raceDate')) _el('raceDate').value=t;
+  if(_el('pastWtDate')) _el('pastWtDate').value=t;
+  if(_el('setStart')) _el('setStart').value=D.settings.start;
+  if(_el('setName')) _el('setName').value=D.settings.name;
+  if(_el('setCurWt')) _el('setCurWt').value=D.settings.startWt;
+  if(_el('setRaceWt')) _el('setRaceWt').value=D.settings.raceWt;
   loadWACode();
   loadAthlinksId();
   initLacRows();
@@ -6783,13 +6804,17 @@ async function callAI(messages, maxTok=600, sysPrompt=null){
     :JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:maxTok,messages,...(sysPrompt?{system:sysPrompt}:{})});
   const headers={'Content-Type':'application/json'};
   const url=isProxy?sv+'/api/chat':'https://api.anthropic.com/v1/messages';
+  const ctrl=new AbortController();
+  const timer=setTimeout(()=>ctrl.abort(),30000);
   try{
-    const r=await fetch(url,{method:'POST',headers,body});
+    const r=await fetch(url,{method:'POST',headers,body,signal:ctrl.signal});
+    clearTimeout(timer);
     const d=await r.json();
     if(isProxy) return d.reply||'';
     return d.content?d.content.map(c=>c.text||'').join(''):'';
   }catch(e){
-    console.error('[AI]',e);
+    clearTimeout(timer);
+    console.error('[AI]',e.name==='AbortError'?'Request timed out after 30s':e);
     return '';
   }
 }
@@ -17922,7 +17947,10 @@ After each conversation, if you learn something new about Elias (food preference
       ? { 'Content-Type': 'application/json' }
       : { 'Content-Type': 'application/json', 'x-api-key': '', 'anthropic-version': '2023-06-01' };
 
-    const resp = await fetch(endpoint, { method: 'POST', headers, body });
+    const _ctrl1 = new AbortController();
+    const _timer1 = setTimeout(() => _ctrl1.abort(), 30000);
+    const resp = await fetch(endpoint, { method: 'POST', headers, body, signal: _ctrl1.signal });
+    clearTimeout(_timer1);
     const data = await resp.json();
     const reply = isProxy ? (data.reply || '...') : (data.content?.[0]?.text || '...');
 
@@ -18423,9 +18451,22 @@ window.connectMyFitnessPal=connectMyFitnessPal;
 // BOOT — fires on page load
 // ═══════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function() {
+  var _bootTimeout = setTimeout(function() {
+    var app = document.getElementById('app');
+    var auth = document.getElementById('authScreen');
+    var splash = document.getElementById('splash');
+    var appVisible = app && app.style.display !== 'none';
+    var authVisible = auth && auth.style.display !== 'none';
+    var splashVisible = splash && getComputedStyle(splash).display !== 'none';
+    if (!appVisible && !authVisible && !splashVisible) {
+      console.warn('[GEDYON] Boot timeout — force launching app');
+      try { launchApp(); } catch(e) { if(app) app.style.display = 'flex'; }
+    }
+  }, 5000);
   try {
     // Dev bypass: ?dev=1 skips all auth/setup/tour gates
     if(new URLSearchParams(window.location.search).get('dev') === '1') {
+      clearTimeout(_bootTimeout);
       localStorage.setItem(SETUP_KEY,'1');
       localStorage.setItem(TUT_KEY,'1');
       if(!D.settings.isBuilder) Object.assign(D.settings, BUILDER_DEFAULTS);
@@ -18435,7 +18476,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // Check auth first (async), then setup
     if(SUPABASE_URL && SUPABASE_KEY){
-      checkAuth().then(function(showed){ if(!showed) { if(!checkSetup()) proceedAfterAuth(); } });
+      checkAuth().then(function(showed){ clearTimeout(_bootTimeout); if(!showed) { if(!checkSetup()) proceedAfterAuth(); } }).catch(function(e){ console.error('Auth flow error:', e); clearTimeout(_bootTimeout); try { launchApp(); } catch(e2) {} });
       return;
     }
     // No Supabase configured — check setup
@@ -18453,6 +18494,7 @@ document.addEventListener('DOMContentLoaded', function() {
       else { launchApp(); }
     }
   } catch(e) {
+    clearTimeout(_bootTimeout);
     console.error('BOOT ERROR:', e);
     try { launchApp(); } catch(e2) {}
   }
@@ -19282,15 +19324,19 @@ VOICE RULES:
       ? {'Content-Type':'application/json'}
       : {'Content-Type':'application/json','x-api-key':'','anthropic-version':'2023-06-01'};
 
-    const resp = await fetch(endpoint, { method:'POST', headers, body });
+    const _ctrl2 = new AbortController();
+    const _timer2 = setTimeout(() => _ctrl2.abort(), 30000);
+    const resp = await fetch(endpoint, { method:'POST', headers, body, signal: _ctrl2.signal });
+    clearTimeout(_timer2);
     const data = await resp.json();
     const reply = isProxy ? (data.reply || '...') : (data.content?.[0]?.text || '...');
 
     document.getElementById(thinkId)?.remove();
 
+    const _safeReply = reply.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
     const aDiv = document.createElement('div');
     aDiv.style.cssText = 'align-self:flex-start;max-width:90%;';
-    aDiv.innerHTML = '<div style="font-family:SF Mono,monospace;font-size:11px;color:rgba(232,147,58,.6);letter-spacing:1px;margin-bottom:4px;">INTEL</div><div style="background:rgba(232,147,58,.08);border:1px solid rgba(232,147,58,.2);border-radius:12px 12px 12px 4px;padding:11px 14px;font-family:SF Mono,monospace;font-size:11px;color:var(--white);line-height:1.75;">' + reply.replace(/\n/g,'<br>') + '</div>';
+    aDiv.innerHTML = '<div style="font-family:SF Mono,monospace;font-size:11px;color:rgba(232,147,58,.6);letter-spacing:1px;margin-bottom:4px;">INTEL</div><div style="background:rgba(232,147,58,.08);border:1px solid rgba(232,147,58,.2);border-radius:12px 12px 12px 4px;padding:11px 14px;font-family:SF Mono,monospace;font-size:11px;color:var(--white);line-height:1.75;">' + _safeReply + '</div>';
     log.appendChild(aDiv);
     ATLAS_HISTORY.push({ role:'assistant', content: reply });
     log.scrollTop = log.scrollHeight;
@@ -19364,6 +19410,8 @@ Grade this workout execution and give me exactly 2 sentences of coaching feedbac
     const cleanUrl = serverUrl.replace(/\/+$/, '');
     const endpoint = cleanUrl + '/api/chat';
 
+    const _ctrl3 = new AbortController();
+    const _timer3 = setTimeout(() => _ctrl3.abort(), 30000);
     const resp = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -19371,8 +19419,10 @@ Grade this workout execution and give me exactly 2 sentences of coaching feedbac
         system: systemPrompt,
         messages: [{ role: 'user', content: userMessage }],
         max_tokens: 180
-      })
+      }),
+      signal: _ctrl3.signal
     });
+    clearTimeout(_timer3);
     if(!resp.ok) throw new Error('Server responded ' + resp.status);
     const data = await resp.json();
     const analysis = data.reply || data.content?.[0]?.text || '';
