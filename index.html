@@ -3368,6 +3368,19 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
       <!-- MILEAGE TRACKER + TODAY'S PLAN -->
       <div id="planMileageSummary" style="margin-bottom:10px;"></div>
       <div id="planTodayBox" style="margin-bottom:10px;"></div>
+      <!-- RECALIBRATE BANNER -->
+      <div style="margin-bottom:10px;">
+        <button onclick="showRecalibrationModal()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:20px;">⚡</div>
+            <div style="text-align:left;">
+              <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:16px;letter-spacing:2px;color:var(--gold);">RECALIBRATE TRAINING</div>
+              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:1px;">Find your true week based on fitness + time to Trials</div>
+            </div>
+          </div>
+          <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--gold);opacity:.6;">›</div>
+        </button>
+      </div>
       <!-- FILTER BY PHASE + WEEKS -->
       <div class="card" style="margin-top:0;"><div class="cb">
         <div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--grey);margin-bottom:8px;">FILTER BY PHASE</div>
@@ -9767,6 +9780,224 @@ function renderPlanTodayBox(){
   el.innerHTML=html;
   // Update daily calorie total after nutrition plan renders
   setTimeout(function(){ if(typeof updateDailyCalTotal==='function') updateDailyCalTotal(); },120);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  TRAINING RECALIBRATION ENGINE
+//  Analyzes actual recent workouts, compares against plan phase
+//  targets, and repositions D.settings.start so that today falls
+//  on the best-fit week — respecting both fitness AND time-to-trials.
+// ─────────────────────────────────────────────────────────────
+
+// Weekly mileage targets per phase (non-deload week, all 7 sessions)
+// Derived from phaseConfig: baseMi*2.55 + reps*0.62 + threshMi*0.80 + longMi + 8.4
+var PHASE_TARGETS = [
+  {phase:1, wks:[1,12],   weeklyMi:38.8, longRun:10.5, name:'Foundation'},
+  {phase:2, wks:[13,28],  weeklyMi:47.8, longRun:14.0, name:'Aerobic Construction'},
+  {phase:3, wks:[29,48],  weeklyMi:52.6, longRun:16.0, name:'Threshold Peak'},
+  {phase:4, wks:[49,68],  weeklyMi:50.0, longRun:15.0, name:'Race Specific'},
+  {phase:5, wks:[69,100], weeklyMi:54.9, longRun:17.0, name:'Championship'},
+  {phase:6, wks:[101,110],weeklyMi:35.9, longRun:10.0, name:'Trials Taper'},
+];
+
+function recalibrateTrainingPlan(){
+  var today = td();
+  var todayMs = parseLocalDate(today).getTime();
+  var eightWeeksAgoMs = todayMs - 56 * 86400000;
+
+  // 1. Gather actual recent run data (last 8 weeks, outdoor runs only)
+  var recentRuns = (D.workouts||[]).filter(function(w){
+    if(!w.date || !w.dist || w.dist < 0.5) return false;
+    var wMs = parseLocalDate(w.date).getTime();
+    var type = _normType(w.type||'run');
+    return wMs >= eightWeeksAgoMs && wMs <= todayMs && (type==='run'||type==='walk');
+  });
+
+  // Group miles by calendar week (0 = this week, 1 = last week, …)
+  var weekBuckets = {};
+  recentRuns.forEach(function(w){
+    var wMs = parseLocalDate(w.date).getTime();
+    var bucket = Math.floor((todayMs - wMs) / (7*86400000));
+    weekBuckets[bucket] = (weekBuckets[bucket]||0) + (w.dist||0);
+  });
+  var activeWeekMiles = Object.values(weekBuckets).filter(function(m){ return m > 1; });
+  var avgWeeklyMiles = activeWeekMiles.length
+    ? Math.round(10 * activeWeekMiles.reduce(function(a,b){return a+b;},0) / activeWeekMiles.length) / 10
+    : 0;
+  var recentLongRun = recentRuns.length
+    ? Math.round(10 * Math.max.apply(null, recentRuns.map(function(w){return w.dist||0;}))) / 10
+    : 0;
+  var dataWeeks = activeWeekMiles.length;
+
+  // 2. Timeline constraint — count weeks until trials
+  var trialsDateStr = (D.settings&&D.settings.compDate) || '2028-04-04';
+  var trialsMs = parseLocalDate(trialsDateStr).getTime();
+  var weeksUntilTrials = Math.max(1, Math.ceil((trialsMs - todayMs) / (7*86400000)));
+  // Where you MUST be on the plan to finish on time
+  var timelineWeek = Math.max(1, Math.min(110, 111 - weeksUntilTrials));
+
+  // 3. Fitness-based phase matching
+  var bestPT = PHASE_TARGETS[0], bestScore = Infinity;
+  if(avgWeeklyMiles > 0){
+    PHASE_TARGETS.forEach(function(pt){
+      var miScore   = Math.abs(pt.weeklyMi - avgWeeklyMiles);
+      var longScore = recentLongRun > 0 ? Math.abs(pt.longRun - recentLongRun) * 0.6 : 0;
+      var score = miScore + longScore;
+      if(score < bestScore){ bestScore = score; bestPT = pt; }
+    });
+  }
+  // Mid-point of the fitness-appropriate phase
+  var fitnessWeek = Math.round((bestPT.wks[0] + bestPT.wks[1]) / 2);
+
+  // 4. Blend fitness + timeline (55% timeline, 45% fitness)
+  //    Never exceed timelineWeek by more than 3 (we can't skip ahead of schedule)
+  //    Never go below 1
+  var recommendedWeek = timelineWeek; // fallback if no data
+  if(avgWeeklyMiles > 0){
+    var blended = Math.round(0.55 * timelineWeek + 0.45 * fitnessWeek);
+    recommendedWeek = Math.max(1, Math.min(Math.min(110, timelineWeek + 3), blended));
+  }
+
+  // 5. Compute new start date so getWk(today) === recommendedWeek
+  //    floor((today - start) / 7) + 1 = recommendedWeek
+  //    → start = today − (recommendedWeek−1)*7 days, snapped to Monday
+  var newStartMs  = todayMs - (recommendedWeek - 1) * 7 * 86400000;
+  var newStartDt  = new Date(newStartMs);
+  var dow = newStartDt.getDay(); // 0=Sun
+  newStartDt.setDate(newStartDt.getDate() + (1 - dow + (dow===0?-6:0)));
+  var newStart = newStartDt.toISOString().split('T')[0];
+
+  var currentWeek  = getWk(today);
+  var currentPhase = getPhase(currentWeek);
+  var newPhase     = getPhase(recommendedWeek);
+
+  // Describe the gap
+  var weekDelta = recommendedWeek - currentWeek;
+  var gapText = weekDelta === 0 ? 'No change needed'
+    : weekDelta > 0 ? 'Move forward ' + weekDelta + ' week' + (Math.abs(weekDelta)>1?'s':'')
+    : 'Move back ' + Math.abs(weekDelta) + ' week' + (Math.abs(weekDelta)>1?'s':'');
+
+  return {
+    today, currentWeek, currentPhase, recommendedWeek, newPhase,
+    newStart, oldStart: (D.settings&&D.settings.start)||'2026-02-23',
+    avgWeeklyMiles, recentLongRun, weeksUntilTrials,
+    timelineWeek, fitnessWeek, dataWeeks, weekDelta, gapText,
+    phaseTarget: bestPT,
+  };
+}
+
+function applyRecalibration(newStart){
+  D.settings.start = newStart;
+  save();
+  // Re-render all plan-dependent UI
+  try{ renderPlanTodayBox(); }catch(e){}
+  try{ filtPlan('all', document.querySelector('#phFilter .tog')); }catch(e){}
+  try{ setTimeout(renderPlanMileage, 80); }catch(e){}
+  try{ renderDash(); }catch(e){}
+  showSyncToast('Training plan recalibrated — now on Week '+getWk(td()), 'green');
+}
+
+function showRecalibrationModal(){
+  var r = recalibrateTrainingPlan();
+
+  // Upcoming 3 sessions at new position
+  function sessionRow(label, plan){
+    var typeCol = {rest:'var(--grey)',easy:'var(--green)',long:'var(--blue)',threshold:'var(--red)'}[plan.type]||'var(--gold)';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);">'
+      +'<div style="width:3px;height:32px;border-radius:2px;background:'+typeCol+';flex-shrink:0;"></div>'
+      +'<div><div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.1em;">'+label+'</div>'
+      +'<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:15px;color:var(--white);letter-spacing:.05em;">'+plan.name+'</div>'
+      +'<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:'+typeCol+';">'+(plan.mi||0)+'mi · '+(plan.zone||'—')+'</div>'
+      +'</div></div>';
+  }
+  // Get next 3 training days (skip rest)
+  var upcomingSessions = [];
+  var checkDate = new Date(r.today+'T12:00:00');
+  // Temporarily set the new start to preview upcoming sessions
+  var savedStart = D.settings.start;
+  D.settings.start = r.newStart;
+  for(var i=1; i<=10 && upcomingSessions.length<3; i++){
+    checkDate.setDate(checkDate.getDate() + 1);
+    var ds = checkDate.toISOString().split('T')[0];
+    var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var plan = getDayPlan(ds);
+    if(plan.type !== 'rest') upcomingSessions.push({label: dayNames[checkDate.getDay()]+' · '+ds, plan});
+  }
+  D.settings.start = savedStart; // restore until user confirms
+
+  var noData = r.dataWeeks === 0;
+  var noChange = r.weekDelta === 0;
+
+  var modal = document.createElement('div');
+  modal.id = 'recalModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:99995;background:rgba(0,0,0,0.88);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);padding:0 0 env(safe-area-inset-bottom,0px);';
+
+  var accentCol = noChange ? 'var(--green)' : 'var(--gold)';
+
+  var html = '<div style="width:100%;max-width:480px;background:#0D0D18;border-radius:24px 24px 0 0;border-top:1px solid rgba(255,255,255,.12);max-height:92vh;overflow-y:auto;padding:0 0 24px;">';
+  // Handle bar
+  html += '<div style="display:flex;justify-content:center;padding:12px 0 4px;"><div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);"></div></div>';
+  // Header
+  html += '<div style="padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,.07);">';
+  html += '<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:26px;letter-spacing:2px;color:var(--white);">RECALIBRATE PLAN</div>';
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);margin-top:3px;letter-spacing:.08em;">Find your true position in the 110-week program</div>';
+  html += '</div>';
+
+  // Current status
+  html += '<div style="padding:16px 20px;">';
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;">Current Position</div>';
+  html += '<div style="display:flex;gap:12px;margin-bottom:14px;">';
+  html += _rcStatBox('WK '+r.currentWeek, r.currentPhase.name, 'var(--grey)');
+  html += _rcStatBox((r.avgWeeklyMiles||0)+' mi/wk', r.dataWeeks+' week'+(r.dataWeeks!==1?'s':'')+' of data', r.avgWeeklyMiles>0?'var(--blue)':'var(--grey)');
+  html += _rcStatBox(r.recentLongRun+' mi', 'Recent long run', 'var(--orange)');
+  html += '</div>';
+
+  if(noData){
+    html += '<div style="background:rgba(255,160,0,.08);border:1px solid rgba(255,160,0,.2);border-radius:12px;padding:12px 14px;font-family:\'SF Mono\',monospace;font-size:11px;color:rgba(255,160,0,.9);line-height:1.7;margin-bottom:14px;">No recent run data found. Connect Strava or log some workouts first for the best recalibration. Proceeding with timeline-only positioning.</div>';
+  }
+
+  // Recommendation
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;">Recommendation</div>';
+  html += '<div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:16px;padding:16px;margin-bottom:14px;">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">';
+  html += '<div><div style="font-family:Impact,Arial Narrow,sans-serif;font-size:36px;color:'+accentCol+';line-height:1;letter-spacing:1px;">WEEK '+r.recommendedWeek+'</div>';
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:var(--gold);margin-top:3px;">'+r.newPhase.name.toUpperCase()+'</div></div>';
+  html += '<div style="text-align:right;"><div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);">'+r.weeksUntilTrials+' wks to Trials</div>';
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:'+(r.weekDelta>0?'var(--green)':r.weekDelta<0?'var(--orange)':'var(--grey)')+';">'+r.gapText+'</div></div>';
+  html += '</div>';
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);line-height:1.8;">';
+  html += '📊 Fitness signals → Phase ' + r.phaseTarget.phase + ' (~'+r.phaseTarget.weeklyMi+'mi/wk target)<br>';
+  html += '📅 Timeline position → Week ' + r.timelineWeek + ' ('+r.weeksUntilTrials+' wks left)<br>';
+  html += '⚡ Blended recommendation → <strong style="color:var(--white);">Week '+r.recommendedWeek+'</strong>';
+  html += '</div></div>';
+
+  // Upcoming sessions preview
+  if(upcomingSessions.length > 0){
+    html += '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px;">Your Next Sessions at Week '+r.recommendedWeek+'</div>';
+    html += '<div style="background:rgba(255,255,255,.025);border-radius:12px;padding:0 12px;margin-bottom:16px;">';
+    upcomingSessions.forEach(function(s){ html += sessionRow(s.label, s.plan); });
+    html += '</div>';
+  }
+
+  // Action buttons
+  if(!noChange){
+    html += '<button onclick="applyRecalibration(\''+r.newStart+'\');document.getElementById(\'recalModal\').remove();" style="width:100%;padding:15px;background:var(--gold);color:#000;font-family:Impact,Arial Narrow,sans-serif;font-size:18px;letter-spacing:3px;border:none;border-radius:14px;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 20px rgba(201,168,76,.35);">APPLY — MOVE TO WEEK '+r.recommendedWeek+'</button>';
+  } else {
+    html += '<div style="text-align:center;padding:12px;font-family:\'SF Mono\',monospace;font-size:12px;color:var(--green);margin-bottom:10px;">✓ Already on the correct week</div>';
+  }
+  html += '<button onclick="document.getElementById(\'recalModal\').remove();" style="width:100%;padding:13px;background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--grey);font-family:\'SF Mono\',monospace;font-size:13px;border-radius:14px;cursor:pointer;">Cancel</button>';
+
+  html += '</div></div>';
+  modal.innerHTML = html;
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+
+function _rcStatBox(val, label, color){
+  return '<div style="flex:1;background:rgba(255,255,255,.04);border-radius:12px;padding:10px 12px;text-align:center;">'
+    +'<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:18px;color:'+(color||'var(--white)')+';letter-spacing:.5px;line-height:1;">'+val+'</div>'
+    +'<div style="font-family:\'SF Mono\',monospace;font-size:9px;color:var(--grey);margin-top:3px;letter-spacing:.08em;">'+label+'</div>'
+    +'</div>';
 }
 
 function buildNutritionPlan(plan){
