@@ -14833,7 +14833,10 @@ async function autoSyncOnLaunch(){
     const ouraToken = localStorage.getItem('gedyon_oura_token');
     if(ouraToken) promises.push(syncOuraData().then(()=>{ renderRaceReadyCard(); }));
     await Promise.allSettled(promises);
-    console.log('[AUTO-SYNC] Complete');
+    // Final cross-source dedup after all services have reported in
+    deduplicateWorkouts();
+    save();
+    console.log('[AUTO-SYNC] Complete —', (D.workouts||[]).length, 'unique workouts after dedup');
   } catch(e){
     console.warn('[AUTO-SYNC] Error:', e);
   }
@@ -14870,61 +14873,128 @@ function showSyncToast(msg, color='gold'){
   t._timeout = setTimeout(()=>{ t.style.opacity='0'; }, 4000);
 }
 
+// Source priority for dedup: higher = preferred when same run detected
+var SOURCE_PRIORITY = {strava:10, garmin:9, apple_health:7, whoop:5, oura:4, peloton:3, manual:1};
+function _srcPriority(src){ return SOURCE_PRIORITY[(src||'').toLowerCase()] || 2; }
+
+// Normalise activity type to a canonical string for cross-source comparison
+function _normType(t){
+  if(!t) return 'run';
+  var s = t.toLowerCase();
+  if(/run|jog/.test(s)) return 'run';
+  if(/ride|cycling|bike|peloton/.test(s)) return 'ride';
+  if(/swim/.test(s)) return 'swim';
+  if(/walk/.test(s)) return 'walk';
+  if(/strength|lift|gym|weight/.test(s)) return 'strength';
+  return s;
+}
+
+// Detect whether two workout records represent the same physical session.
+// Returns true when they clearly overlap — prevents double-counting.
+function _isSameWorkout(a, b){
+  if(!a.date || !b.date || a.date !== b.date) return false;
+  // Same source ID always wins
+  if(a.stravaId  && b.stravaId  && a.stravaId  === b.stravaId)  return true;
+  if(a.whoopId   && b.whoopId   && a.whoopId   === b.whoopId)   return true;
+  if(a.pelotonId && b.pelotonId && a.pelotonId === b.pelotonId) return true;
+  if(a.id        && b.id        && a.id        === b.id)        return true;
+  // Same source — different IDs means genuinely different sessions (e.g. two runs)
+  if(a.source && b.source && a.source === b.source) return false;
+  // Cross-source fuzzy match: type + duration proximity + optional distance proximity
+  var typeA = _normType(a.type), typeB = _normType(b.type);
+  if(typeA !== typeB) return false;
+  var durA = a.dur || a.duration || 0;
+  var durB = b.dur || b.duration || 0;
+  // Must both have meaningful duration
+  if(durA < 2 || durB < 2) return false;
+  // Duration within 15 min (covers autoPause, warmup walks, slight clock differences)
+  if(Math.abs(durA - durB) > 15) return false;
+  // If both have distance, they must also be within 20% or 0.5 mi of each other
+  var distA = a.dist || 0, distB = b.dist || 0;
+  if(distA > 0.1 && distB > 0.1){
+    var ratio = Math.min(distA,distB) / Math.max(distA,distB);
+    var absDiff = Math.abs(distA - distB);
+    if(ratio < 0.80 && absDiff > 0.5) return false;
+  }
+  return true;
+}
+
+// Merge two workout records: winner keeps GPS/distance data; loser donates HR/HRV/calories.
+function _mergeWorkoutData(winner, donor){
+  // Donor can contribute HR / calorie / strain data that winner may lack
+  if(donor.avgHR  && !winner.avgHR)  { winner.avgHR = donor.avgHR; winner.hr = donor.avgHR; }
+  if(donor.maxHR  && !winner.maxHR)  { winner.maxHR = donor.maxHR; winner.maxHr = donor.maxHR; }
+  if(donor.calories && !winner.calories) winner.calories = donor.calories;
+  if(donor.strain && !winner.strain)  winner.strain = donor.strain;
+  if(donor.elevation && !winner.elevation) winner.elevation = donor.elevation;
+  // GPS route: prefer whichever source has it (usually Strava)
+  if(!winner.polyline && donor.polyline) winner.polyline = donor.polyline;
+  if(!winner.startLat && donor.startLat) { winner.startLat = donor.startLat; winner.startLng = donor.startLng; }
+  // Tag which sources contributed
+  if(!winner.sources) winner.sources = [winner.source];
+  if(donor.source && !winner.sources.includes(donor.source)) winner.sources.push(donor.source);
+  winner.hr = winner.avgHR || winner.hr || 0;
+}
+
+// Convert raw server object into a normalised workout record
+function _normaliseWorkout(sw){
+  var rawDist = sw.dist || 0;
+  if(rawDist > 100) rawDist = rawDist / 1609.34; // meters → miles
+  return {
+    id:       sw.id || (Date.now() + Math.random()),
+    stravaId: sw.stravaId  || null,
+    whoopId:  sw.whoopId   || null,
+    pelotonId:sw.pelotonId || null,
+    date:     sw.date,
+    name:     sw.name || '',
+    dist:     Math.round(rawDist * 100) / 100,
+    dur:      sw.duration || sw.dur || 0,
+    duration: sw.duration || sw.dur || 0,
+    pace:     sw.pace  || null,
+    avgHR:    sw.avgHR || 0,
+    maxHR:    sw.maxHR || 0,
+    maxHr:    sw.maxHR || sw.maxHr || 0,
+    hr:       sw.avgHR || sw.hr || 0,
+    calories: sw.calories  || 0,
+    elevation:sw.elevation || 0,
+    output:   sw.output || 0,
+    strain:   sw.strain || 0,
+    source:   sw.source || 'unknown',
+    sources:  [sw.source || 'unknown'],
+    polyline: sw.polyline || sw.summary_polyline || sw.map_polyline || null,
+    type:     sw.type || sw.sport_type || 'run',
+    startLat: sw.start_latlng ? sw.start_latlng[0] : null,
+    startLng: sw.start_latlng ? sw.start_latlng[1] : null,
+  };
+}
+
 function mergeServerWorkouts(serverWorkouts){
   if(!D.workouts) D.workouts = [];
-  serverWorkouts.forEach(sw => {
-    const exists = D.workouts.find(w =>
-      (sw.stravaId && w.stravaId === sw.stravaId) ||
-      (sw.whoopId  && w.whoopId  === sw.whoopId)  ||
-      (sw.pelotonId&& w.pelotonId=== sw.pelotonId)||
-      (sw.id       && w.id       === sw.id) ||
-      // Cross-service dedup: same date + similar duration (within 5 min)
-      (sw.date && w.date === sw.date && w.source !== sw.source &&
-       Math.abs((w.dur||w.duration||0) - (sw.duration||sw.dur||0)) < 5 &&
-       (w.dur||w.duration||0) > 0 && (sw.duration||sw.dur||0) > 0)
-    );
-    if(!exists){  // accept all server workouts regardless of source
-      // Convert meters to miles if dist looks like meters (>100 = definitely meters, not miles)
-      var rawDist = sw.dist || 0;
-      if(rawDist > 100) rawDist = rawDist / 1609.34;
-      D.workouts.unshift({
-        id:       sw.id || Date.now() + Math.random(),
-        stravaId: sw.stravaId,
-        whoopId:  sw.whoopId,
-        pelotonId:sw.pelotonId,
-        date:     sw.date,
-        name:     sw.name,
-        dist:     Math.round(rawDist * 100) / 100,
-        dur:      sw.duration || sw.dur || 0,
-        duration: sw.duration || sw.dur || 0,
-        pace:     sw.pace || null,
-        avgHR:    sw.avgHR || 0,
-        maxHR:    sw.maxHR || 0,
-        maxHr:    sw.maxHR || sw.maxHr || 0,
-        calories: sw.calories || 0,
-        elevation:sw.elevation || 0,
-        output:   sw.output || 0,
-        strain:   sw.strain || 0,
-        source:   sw.source,
-        hr:       sw.avgHR || sw.hr || 0,
-        polyline: sw.polyline || sw.summary_polyline || sw.map_polyline || null,
-        type:     sw.type || sw.sport_type || null,
-        startLat: sw.start_latlng ? sw.start_latlng[0] : null,
-        startLng: sw.start_latlng ? sw.start_latlng[1] : null,
-      });
-    } else if(exists) {
-      // Update existing with richer server data
-      if(sw.avgHR && !exists.avgHR) exists.avgHR = sw.avgHR;
-      if(sw.maxHR && !exists.maxHR) { exists.maxHR = sw.maxHR; exists.maxHr = sw.maxHR; }
-      if(sw.dist  && !exists.dist)  exists.dist  = sw.dist;
-      if(sw.pace  && !exists.pace)  exists.pace  = sw.pace;
-      if(sw.calories && !exists.calories) exists.calories = sw.calories;
-      if((sw.duration||sw.dur) && !exists.dur) { exists.dur = sw.duration||sw.dur; exists.duration = exists.dur; }
-      if((sw.polyline||sw.summary_polyline) && !exists.polyline) exists.polyline = sw.polyline||sw.summary_polyline;
-      if(sw.type && !exists.type) exists.type = sw.type;
-      exists.hr = exists.avgHR || exists.hr || 0;
+  serverWorkouts.forEach(function(sw){
+    var existing = null;
+    for(var i=0; i<D.workouts.length; i++){
+      if(_isSameWorkout(D.workouts[i], sw)){ existing = D.workouts[i]; break; }
+    }
+    if(!existing){
+      D.workouts.unshift(_normaliseWorkout(sw));
+    } else {
+      // Decide which record is the authority
+      var incomingPriority = _srcPriority(sw.source);
+      var existingPriority = _srcPriority(existing.source);
+      if(incomingPriority > existingPriority){
+        // Incoming wins: update key fields, then let existing donate its HR/calories
+        var donor = Object.assign({}, existing);
+        Object.assign(existing, _normaliseWorkout(sw));
+        _mergeWorkoutData(existing, donor);
+      } else {
+        // Existing wins: let incoming donate supplemental data
+        _mergeWorkoutData(existing, _normaliseWorkout(sw));
+      }
     }
   });
+
+  // Final dedup pass — catches any duplicates that snuck in across multiple sync calls
+  deduplicateWorkouts();
   autoScoreAllWorkouts();
 
   // Post-workout analysis: trigger for any new today's workout with WHOOP data
@@ -14938,6 +15008,36 @@ function mergeServerWorkouts(serverWorkouts){
       }
     }
   } catch(e){}
+}
+
+// Remove duplicate workout entries that crept in across multiple sync calls.
+// Keeps the highest-priority source's record and merges supplemental data.
+function deduplicateWorkouts(){
+  if(!D.workouts || D.workouts.length < 2) return;
+  var kept = [];
+  D.workouts.forEach(function(wo){
+    var match = null;
+    for(var i=0; i<kept.length; i++){
+      if(_isSameWorkout(kept[i], wo)){ match = kept[i]; break; }
+    }
+    if(!match){
+      kept.push(wo);
+    } else {
+      // Merge into whichever has higher source priority
+      if(_srcPriority(wo.source) > _srcPriority(match.source)){
+        var donor = Object.assign({}, match);
+        Object.assign(match, wo);
+        _mergeWorkoutData(match, donor);
+      } else {
+        _mergeWorkoutData(match, wo);
+      }
+    }
+  });
+  if(kept.length !== D.workouts.length){
+    var removed = D.workouts.length - kept.length;
+    console.log('[DEDUP] Removed', removed, 'duplicate workout(s) across sources (Strava/Apple Watch/WHOOP)');
+    D.workouts = kept;
+  }
 }
 
 function autoScoreAllWorkouts(){
