@@ -13995,15 +13995,21 @@ const WHOOP_API_BASE     = 'https://api.prod.whoop.com/developer/v1';
 const WHOOP_SCOPES       = 'read:recovery read:sleep read:workout read:profile read:cycles offline';
 
 function whoopConnectServer(){
+  // Always use direct OAuth — popup windows get blocked by browsers
+  const clientId = localStorage.getItem(WHOOP_CLIENT_ID_KEY || 'gedyon_whoop_client_id');
+  if(clientId){ whoopDirectConnect(); return; }
+  whoopDirectSetup();
+  // Legacy server popup path kept below (unreachable but preserved for reference)
+  if(false){
   const srv = getServerUrl();
   if(!srv){ showConnectStatus('Set your server URL and tap TEST → first','red'); return; }
   const btn = document.getElementById('whoopConnBtn');
-  if(btn) btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 00-.586-1.414L12 12l-4.414 4.414A2 2 0 007 17.828V22"/><path d="M7 2v4.172a2 2 0 00.586 1.414L12 12l4.414-4.414A2 2 0 0017 6.172V2"/></svg> OPENING...';
+  if(btn) btn.innerHTML = 'OPENING...';
   const popup = window.open(srv + '/auth/whoop', 'WHOOP Login', 'width=500,height=700,scrollbars=yes');
-  if(!popup){ 
-    showConnectStatus('Popup blocked! Allow popups for this page in your browser settings, then try again.','red');
+  if(!popup){
+    showConnectStatus('Popup blocked! Use direct OAuth instead.','red');
     if(btn) btn.textContent = 'CONNECT WHOOP';
-    return; 
+    return;
   }
   window.addEventListener('message', function handler(e){
     if(e.data && e.data.type === 'GEDYON_AUTH_SUCCESS' && e.data.service === 'whoop'){
@@ -14024,6 +14030,7 @@ function whoopConnectServer(){
       btn.textContent = 'CONNECT WHOOP'; btn.style.opacity = '1';
     }
   }, 3000);
+  } // end if(false)
 }
 
 
@@ -14463,38 +14470,55 @@ async function wakeServer(){
   }
 }
 function stravaConnectServer(){
-  // Try direct Strava OAuth first (no server needed)
+  // Always use direct OAuth — popup windows are blocked by browsers
+  // and the Railway server may be offline
   const clientId = localStorage.getItem('gedyon_strava_client_id');
-  if(clientId){
-    stravaDirectConnect();
-    return;
-  }
-  // Fallback to server-based auth
-  const srv = getServerUrl();
-  if(!srv){
-    // Prompt for direct Strava setup
-    stravaDirectSetup();
-    return;
-  }
-  const popup = window.open(srv + '/auth/strava', 'Strava Login', 'width=500,height=700,scrollbars=yes');
-  window.addEventListener('message', function handler(e){
-    if(e.data && e.data.type === 'GEDYON_AUTH_SUCCESS' && e.data.service === 'strava'){
-      window.removeEventListener('message', handler);
-      localStorage.setItem('gedyon_strava_server_user_id', e.data.userId);
-      loadServerWorkouts(e.data.userId);
-      alert('Strava connected! Your activities will sync automatically.');
-    }
-  });
+  if(clientId){ stravaDirectConnect(); return; }
+  stravaDirectSetup();
 }
 
 // ═══ DIRECT STRAVA API SYNC (no server needed) ═══
 function stravaDirectSetup(){
-  const clientId = prompt('Enter your Strava Client ID\n\n(Get it from strava.com/settings/api)\nSet "Authorization Callback Domain" to: ' + window.location.hostname);
-  if(!clientId) return;
-  const clientSecret = prompt('Enter your Strava Client Secret\n\n(From the same strava.com/settings/api page)');
-  if(!clientSecret) return;
+  // Use a proper modal instead of prompt() which is blocked in secure contexts
+  var existing = document.getElementById('stravaSetupModal');
+  if(existing) existing.remove();
+  var redirectUri = window.location.origin + window.location.pathname;
+  var modal = document.createElement('div');
+  modal.id = 'stravaSetupModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:99997;background:rgba(0,0,0,0.92);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(10px);';
+  modal.innerHTML = '<div style="width:100%;max-width:480px;background:#0D0D18;border-radius:24px 24px 0 0;border-top:1px solid rgba(252,76,2,.3);padding:24px 20px calc(28px + env(safe-area-inset-bottom,0px));">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">'
+    +'<div style="font-size:28px;">🟠</div>'
+    +'<div><div style="font-family:Impact,Arial Narrow,sans-serif;font-size:24px;letter-spacing:2px;color:#FC4C02;">CONNECT STRAVA</div>'
+    +'<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);margin-top:2px;">Direct OAuth — no server required</div></div>'
+    +'</div>'
+    +'<div style="background:rgba(252,76,2,.07);border:1px solid rgba(252,76,2,.2);border-radius:12px;padding:12px 14px;margin:14px 0;font-family:\'SF Mono\',monospace;font-size:11px;color:rgba(252,76,2,.9);line-height:1.9;">'
+    +'1. Go to <strong>strava.com/settings/api</strong><br>'
+    +'2. Create an app (or use existing)<br>'
+    +'3. Set <strong>Authorization Callback Domain</strong> to: <strong style="color:#fff;">'+window.location.hostname+'</strong><br>'
+    +'4. Copy your Client ID and Client Secret below'
+    +'</div>'
+    +'<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.1em;margin-bottom:6px;">CLIENT ID</div>'
+    +'<input id="stravaClientIdInput" type="text" placeholder="e.g. 12345" autocomplete="off" style="width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(252,76,2,.3);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:14px;margin-bottom:12px;box-sizing:border-box;outline:none;">'
+    +'<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.1em;margin-bottom:6px;">CLIENT SECRET</div>'
+    +'<input id="stravaClientSecretInput" type="password" placeholder="e.g. abc123def456..." autocomplete="off" style="width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(252,76,2,.3);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:14px;margin-bottom:16px;box-sizing:border-box;outline:none;">'
+    +'<button onclick="_stravaSetupConfirm()" style="width:100%;padding:14px;background:#FC4C02;color:#fff;font-family:Impact,Arial Narrow,sans-serif;font-size:18px;letter-spacing:3px;border:none;border-radius:14px;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 18px rgba(252,76,2,.35);">AUTHORIZE WITH STRAVA →</button>'
+    +'<button onclick="document.getElementById(\'stravaSetupModal\').remove();" style="width:100%;padding:12px;background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--grey);font-family:\'SF Mono\',monospace;font-size:12px;border-radius:12px;cursor:pointer;">Cancel</button>'
+    +'</div>';
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+  setTimeout(function(){ var el=document.getElementById('stravaClientIdInput'); if(el)el.focus(); }, 150);
+}
+
+function _stravaSetupConfirm(){
+  var clientId = (document.getElementById('stravaClientIdInput')||{}).value||'';
+  var clientSecret = (document.getElementById('stravaClientSecretInput')||{}).value||'';
+  if(!clientId.trim()){ showSyncToast('Enter your Strava Client ID','red'); return; }
+  if(!clientSecret.trim()){ showSyncToast('Enter your Strava Client Secret','red'); return; }
   localStorage.setItem('gedyon_strava_client_id', clientId.trim());
   localStorage.setItem('gedyon_strava_client_secret', clientSecret.trim());
+  var m = document.getElementById('stravaSetupModal');
+  if(m) m.remove();
   stravaDirectConnect();
 }
 
@@ -14721,11 +14745,34 @@ const WHOOP_CLIENT_SECRET_KEY = 'gedyon_whoop_client_secret';
 const WHOOP_API = 'https://api.prod.whoop.com';
 
 function whoopDirectSetup(){
-  const clientId = prompt('Enter your WHOOP Developer Client ID\n\nGet one at developer.whoop.com → Create App\nSet redirect URI to:\n' + location.origin + location.pathname);
-  if(!clientId) return;
+  var existingModal = document.getElementById('whoopSetupModal');
+  if(existingModal) existingModal.remove();
+  var redirectUri = location.origin + location.pathname;
+  var modal = document.createElement('div');
+  modal.id = 'whoopSetupModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);';
+  modal.innerHTML = '<div style="background:rgba(30,30,40,.97);border:1.5px solid rgba(180,130,60,.4);border-radius:20px;padding:28px 24px;width:min(440px,92vw);box-shadow:0 20px 60px rgba(0,0,0,.6);">'
+    + '<div style="font-size:1.4rem;font-weight:800;color:var(--gold);margin-bottom:6px;letter-spacing:.5px;">⚡ Connect WHOOP</div>'
+    + '<div style="color:rgba(255,255,255,.55);font-size:.82rem;margin-bottom:18px;line-height:1.5;">'
+    + 'Go to <strong style="color:var(--gold);">developer.whoop.com</strong> → Create App<br>'
+    + 'Set redirect URI to:<br><code style="background:rgba(255,255,255,.08);padding:2px 7px;border-radius:5px;font-size:.78rem;word-break:break-all;">' + redirectUri + '</code></div>'
+    + '<input id="whoopClientIdInput" placeholder="Client ID" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;padding:11px 14px;font-size:.92rem;margin-bottom:10px;outline:none;">'
+    + '<input id="whoopClientSecretInput" placeholder="Client Secret" type="password" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;padding:11px 14px;font-size:.92rem;margin-bottom:18px;outline:none;">'
+    + '<div style="display:flex;gap:10px;">'
+    + '<button onclick="_whoopSetupConfirm()" style="flex:1;background:linear-gradient(135deg,#B8860B,#DAA520);color:#000;border:none;border-radius:10px;padding:12px;font-weight:800;font-size:.95rem;cursor:pointer;">CONNECT →</button>'
+    + '<button onclick="document.getElementById(\'whoopSetupModal\').remove()" style="padding:12px 18px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.12);border-radius:10px;cursor:pointer;font-size:.9rem;">Cancel</button>'
+    + '</div></div>';
+  document.body.appendChild(modal);
+  setTimeout(function(){ var el=document.getElementById('whoopClientIdInput'); if(el) el.focus(); }, 80);
+}
+
+function _whoopSetupConfirm(){
+  var clientId = (document.getElementById('whoopClientIdInput')||{}).value||'';
+  var clientSecret = (document.getElementById('whoopClientSecretInput')||{}).value||'';
+  if(!clientId.trim()){ showSyncToast('Enter your WHOOP Client ID','red'); return; }
   localStorage.setItem(WHOOP_CLIENT_ID_KEY, clientId.trim());
-  const clientSecret = prompt('Enter your WHOOP Client Secret:');
-  if(clientSecret) localStorage.setItem(WHOOP_CLIENT_SECRET_KEY, clientSecret.trim());
+  if(clientSecret.trim()) localStorage.setItem(WHOOP_CLIENT_SECRET_KEY, clientSecret.trim());
+  var m = document.getElementById('whoopSetupModal'); if(m) m.remove();
   whoopDirectConnect();
 }
 
@@ -19739,101 +19786,141 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
-  const srv = (localStorage.getItem('gedyon_server_url') || 'https://gedyon-server-production.up.railway.app').replace(/\/+$/,'');
-  const suid = localStorage.getItem('gedyon_strava_server_user_id');
-  const wuid = localStorage.getItem('gedyon_whoop_server_user_id');
-  const puid = localStorage.getItem('gedyon_peloton_server_user_id');
-
+  if(!el) return;
   el.innerHTML = '<span style="color:var(--gold);">Running diagnostics...</span>';
+
+  const srv = (localStorage.getItem('gedyon_server_url') || 'https://gedyon-server-production.up.railway.app').replace(/\/+$/,'');
+
+  // Check all actual storage keys for each service
+  const stravaServerUid  = localStorage.getItem('gedyon_strava_server_user_id');
+  const stravaDirectTok  = localStorage.getItem('gedyon_strava_access_token') || localStorage.getItem('gedyon_strava_token');
+  const stravaClientId   = localStorage.getItem('gedyon_strava_client_id');
+  const whoopServerUid   = localStorage.getItem('gedyon_whoop_server_user_id');
+  const whoopDirectTok   = localStorage.getItem('gedyon_whoop_direct_token') || localStorage.getItem('gedyon_whoop_token');
+  const whoopClientId    = localStorage.getItem(WHOOP_CLIENT_ID_KEY || 'gedyon_whoop_client_id');
+  const pelotonServerUid = localStorage.getItem('gedyon_peloton_server_user_id');
+  const pelotonCreds     = localStorage.getItem('gedyon_peloton_creds');
+  const ouraToken        = localStorage.getItem('gedyon_oura_token');
+  const appleConnected   = localStorage.getItem('gedyon_apple_health_connected');
 
   const results = [];
 
-  // 1. Server check
+  // 1. Server ping (non-blocking — server being offline doesn't break direct connections)
+  let serverOnline = false;
   try {
     const r = await Promise.race([
       fetch(srv + '/'),
-      new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 8000))
+      new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 6000))
     ]);
-    if (r.ok) {
+    if(r.ok){
       const d = await r.json().catch(() => ({}));
-      results.push({ ok: true,  label: 'GEDYON SERVER', detail: 'Online · ' + (d.totalWorkouts || 0) + ' workouts stored' });
+      serverOnline = true;
+      results.push({ ok: true, label: 'GEDYON SERVER', detail: 'Online · ' + (d.totalWorkouts || 0) + ' workouts stored' });
     } else {
-      results.push({ ok: false, label: 'GEDYON SERVER', detail: 'HTTP ' + r.status + ' — check Railway deployment' });
+      results.push({ ok: false, label: 'GEDYON SERVER', detail: 'HTTP ' + r.status + ' — server error' });
     }
   } catch(e) {
-    const isTimeout = e.message === 'timeout';
-    results.push({ ok: false, label: 'GEDYON SERVER', detail: isTimeout ? 'TIMEOUT — Railway cold start, wait 30s and retry' : 'OFFLINE — verify URL: ' + srv });
+    results.push({ ok: false, label: 'GEDYON SERVER', detail: 'Offline — direct OAuth connections still work' });
   }
 
-  // 2. Strava
-  if (suid) {
+  // 2. Strava — check direct token first, then server
+  if(stravaDirectTok){
+    // Verify token works with a lightweight API call
     try {
-      const r = await fetch(srv + '/api/status?userId=' + suid);
+      const r = await Promise.race([
+        fetch('https://www.strava.com/api/v3/athlete', { headers: { Authorization: 'Bearer ' + stravaDirectTok } }),
+        new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 6000))
+      ]);
+      const d = await r.json().catch(() => ({}));
+      if(d.id){
+        results.push({ ok: true, label: 'STRAVA', detail: (d.firstname||'') + ' ' + (d.lastname||'') + ' · Direct OAuth ✓' });
+      } else {
+        results.push({ ok: false, label: 'STRAVA', detail: 'Token expired — tap CONNECT STRAVA to refresh' });
+      }
+    } catch(e){ results.push({ ok: false, label: 'STRAVA', detail: 'Token check failed — reconnect' }); }
+  } else if(stravaServerUid && serverOnline){
+    try {
+      const r = await fetch(srv + '/api/status?userId=' + stravaServerUid);
       const d = await r.json();
-      if (d.strava) results.push({ ok: true,  label: 'STRAVA', detail: (d.stravaName || 'Connected') + ' · ' + (d.stravaCount || 0) + ' activities' });
-      else          results.push({ ok: false, label: 'STRAVA', detail: 'Token invalid — reconnect below' });
-    } catch(e) { results.push({ ok: false, label: 'STRAVA', detail: 'Cannot check — server offline' }); }
+      if(d.strava) results.push({ ok: true, label: 'STRAVA', detail: (d.stravaName||'Connected') + ' · Server OAuth ✓' });
+      else         results.push({ ok: false, label: 'STRAVA', detail: 'Server token invalid — reconnect' });
+    } catch(e){ results.push({ ok: false, label: 'STRAVA', detail: 'Cannot verify — try reconnecting' }); }
+  } else if(stravaClientId){
+    results.push({ ok: null, label: 'STRAVA', detail: 'Client ID saved — tap CONNECT STRAVA to authorize' });
   } else {
-    results.push({ ok: null, label: 'STRAVA', detail: 'Not connected — tap CONNECT STRAVA below' });
+    results.push({ ok: null, label: 'STRAVA', detail: 'Not set up — tap CONNECT STRAVA' });
   }
 
-  // 3. WHOOP
-  if (wuid) {
+  // 3. WHOOP — check direct token first
+  if(whoopDirectTok){
     try {
-      const r = await fetch(srv + '/api/whoop/today?userId=' + wuid);
+      const r = await Promise.race([
+        fetch('https://api.prod.whoop.com/developer/v1/recovery?limit=1', { headers: { Authorization: 'Bearer ' + whoopDirectTok } }),
+        new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 6000))
+      ]);
+      if(r.ok){
+        const d = await r.json().catch(() => ({}));
+        const rec = d.records && d.records[0];
+        results.push({ ok: true, label: 'WHOOP', detail: rec ? 'Recovery: ' + Math.round((rec.score||{}).recovery_score||0) + '% · Direct OAuth ✓' : 'Connected · Direct OAuth ✓' });
+      } else if(r.status === 401){
+        results.push({ ok: false, label: 'WHOOP', detail: 'Token expired — tap CONNECT WHOOP to refresh' });
+      } else {
+        results.push({ ok: false, label: 'WHOOP', detail: 'API error ' + r.status + ' — try reconnecting' });
+      }
+    } catch(e){ results.push({ ok: false, label: 'WHOOP', detail: 'Token check failed — reconnect' }); }
+  } else if(whoopServerUid && serverOnline){
+    try {
+      const r = await fetch(srv + '/api/whoop/today?userId=' + whoopServerUid);
       const d = await r.json();
-      if (d.recovery != null) results.push({ ok: true,  label: 'WHOOP', detail: 'Recovery: ' + d.recovery + '% · HRV: ' + (d.hrv || '—') + 'ms' });
-      else                    results.push({ ok: false, label: 'WHOOP', detail: 'Connected but no data today' });
-    } catch(e) { results.push({ ok: false, label: 'WHOOP', detail: 'Cannot check — server offline' }); }
+      if(d.recovery != null) results.push({ ok: true,  label: 'WHOOP', detail: 'Recovery: ' + d.recovery + '% · HRV: ' + (d.hrv||'—') + 'ms' });
+      else                   results.push({ ok: false, label: 'WHOOP', detail: 'Server connected but no data today' });
+    } catch(e){ results.push({ ok: false, label: 'WHOOP', detail: 'Cannot verify — try reconnecting' }); }
+  } else if(whoopClientId){
+    results.push({ ok: null, label: 'WHOOP', detail: 'Client ID saved — tap CONNECT WHOOP to authorize' });
   } else {
-    results.push({ ok: null, label: 'WHOOP', detail: 'Not connected — tap CONNECT WHOOP below' });
+    results.push({ ok: null, label: 'WHOOP', detail: 'Not set up — tap CONNECT WHOOP' });
   }
 
   // 4. Peloton
-  if (puid) {
-    results.push({ ok: true, label: 'PELOTON', detail: 'Credentials saved · use SYNC to refresh' });
+  if(pelotonCreds || pelotonServerUid){
+    results.push({ ok: true, label: 'PELOTON', detail: 'Credentials saved · tap SYNC to import rides' });
   } else {
     results.push({ ok: null, label: 'PELOTON', detail: 'Not connected — enter credentials below' });
   }
 
-  // 5. AI (Anthropic key)
-  try {
-    const r = await fetch(srv + '/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [{ role: 'user', content: 'ping' }], max_tokens: 5 })
-    });
-    const d = await r.json().catch(() => ({}));
-    if (d.error && d.error.includes('ANTHROPIC_API_KEY')) {
-      results.push({ ok: false, label: 'ATLAS AI', detail: 'Missing ANTHROPIC_API_KEY in Railway vars' });
-    } else if (d.reply !== undefined || d.content) {
-      results.push({ ok: true, label: 'ATLAS AI', detail: 'Connected · AI coach ready' });
-    } else {
-      results.push({ ok: false, label: 'ATLAS AI', detail: 'Server responded but AI key may be missing' });
-    }
-  } catch(e) {
-    results.push({ ok: null, label: 'ATLAS AI', detail: 'Cannot check — server offline' });
+  // 5. Oura
+  if(ouraToken){
+    results.push({ ok: true, label: 'OURA', detail: 'Ring connected · token present' });
+  } else {
+    results.push({ ok: null, label: 'OURA', detail: 'Not connected' });
+  }
+
+  // 6. Apple Health / Watch
+  if(appleConnected){
+    results.push({ ok: true, label: 'APPLE WATCH', detail: 'HealthKit bridge active' });
+  } else {
+    results.push({ ok: null, label: 'APPLE WATCH', detail: 'iOS only — open app on iPhone to connect' });
   }
 
   // Render results
   el.innerHTML = results.map(r => {
-    const icon = r.ok === true ? '<span style="color:var(--green);"></span>' :
-                 r.ok === false ? '<span style="color:var(--red);"></span>' :
-                 '<span style="color:var(--grey);">○</span>';
-    const labelColor = r.ok === true ? 'var(--white)' : r.ok === false ? 'rgba(255,100,100,.9)' : 'var(--grey)';
-    return icon + ' <span style="color:' + labelColor + ';font-weight:bold;">' + r.label + '</span> <span style="color:var(--grey);">— ' + r.detail + '</span>';
+    const icon = r.ok === true  ? '<span style="color:#00e676;">●</span>'
+               : r.ok === false ? '<span style="color:#ff5252;">●</span>'
+               :                  '<span style="color:rgba(255,255,255,.3);">○</span>';
+    const labelColor = r.ok === true ? 'var(--white)' : r.ok === false ? 'rgba(255,100,100,.9)' : 'rgba(255,255,255,.5)';
+    return icon + ' <span style="color:' + labelColor + ';font-weight:700;">' + r.label + '</span> <span style="color:rgba(255,255,255,.4);font-size:.85rem;">— ' + r.detail + '</span>';
   }).join('<br>');
 
-  // Update connection cards
+  // Update connection card borders and status badges
+  const CARD_MAP   = { STRAVA: 'connCard-strava', WHOOP: 'connCard-whoop', PELOTON: 'connCard-pelo' };
+  const STATUS_MAP = { STRAVA: 'conn-strava-status', WHOOP: 'conn-whoop-status', PELOTON: 'conn-pelo-status' };
   results.forEach(r => {
-    const cardMap = { STRAVA: 'connCard-strava', WHOOP: 'connCard-whoop', PELOTON: 'connCard-pelo' };
-    const statusMap = { STRAVA: 'conn-strava-status', WHOOP: 'conn-whoop-status', PELOTON: 'conn-pelo-status' };
-    const card = document.getElementById(cardMap[r.label]);
-    const stat = document.getElementById(statusMap[r.label]);
-    if (card && r.ok === true) card.style.borderColor = 'rgba(0,230,118,.4)';
-    if (stat) {
-      stat.textContent = r.ok === true ? ' CONNECTED' : r.ok === false ? ' ERROR' : 'NOT SET UP';
-      stat.style.color = r.ok === true ? 'var(--green)' : r.ok === false ? 'var(--red)' : 'var(--grey)';
+    const card = document.getElementById(CARD_MAP[r.label]);
+    const stat = document.getElementById(STATUS_MAP[r.label]);
+    if(card) card.style.borderColor = r.ok === true ? 'rgba(0,230,118,.4)' : r.ok === false ? 'rgba(255,82,82,.3)' : 'rgba(255,255,255,.08)';
+    if(stat){
+      stat.textContent = r.ok === true ? '● CONNECTED' : r.ok === false ? '● ERROR' : '○ NOT SET UP';
+      stat.style.color = r.ok === true ? 'var(--green)' : r.ok === false ? 'var(--red)' : 'rgba(255,255,255,.35)';
     }
   });
 }
