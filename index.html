@@ -4229,6 +4229,17 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
           <button class="btn-ghost" style="margin-top:8px;" onclick="replayProductTour();"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align:middle;display:inline-block"><polygon points="6 3 20 12 6 21 6 3"/></svg> REPLAY GUIDED TOUR</button>
         </div></div>
         <div class="sh">INTEGRATIONS</div>
+        <!-- Connect All banner -->
+        <button onclick="showConnectAllWizard()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(100,210,255,.08));border:1px solid rgba(201,168,76,.28);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="font-size:22px;">🔗</div>
+            <div style="text-align:left;">
+              <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:17px;letter-spacing:2px;color:var(--gold);">CONNECT ALL TRAINING</div>
+              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:2px;">Strava · WHOOP · Oura · Peloton · Apple Watch</div>
+            </div>
+          </div>
+          <div style="font-family:'SF Mono',monospace;font-size:20px;color:var(--gold);opacity:.5;">›</div>
+        </button>
         <div class="card"><div class="cb" style="padding:0;" id="integrationsHub"></div></div>
         <!-- World Athletics -->
         <div class="card" style="margin-bottom:10px;">
@@ -18785,7 +18796,234 @@ function buildEliasContext(){
 // ═══════════════════════════════════════════════════════
 // INTEGRATIONS HUB
 // ═══════════════════════════════════════════════════════
-function checkIntegrationStatuses(){return{appleHealth:!!localStorage.getItem('gedyon_apple_health_connected'),garmin:!!localStorage.getItem('gedyon_garmin_token'),strava:!!localStorage.getItem('gedyon_strava_token'),whoop:!!localStorage.getItem('gedyon_whoop_token'),oura:!!localStorage.getItem('gedyon_oura_token'),mfp:!!localStorage.getItem('gedyon_mfp_token')};}
+// ─────────────────────────────────────────────────────────────
+//  CONNECT ALL WIZARD
+//  Step-by-step guided flow to connect every training source.
+//  Tries the Railway server first (no API keys needed), falls
+//  back to direct OAuth / PAT with clear instructions.
+// ─────────────────────────────────────────────────────────────
+
+var _CAW_STEP = 0;
+var _CAW_SERVER_ALIVE = null; // null=unknown, true=alive, false=dead
+
+var CAW_STEPS = [
+  {key:'strava',  label:'Strava',       emoji:'🟠', color:'#FC4C02', desc:'GPS runs · Routes · Pace'},
+  {key:'whoop',   label:'WHOOP',        emoji:'🟢', color:'#00F19F', desc:'Recovery · Strain · Sleep'},
+  {key:'oura',    label:'Oura Ring',    emoji:'🟣', color:'#A78BFA', desc:'Readiness · HRV · Sleep stages'},
+  {key:'peloton', label:'Peloton',      emoji:'⚫', color:'#D4FF00', desc:'Indoor rides · Output · Cadence'},
+  {key:'apple',   label:'Apple Watch',  emoji:'🍎', color:'#FF3B5C', desc:'Steps · Calories · Heart rate (iPhone)'},
+];
+
+async function _cawPingServer(){
+  if(_CAW_SERVER_ALIVE !== null) return _CAW_SERVER_ALIVE;
+  try {
+    var r = await Promise.race([
+      fetch(OTA_SERVER + '/', {method:'GET'}),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 5000); })
+    ]);
+    _CAW_SERVER_ALIVE = r.ok || r.status < 500;
+  } catch(e){ _CAW_SERVER_ALIVE = false; }
+  return _CAW_SERVER_ALIVE;
+}
+
+function _cawIsConnected(key){
+  var st = checkIntegrationStatuses();
+  if(key==='strava')  return st.strava;
+  if(key==='whoop')   return st.whoop;
+  if(key==='oura')    return st.oura;
+  if(key==='peloton') return st.peloton;
+  if(key==='apple')   return st.appleHealth;
+  return false;
+}
+
+function showConnectAllWizard(step){
+  _CAW_STEP = (typeof step==='number') ? step : 0;
+  var modal = document.getElementById('cawModal');
+  if(modal) modal.remove();
+
+  var st = CAW_STEPS[_CAW_STEP];
+  if(!st){ _cawDone(); return; }
+
+  var connected = _cawIsConnected(st.key);
+  var total = CAW_STEPS.length;
+
+  modal = document.createElement('div');
+  modal.id = 'cawModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:99996;background:rgba(0,0,0,0.92);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(10px);';
+
+  // Progress dots
+  var dots = CAW_STEPS.map(function(s,i){
+    var active = i===_CAW_STEP;
+    var done = _cawIsConnected(s.key);
+    var col = done?'#30D158':active?'var(--gold)':'rgba(255,255,255,.2)';
+    return '<div style="width:'+(active?'20':'8')+'px;height:8px;border-radius:4px;background:'+col+';transition:all .3s;"></div>';
+  }).join('');
+
+  var html = '<div style="width:100%;max-width:480px;background:#0D0D18;border-radius:24px 24px 0 0;border-top:1px solid rgba(255,255,255,.12);padding:0 0 calc(24px + env(safe-area-inset-bottom,0px));">';
+  // Handle
+  html += '<div style="display:flex;justify-content:center;padding:12px 0 0;"><div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);"></div></div>';
+  // Header
+  html += '<div style="padding:16px 20px 0;display:flex;align-items:center;justify-content:space-between;">';
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.15em;">STEP '+(_CAW_STEP+1)+' OF '+total+'</div>';
+  html += '<button onclick="document.getElementById(\'cawModal\').remove();" style="background:transparent;border:none;color:var(--grey);font-size:20px;cursor:pointer;padding:4px;">✕</button>';
+  html += '</div>';
+  // Progress
+  html += '<div style="display:flex;gap:5px;align-items:center;padding:10px 20px 0;">'+dots+'</div>';
+
+  // Service card
+  html += '<div style="padding:20px 20px 16px;">';
+  html += '<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">';
+  html += '<div style="width:52px;height:52px;border-radius:16px;background:'+st.color+'18;border:1.5px solid '+st.color+'44;display:flex;align-items:center;justify-content:center;font-size:26px;">'+st.emoji+'</div>';
+  html += '<div><div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:28px;letter-spacing:2px;color:var(--white);">'+st.label.toUpperCase()+'</div>';
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);margin-top:2px;">'+st.desc+'</div></div>';
+  html += '</div>';
+
+  if(connected){
+    html += '<div style="background:rgba(48,209,88,.08);border:1px solid rgba(48,209,88,.25);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:10px;margin-bottom:16px;">';
+    html += '<div style="font-size:20px;">✓</div>';
+    html += '<div><div style="font-family:Impact,Arial Narrow,sans-serif;font-size:16px;color:#30D158;letter-spacing:1px;">ALREADY CONNECTED</div>';
+    html += '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);margin-top:2px;">'+st.label+' is syncing your data</div></div>';
+    html += '</div>';
+    html += _cawNextButton(_CAW_STEP, total, 'NEXT →');
+  } else {
+    html += _cawServiceInstructions(st);
+  }
+
+  html += '</div></div>';
+  modal.innerHTML = html;
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+
+function _cawServiceInstructions(st){
+  var html = '';
+  if(st.key==='strava'){
+    html += '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);line-height:1.9;margin-bottom:16px;">';
+    html += '1. Go to <strong style="color:var(--white);">strava.com/settings/api</strong><br>';
+    html += '2. Create an app — set Auth Callback to this page URL<br>';
+    html += '3. Copy your <strong style="color:var(--white);">Client ID</strong> and <strong style="color:var(--white);">Client Secret</strong><br>';
+    html += '4. Tap CONNECT below and paste them in';
+    html += '</div>';
+    html += '<button onclick="document.getElementById(\'cawModal\').remove();stravaConnectServer();" style="'+_cawBtnStyle('#FC4C02')+'">CONNECT STRAVA</button>';
+    html += _cawSkipButton();
+  } else if(st.key==='whoop'){
+    html += '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);line-height:1.9;margin-bottom:16px;">';
+    html += '1. Go to <strong style="color:var(--white);">developer.whoop.com</strong><br>';
+    html += '2. Create an app — get your <strong style="color:var(--white);">Client ID</strong><br>';
+    html += '3. Set Redirect URI to this page URL<br>';
+    html += '4. Tap CONNECT and paste your Client ID';
+    html += '</div>';
+    html += '<button onclick="document.getElementById(\'cawModal\').remove();whoopDirectConnect();" style="'+_cawBtnStyle('#00F19F')+'">CONNECT WHOOP</button>';
+    html += _cawSkipButton();
+  } else if(st.key==='oura'){
+    html += '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);line-height:1.9;margin-bottom:16px;">';
+    html += '1. Go to <strong style="color:var(--white);">cloud.ouraring.com</strong><br>';
+    html += '2. Profile → Personal Access Tokens<br>';
+    html += '3. Create a new token → copy it<br>';
+    html += '4. Paste it below';
+    html += '</div>';
+    html += '<input id="cawOuraPat" type="password" placeholder="Paste Oura token here..." style="width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(167,139,250,.3);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:13px;margin-bottom:12px;box-sizing:border-box;outline:none;">';
+    html += '<button onclick="_cawConnectOura();" style="'+_cawBtnStyle('#A78BFA')+'">CONNECT OURA</button>';
+    html += _cawSkipButton();
+  } else if(st.key==='peloton'){
+    html += '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);line-height:1.9;margin-bottom:16px;">';
+    html += 'Enter your Peloton login credentials. No server needed — connects directly.';
+    html += '</div>';
+    html += '<input id="cawPelEmail" type="email" placeholder="Peloton email" style="'+_cawInputStyle()+'margin-bottom:8px;">';
+    html += '<input id="cawPelPass" type="password" placeholder="Peloton password" style="'+_cawInputStyle()+'margin-bottom:12px;">';
+    html += '<button onclick="_cawConnectPeloton();" style="'+_cawBtnStyle('#D4FF00','#000')+'">CONNECT PELOTON</button>';
+    html += _cawSkipButton();
+  } else if(st.key==='apple'){
+    html += '<div style="background:rgba(255,59,92,.07);border:1px solid rgba(255,59,92,.2);border-radius:14px;padding:14px 16px;margin-bottom:16px;font-family:\'SF Mono\',monospace;font-size:11px;color:rgba(255,59,92,.9);line-height:1.8;">';
+    html += '📱 Apple Health requires the GEDYON app on your iPhone.<br>';
+    html += 'Open GEDYON on your iPhone → More → Connect → Apple Health.<br>';
+    html += 'Your Garmin watch data flows through Apple Health automatically.';
+    html += '</div>';
+    html += _cawNextButton(_CAW_STEP, CAW_STEPS.length, 'OK, GOT IT →');
+  }
+  return html;
+}
+
+function _cawBtnStyle(color, textColor){
+  textColor = textColor||'#000';
+  return 'width:100%;padding:14px;background:'+color+';color:'+textColor+';font-family:Impact,Arial Narrow,sans-serif;font-size:17px;letter-spacing:3px;border:none;border-radius:14px;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 18px '+color+'44;';
+}
+function _cawInputStyle(){
+  return 'width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:13px;box-sizing:border-box;outline:none;display:block;';
+}
+function _cawSkipButton(){
+  var next = _CAW_STEP + 1;
+  return '<button onclick="showConnectAllWizard('+next+');" style="width:100%;padding:11px;background:transparent;border:1px solid rgba(255,255,255,.10);color:var(--grey);font-family:\'SF Mono\',monospace;font-size:12px;border-radius:12px;cursor:pointer;">Skip for now →</button>';
+}
+function _cawNextButton(step, total, label){
+  var next = step + 1;
+  if(next >= total) return '<button onclick="document.getElementById(\'cawModal\').remove();_cawDone();" style="'+_cawBtnStyle('var(--gold)')+'">'+label+'</button>';
+  return '<button onclick="showConnectAllWizard('+next+');" style="'+_cawBtnStyle('var(--gold)')+'">'+label+'</button>';
+}
+
+async function _cawConnectOura(){
+  var pat = (document.getElementById('cawOuraPat')||{}).value||'';
+  if(!pat.trim()){ showToast('Paste your Oura token first','error'); return; }
+  localStorage.setItem('gedyon_oura_token', pat.trim());
+  var modal = document.getElementById('cawModal');
+  if(modal) modal.remove();
+  try{ await syncOuraData(); showToast('Oura connected!','ok'); }catch(e){ showToast('Oura: check your token','error'); }
+  if(typeof initIntegrationsHub==='function') initIntegrationsHub();
+  showConnectAllWizard(_CAW_STEP + 1);
+}
+
+async function _cawConnectPeloton(){
+  var email = (document.getElementById('cawPelEmail')||{}).value||'';
+  var pass  = (document.getElementById('cawPelPass')||{}).value||'';
+  if(!email||!pass){ showToast('Enter your Peloton email + password','error'); return; }
+  var btn = document.querySelector('#cawModal button[onclick*="_cawConnectPeloton"]');
+  if(btn){ btn.textContent='Connecting...'; btn.disabled=true; }
+  try{
+    var r = await fetch('https://corsproxy.io/?'+encodeURIComponent('https://api.onepeloton.com/auth/login'),{
+      method:'POST', headers:{'Content-Type':'application/json','Peloton-Platform':'web'},
+      body: JSON.stringify({username_or_email:email, password:pass})
+    });
+    var data = await r.json();
+    if(!r.ok || !data.session_id) throw new Error(data.message||'Login failed');
+    localStorage.setItem('gedyon_peloton_creds', JSON.stringify({session_id:data.session_id, user_id:data.user_id, email:email}));
+    document.getElementById('cawModal').remove();
+    showToast('Peloton connected!','ok');
+    if(typeof initIntegrationsHub==='function') initIntegrationsHub();
+    showConnectAllWizard(_CAW_STEP + 1);
+  } catch(e){
+    showToast('Peloton login failed: '+e.message,'error');
+    if(btn){ btn.textContent='CONNECT PELOTON'; btn.disabled=false; }
+  }
+}
+
+function _cawDone(){
+  var st = checkIntegrationStatuses();
+  var connected = Object.values(st).filter(Boolean).length;
+  showSyncToast('Setup complete — '+connected+' source'+(connected!==1?'s':'')+' connected. Syncing...','green');
+  if(typeof autoSyncOnLaunch==='function') autoSyncOnLaunch();
+  if(typeof initIntegrationsHub==='function') initIntegrationsHub();
+}
+
+function checkIntegrationStatuses(){
+  // Check ALL possible token keys for each service (direct OAuth + server paths)
+  var stravaOk  = !!(localStorage.getItem('gedyon_strava_server_user_id') ||
+                     localStorage.getItem('gedyon_strava_access_token')    ||
+                     localStorage.getItem('gedyon_strava_token'));
+  var whoopOk   = !!(localStorage.getItem('gedyon_whoop_server_user_id')  ||
+                     localStorage.getItem('gedyon_whoop_direct_token')     ||
+                     localStorage.getItem('gedyon_whoop_token'));
+  var pelotonOk = !!(localStorage.getItem('gedyon_peloton_server_user_id')||
+                     localStorage.getItem('gedyon_peloton_creds'));
+  return {
+    appleHealth: !!localStorage.getItem('gedyon_apple_health_connected'),
+    garmin:      !!localStorage.getItem('gedyon_garmin_token'),
+    strava:      stravaOk,
+    whoop:       whoopOk,
+    oura:        !!localStorage.getItem('gedyon_oura_token'),
+    mfp:         !!localStorage.getItem('gedyon_mfp_token'),
+    peloton:     pelotonOk,
+  };
+}
 var HEALTH_READ_TYPES=['HKQuantityTypeIdentifierHeartRateVariabilitySDNN','HKCategoryTypeIdentifierSleepAnalysis','HKQuantityTypeIdentifierStepCount','HKQuantityTypeIdentifierActiveEnergyBurned','HKQuantityTypeIdentifierBodyMass','HKQuantityTypeIdentifierRestingHeartRate'];
 async function connectAppleHealth(){
   var isIOS=!!(window.Capacitor&&typeof window.Capacitor.isNativePlatform==='function'&&window.Capacitor.isNativePlatform()&&window.Capacitor.getPlatform()==='ios');
