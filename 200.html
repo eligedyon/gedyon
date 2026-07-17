@@ -4022,17 +4022,19 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
             <div style="width:28px;height:28px;background:rgba(255,45,85,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;"></div>
             <div>
-              <div style="font-family:Impact,sans-serif;font-size:16px;letter-spacing:2px;color:var(--white);">APPLE HEALTH</div>
-              <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">WORKOUTS · SLEEP · HR · HRV · CALORIES</div>
+              <div style="font-family:Impact,sans-serif;font-size:16px;letter-spacing:2px;color:var(--white);">APPLE HEALTH + FITNESS</div>
+              <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">WATCH & FITNESS APP WORKOUTS · SLEEP · HR · HRV</div>
             </div>
             <div id="conn-apple-status" style="margin-left:auto;font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);">NOT IMPORTED</div>
           </div>
           <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);line-height:1.9;margin-bottom:10px;">
-            Imports your <strong style="color:var(--off);">complete Apple Watch history</strong> — every run, ride, sleep night, HRV reading and calorie burn. Includes Peloton data written by the Peloton app.<br><br>
-            <strong style="color:var(--gold);">HOW TO EXPORT:</strong><br>
-            1. iPhone → Health app → tap your photo (top right)<br>
-            2. Scroll down → <strong style="color:var(--off);">Export All Health Data</strong><br>
-            3. Save the ZIP → upload it below
+            Imports your <strong style="color:var(--off);">complete Apple Watch + Fitness app history</strong> — every run, ride, sleep night, HRV reading and calorie burn. Anything the Fitness app tracked is in here too (it all lives in Apple Health). Includes Peloton data written by the Peloton app.<br><br>
+            <strong style="color:var(--gold);">HOW TO EXPORT (2 min):</strong><br>
+            1. iPhone → <strong style="color:var(--off);">Health</strong> app → tap your photo (top right)<br>
+            2. Scroll to the bottom → <strong style="color:var(--off);">Export All Health Data</strong> → Export<br>
+            3. When the share sheet opens → <strong style="color:var(--off);">Save to Files</strong><br>
+            4. Come back here → tap below → pick <strong style="color:var(--off);">export.zip</strong> from Files<br>
+            <span style="color:rgba(0,230,118,.8);">After import, your fitness placement re-runs automatically.</span>
           </div>
           <label style="display:block;background:rgba(255,45,85,.08);border:1px dashed rgba(255,45,85,.3);border-radius:10px;padding:14px;text-align:center;cursor:pointer;margin-bottom:8px;">
             <input type="file" id="appleHealthInput" accept=".zip,.xml" style="display:none;" onchange="importAppleHealth(this)">
@@ -14453,7 +14455,7 @@ function showSyncToast(msg, color='gold'){
 }
 
 // Source priority for dedup: higher = preferred when same run detected
-var SOURCE_PRIORITY = {strava:10, garmin:9, apple_health:7, whoop:5, oura:4, peloton:3, manual:1};
+var SOURCE_PRIORITY = {strava:10, garmin:9, apple_health:7, apple:7, whoop:5, oura:4, peloton:3, manual:1};
 function _srcPriority(src){ return SOURCE_PRIORITY[(src||'').toLowerCase()] || 2; }
 
 // Normalise activity type to a canonical string for cross-source comparison
@@ -16235,14 +16237,27 @@ async function importAppleHealth(input){
     const sleepD = Object.keys(sleepByDate).length;
     const hrvD   = Object.keys(hrvByDate).length;
 
+    // Cross-source dedup (same run recorded by Watch + Strava counts once)
+    var dupsRemoved = 0;
+    try{
+      var beforeCount = (D.workouts||[]).length;
+      if(typeof deduplicateWorkouts === 'function') deduplicateWorkouts();
+      dupsRemoved = beforeCount - (D.workouts||[]).length;
+    }catch(e){}
+    // Mark Apple Health as a live source so RUN CHECK shows it connected
+    localStorage.setItem('gedyon_apple_health_connected','1');
+    localStorage.setItem('gedyon_apple_health_connected_last_sync', String(Date.now()));
+    saveData();
+
     setProgress(100, 'Complete!');
     statusEl.style.color = 'var(--green)';
-    statusEl.innerHTML = 
+    statusEl.innerHTML =
       ' <strong>' + imported + ' workouts imported</strong> (' + runs + ' runs, ' + rides + ' rides)<br>' +
       ' <strong>' + sleepD + ' nights</strong> of sleep data<br>' +
       ' <strong>' + hrvD + ' days</strong> of HRV data<br>' +
       (skipped ? skipped + ' already existed (skipped)<br>' : '') +
-      '→ Dashboard → Charts → MILES or HR to see your data';
+      (dupsRemoved ? dupsRemoved + ' duplicates merged (Watch + Strava same run)<br>' : '') +
+      '→ Checking your fitness placement now...';
 
     const cst = document.getElementById('conn-apple-status');
     if(cst){ cst.textContent = ' ' + imported + ' WORKOUTS'; cst.style.color='var(--green)'; }
@@ -16251,6 +16266,11 @@ async function importAppleHealth(input){
 
     setTimeout(renderDash, 300);
     setTimeout(renderActiveChart, 600);
+    // The whole point: place the athlete from their real history
+    if(typeof autoFitnessCheck === 'function'){
+      localStorage.removeItem('gedyon_autorecal_shown');
+      setTimeout(autoFitnessCheck, 900);
+    }
 
   } catch(err){
     statusEl.style.color = 'var(--red)';
@@ -19533,7 +19553,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.17-15'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.17-16'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
