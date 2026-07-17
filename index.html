@@ -9755,6 +9755,12 @@ async function autoFitnessCheck(){
     var r = recalibrateTrainingPlan();
     console.log('[AutoFitnessCheck] week', r.currentWeek, '→ recommended', r.recommendedWeek,
                 '(' + r.gapText + ') · avg', r.avgWeeklyMiles, 'mi/wk over', r.dataWeeks, 'wks');
+    if(r.dataWeeks === 0){
+      // No run data = the week number is ONLY the calendar. Say so loudly —
+      // silent fallback made it look like fitness had been assessed.
+      showSyncToast('Week ' + r.currentWeek + ' is calendar-only — no runs synced yet. Connect Strava/Apple Watch or log runs so I can place you by real fitness.', 'gold');
+      return;
+    }
     if(Math.abs(r.weekDelta) >= 2){
       var today = td();
       var lastShown = localStorage.getItem('gedyon_autorecal_shown');
@@ -9762,8 +9768,8 @@ async function autoFitnessCheck(){
         localStorage.setItem('gedyon_autorecal_shown', today);
         showRecalibrationModal();
       }
-    } else if(r.dataWeeks > 0){
-      showSyncToast('Placement checked — Week ' + r.currentWeek + ' is right ✓', 'green');
+    } else {
+      showSyncToast('Placement checked — Week ' + r.currentWeek + ' matches your last ' + r.dataWeeks + ' weeks of running (' + r.avgWeeklyMiles + ' mi/wk) ✓', 'green');
     }
   }catch(e){ console.warn('[AutoFitnessCheck]', e && e.message); }
 }
