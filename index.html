@@ -13090,12 +13090,12 @@ function testServerNow(){
   };
 
   xhr.ontimeout = function(){
-    setServerStatusUI('TIMEOUT','red');
+    setServerStatusUI('OPTIONAL — OFF','gold');
     _showDirectOAuthStatus();
   };
 
   xhr.onerror = function(){
-    setServerStatusUI(' OFFLINE','red');
+    setServerStatusUI('OPTIONAL — OFF','gold');
     _showDirectOAuthStatus();
   };
 
@@ -19402,7 +19402,7 @@ async function runDiagnostic() {
       results.push({ ok: false, label: 'GEDYON SERVER', detail: 'HTTP ' + r.status + ' — server error' });
     }
   } catch(e) {
-    results.push({ ok: false, label: 'GEDYON SERVER', detail: 'Offline — direct OAuth connections still work' });
+    results.push({ ok: null, label: 'LEGACY SERVER', detail: 'Optional — app runs fully without it. Only needed for Garmin (restart at railway.app if wanted)' });
   }
 
   // 2. Strava — check direct token first, then server
