@@ -15138,6 +15138,8 @@ async function autoSyncOnLaunch(){
     if(suid) promises.push(loadServerWorkouts(suid).then(()=>{ renderTrainingSummary(); renderRaceReadyCard(); renderRaceProgressCard(); renderOvertrainingCard(); }));
     if(wuid) promises.push(loadServerWhoopData(wuid).then(()=>{ renderWhoopDash(); renderRaceReadyCard(); renderOvertrainingCard(); }));
     if(puid) promises.push(loadPelotonWorkouts().then(()=>{ renderTrainingSummary(); }));
+    // Silent HealthKit → Supabase sync: opening the app IS the sync
+    if(typeof syncHealthData === 'function') promises.push(syncHealthData().then(()=>{ renderTrainingSummary(); }));
     const ouraToken = localStorage.getItem('gedyon_oura_token');
     if(ouraToken) promises.push(syncOuraData().then(()=>{ renderRaceReadyCard(); }));
     await Promise.allSettled(promises);
@@ -19090,7 +19092,7 @@ function checkIntegrationStatuses(){
     peloton:     pelotonOk,
   };
 }
-var HEALTH_READ_TYPES=['HKQuantityTypeIdentifierHeartRateVariabilitySDNN','HKCategoryTypeIdentifierSleepAnalysis','HKQuantityTypeIdentifierStepCount','HKQuantityTypeIdentifierActiveEnergyBurned','HKQuantityTypeIdentifierBodyMass','HKQuantityTypeIdentifierRestingHeartRate'];
+var HEALTH_READ_TYPES=['HKQuantityTypeIdentifierHeartRateVariabilitySDNN','HKCategoryTypeIdentifierSleepAnalysis','HKQuantityTypeIdentifierStepCount','HKQuantityTypeIdentifierActiveEnergyBurned','HKQuantityTypeIdentifierBodyMass','HKQuantityTypeIdentifierRestingHeartRate','HKQuantityTypeIdentifierVO2Max','HKWorkoutTypeIdentifier'];
 async function connectAppleHealth(){
   var isIOS=!!(window.Capacitor&&typeof window.Capacitor.isNativePlatform==='function'&&window.Capacitor.isNativePlatform()&&window.Capacitor.getPlatform()==='ios');
   if(!isIOS){showToast('Apple Health is only available on iPhone. Open GEDYON on your iPhone to connect.','info');return;}
@@ -19124,6 +19126,115 @@ async function syncAppleHealth(){
     if($('integrationsHub'))initIntegrationsHub();
   }catch(err){console.error('[AppleHealth] sync',err);}
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// HEALTH SYNC SERVICE — silent HealthKit → Supabase sync on app open
+// (equivalent of src/services/healthSync.ts — this app is a single file)
+// Tables required (run supabase/gap_protocol_schema.sql once):
+//   health_metrics, workouts, plan_position, sync_state, gap_responses
+// All writes degrade silently to the local D blob if tables don't exist.
+// ═══════════════════════════════════════════════════════════════════
+var HK_LAST_SUCCESS_KEY = 'gedyon_hk_last_success';
+
+async function syncHealthData(){
+  var HK = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.HealthKit;
+  if(!HK || !localStorage.getItem('gedyon_apple_health_connected')) return {skipped:true, reason:'no_healthkit'};
+  try{
+    // Window: since last SUCCESSFUL sync (fallback 7 days, hard cap 30 days)
+    var lastOk = parseInt(localStorage.getItem(HK_LAST_SUCCESS_KEY)||'0');
+    var end = new Date();
+    var start = lastOk ? new Date(Math.max(lastOk, end.getTime()-30*864e5)) : new Date(end.getTime()-7*864e5);
+    var s = start.toISOString(), e = end.toISOString();
+    var q = function(name, limit){ return HK.queryHKitSampleType({sampleName:name, startDate:s, endDate:e, limit:limit||100, ascending:'false'}).catch(function(){ return {resultData:[]}; }); };
+
+    var rs = await Promise.all([
+      q('HKQuantityTypeIdentifierHeartRateVariabilitySDNN'),
+      q('HKQuantityTypeIdentifierRestingHeartRate', 30),
+      q('HKCategoryTypeIdentifierSleepAnalysis', 200),
+      q('HKQuantityTypeIdentifierVO2Max', 30),
+      q('workoutType', 100)   // @capacitor-community/health-kit workout query name
+    ]);
+
+    var items = function(raw){ return (raw && (raw.resultData || raw.data)) || []; };
+    var byDay = function(raw, unit){
+      var out = {};
+      items(raw).forEach(function(it){
+        var d = (it.startDate||'').slice(0,10); if(!d) return;
+        var v = parseFloat(it.quantity != null ? it.quantity : it.value); if(isNaN(v)) return;
+        if(!out[d]) out[d] = [];
+        out[d].push(v);
+      });
+      return Object.entries(out).map(function(kv){
+        return {date: kv[0], value: Math.round((kv[1].reduce(function(a,b){return a+b;},0)/kv[1].length)*100)/100, unit: unit};
+      });
+    };
+    var sleepByDay = function(raw){
+      var by = {};
+      items(raw).forEach(function(it){
+        var v = parseInt(it.value != null ? it.value : it.quantity, 10);
+        if(isNaN(v) || v > 3) return; // asleep categories only
+        var hrs = (new Date(it.endDate) - new Date(it.startDate))/36e5;
+        var k = (it.endDate||'').slice(0,10);
+        if(k) by[k] = (by[k]||0) + hrs;
+      });
+      return Object.entries(by).map(function(kv){ return {date: kv[0], value: Math.round(kv[1]*10)/10, unit: 'hours'}; });
+    };
+
+    var metrics = []
+      .concat(byDay(rs[0],'ms').map(function(m){ m.metric='hrv'; return m; }))
+      .concat(byDay(rs[1],'bpm').map(function(m){ m.metric='resting_hr'; return m; }))
+      .concat(sleepByDay(rs[2]).map(function(m){ m.metric='sleep_hours'; return m; }))
+      .concat(byDay(rs[3],'mL/kg/min').map(function(m){ m.metric='vo2max'; return m; }));
+
+    var hkWorkouts = items(rs[4]).map(function(w){
+      var mins = Math.round((new Date(w.endDate) - new Date(w.startDate))/6e4);
+      return {
+        date: (w.startDate||'').slice(0,10),
+        minutes: mins > 0 ? mins : 0,
+        dist: w.totalDistance ? Math.round(parseFloat(w.totalDistance)/1609.34*100)/100 : 0,
+        type: w.workoutActivityName || w.workoutActivityId || 'workout',
+        source: 'apple_health'
+      };
+    }).filter(function(w){ return w.date && w.minutes >= 5; });
+
+    // 1) Local: merge into D (dedup engine handles Strava/Watch overlap)
+    if(!D.appleHealth) D.appleHealth = {};
+    D.appleHealth.lastSync = new Date().toISOString();
+    hkWorkouts.forEach(function(hw){
+      var dup = (D.workouts||[]).some(function(ex){ return typeof _isSameWorkout==='function' ? _isSameWorkout(ex, {date:hw.date, dur:hw.minutes, dist:hw.dist, type:hw.type, source:'apple_health'}) : (ex.date===hw.date && Math.abs((ex.dur||0)-hw.minutes)<15); });
+      if(!dup){ if(!D.workouts) D.workouts=[]; D.workouts.push({date:hw.date, name:hw.type, dur:hw.minutes, dist:hw.dist, source:'apple_health'}); }
+    });
+    if(typeof deduplicateWorkouts==='function') deduplicateWorkouts();
+    saveData();
+
+    // 2) Cloud: row-level upserts (silent no-op if tables missing / signed out)
+    if(typeof sbClient!=='undefined' && sbClient && currentUser){
+      if(metrics.length){
+        await sbClient.from('health_metrics').upsert(metrics.map(function(m){
+          return {user_id: currentUser.id, date: m.date, metric: m.metric, value: m.value, unit: m.unit, source: 'apple_health'};
+        }), {onConflict: 'user_id,date,metric'}).then(function(r){ if(r.error) console.warn('[HealthSync] health_metrics:', r.error.message); });
+      }
+      if(hkWorkouts.length){
+        await sbClient.from('workouts').upsert(hkWorkouts.map(function(w){
+          return {user_id: currentUser.id, date: w.date, minutes: w.minutes, distance_mi: w.dist, workout_type: w.type, source: 'apple_health', verified: true};
+        }), {onConflict: 'user_id,date,source,minutes'}).then(function(r){ if(r.error) console.warn('[HealthSync] workouts:', r.error.message); });
+      }
+      await sbClient.from('sync_state').upsert({
+        user_id: currentUser.id, last_healthkit_sync: new Date().toISOString()
+      }, {onConflict: 'user_id'}).then(function(r){ if(r.error) console.warn('[HealthSync] sync_state:', r.error.message); });
+    }
+
+    localStorage.setItem(HK_LAST_SUCCESS_KEY, String(Date.now()));
+    console.log('[HealthSync] OK —', metrics.length, 'metrics,', hkWorkouts.length, 'workouts since', s.slice(0,10));
+    return {skipped:false, metrics: metrics.length, workouts: hkWorkouts.length};
+  }catch(err){
+    console.warn('[HealthSync] failed (will retry next open):', err && err.message);
+    return {skipped:true, reason: err && err.message};
+  }
+}
+
+window.syncHealthData = syncHealthData;
+
 function connectGarmin(){
   var ahConnected=!!localStorage.getItem('gedyon_apple_health_connected');
   var modal=document.createElement('div');
