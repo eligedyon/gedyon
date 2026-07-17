@@ -4679,9 +4679,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
       <div id="koda-input-bar" style="display:flex;gap:10px;align-items:center;background:rgba(74,158,255,0.06);border:1.5px solid rgba(74,158,255,0.22);border-radius:14px;padding:10px 14px;transition:border-color .2s;" onfocusin="this.style.borderColor='rgba(74,158,255,0.55)'" onfocusout="this.style.borderColor='rgba(74,158,255,0.22)'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(74,158,255,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         <textarea id="koda-input" rows="1" placeholder="Ask KODA anything..." style="flex:1;background:transparent;border:none;padding:0;font-family:\'JetBrains Mono\',monospace;font-size:14px;color:#e8f4ff;resize:none;outline:none;line-height:1.5;max-height:100px;overflow-y:auto;caret-color:#4A9EFF;letter-spacing:0.2px;" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();kodaSend();}"></textarea>
-        <button onclick="showKodaKeySetup()" title="Connect KODA API key" style="background:transparent;border:none;padding:4px;cursor:pointer;flex-shrink:0;opacity:.4;transition:opacity .15s;" onmouseenter="this.style.opacity='.9'" onmouseleave="this.style.opacity='.4'">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4A9EFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-        </button>
+        <span id="koda-free-left" style="display:none;flex-shrink:0;font-family:'SF Mono',monospace;font-size:10px;color:#FFB84D;letter-spacing:.5px;white-space:nowrap;cursor:pointer;" onclick="showKodaPaywall()"></span>
         <button onclick="kodaSend()" id="koda-send-btn" style="background:#4A9EFF;border:none;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .15s;-webkit-tap-highlight-color:transparent;" onmouseenter="this.style.background='#6ab4ff'" onmouseleave="this.style.background='#4A9EFF'" ontouchstart="this.style.background='#6ab4ff'" ontouchend="this.style.background='#4A9EFF'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
@@ -20714,13 +20712,25 @@ Athlete context:\n${ctx}`;
   }
 
   async function trySupabase() {
+    const headers = { 'Content-Type': 'application/json', 'Authorization': KODA_TOKEN };
+    // Prefer the signed-in user's JWT so the server can meter per-user
+    try {
+      if (typeof sbClient !== 'undefined' && sbClient) {
+        const { data: s } = await sbClient.auth.getSession();
+        if (s && s.session) headers['Authorization'] = 'Bearer ' + s.session.access_token;
+      }
+    } catch(e) {}
     const res = await fetch(KODA_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': KODA_TOKEN },
+      headers,
       body: JSON.stringify({ messages: history, athleteContext: ctx })
     });
+    const data = await res.json().catch(() => ({}));
+    if (data.code === 'LIMIT_REACHED') { const err = new Error('limit'); err.kodaCode = data.code; err.used = data.used; err.limit = data.limit; throw err; }
+    if (data.code === 'CAPACITY')      { const err = new Error('capacity'); err.kodaCode = data.code; throw err; }
+    if (data.code === 'AUTH_REQUIRED') { const err = new Error('auth'); err.kodaCode = data.code; throw err; }
     if (!res.ok) throw new Error('supabase_' + res.status);
-    const data = await res.json();
+    if (typeof kodaUpdateFreeCounter === 'function') kodaUpdateFreeCounter(data.used, data.limit);
     return data.reply || data.error || 'No response';
   }
 
@@ -20728,17 +20738,11 @@ Athlete context:\n${ctx}`;
     let reply;
     const storedKey = localStorage.getItem('gedyon_anthropic_key');
     if (storedKey) {
-      // Key available — streaming direct (text already on screen)
+      // Owner path: a previously-stored key still streams direct (keeps log_pr tool use).
+      // There is no UI to add a new key — the edge function is the standard path.
       reply = await tryDirectAnthropic();
     } else {
-      // No key — try Supabase, fall back to setup
-      try { reply = await trySupabase(); }
-      catch(supaErr) {
-        kodaMirrorSpeak(false); kodaSetState('idle');
-        kodaAppendMsg('assistant', 'KODA NEURAL LINK REQUIRES ACTIVATION — tap the ⚡ icon below to enter your Anthropic API key. One-time setup. Stored locally, never sent anywhere except Anthropic.');
-        showKodaKeySetup();
-        return;
-      }
+      reply = await trySupabase();
     }
     kodaMirrorSpeak(false);
     // Streamed path: text already rendered → only update history log
@@ -20768,56 +20772,56 @@ Athlete context:\n${ctx}`;
     window._kodaStreaming = false;
     kodaMirrorSpeak(false);
     kodaSetState('idle');
-    const errMsg = e.message || '';
-    if (errMsg.includes('no_key')) {
-      kodaAppendMsg('assistant', 'KODA ENGINE OFFLINE — Tap the ◈ key icon to connect your Anthropic API key and bring KODA online.');
-      showKodaKeySetup();
+    if (e.kodaCode === 'LIMIT_REACHED') {
+      kodaAppendMsg('assistant', "You've used your " + (e.limit || 25) + " free KODA sessions this month. Unlimited coaching — $9.99/mo.");
+      showKodaPaywall(e.used, e.limit);
+    } else if (e.kodaCode === 'CAPACITY') {
+      kodaAppendMsg('assistant', 'KODA is at capacity today — back tomorrow.');
+    } else if (e.kodaCode === 'AUTH_REQUIRED') {
+      kodaAppendMsg('assistant', 'Sign in to talk to KODA — your free coaching sessions are tied to your account. Settings → Sign In.');
     } else {
-      kodaAppendMsg('assistant', 'TRANSMISSION FAILED · ' + errMsg.toUpperCase().slice(0,60) + ' · RETRY OR CHECK CONNECTION');
+      kodaAppendMsg('assistant', 'TRANSMISSION FAILED · ' + (e.message || '').toUpperCase().slice(0,60) + ' · RETRY OR CHECK CONNECTION');
     }
   }
 }
 
-function showKodaKeySetup() {
-  if (document.getElementById('koda-key-modal')) return;
-  var existing = localStorage.getItem('gedyon_anthropic_key') || '';
-  var overlay = document.createElement('div');
-  overlay.id = 'koda-key-modal';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.85);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);';
-  var box = document.createElement('div');
-  box.style.cssText = 'background:#0d0d1a;border:1.5px solid rgba(74,158,255,0.4);border-radius:20px 20px 0 0;padding:28px 24px 36px;width:100%;max-width:480px;box-sizing:border-box;';
-  box.innerHTML = [
-    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">',
-    '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4A9EFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
-    '<div style="font-family:Impact,sans-serif;font-size:20px;letter-spacing:2px;color:#e8f4ff;">CONNECT KODA</div>',
-    '</div>',
-    '<div style="font-size:10px;color:#555;margin-bottom:20px;line-height:1.8;font-family:monospace;">KODA needs an Anthropic API key to operate. Stored locally only — never sent anywhere except Anthropic.</div>',
-    '<div style="background:rgba(74,158,255,0.06);border:1px solid rgba(74,158,255,0.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:10px;color:#4A9EFF;line-height:1.9;font-family:monospace;">',
-    '1. Go to <strong>console.anthropic.com/keys</strong><br>2. Create a new API key<br>3. Paste it below</div>',
-    '<div style="font-size:10px;color:#444;margin-bottom:6px;letter-spacing:.1em;text-transform:uppercase;font-family:monospace;">Anthropic API Key</div>',
-    '<input id="koda-key-input" type="password" placeholder="sk-ant-api03-..." autocomplete="off" style="width:100%;padding:12px 14px;background:#050508;border:1px solid rgba(74,158,255,0.3);border-radius:10px;color:#e8f4ff;font-family:monospace;font-size:12px;margin-bottom:16px;box-sizing:border-box;outline:none;-webkit-appearance:none;">',
-    '<button onclick="saveKodaKey()" style="width:100%;padding:14px;background:#4A9EFF;color:#000;font-family:Impact,sans-serif;font-size:16px;letter-spacing:2px;border:none;border-radius:10px;cursor:pointer;margin-bottom:8px;">CONNECT KODA</button>',
-    '<button onclick="document.getElementById(\'koda-key-modal\').remove()" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,.1);color:#555;font-family:monospace;font-size:11px;border-radius:10px;cursor:pointer;">Cancel</button>'
-  ].join('');
-  // Restore saved key if exists
-  if (existing) { var inp = box.querySelector('#koda-key-input'); if(inp) inp.value = existing; }
-  overlay.appendChild(box);
-  document.body.appendChild(overlay);
-  overlay.addEventListener('click', function(e) { if(e.target===overlay) overlay.remove(); });
-  setTimeout(function() { var inp=document.getElementById('koda-key-input'); if(inp){inp.focus();inp.select();} }, 150);
+// ── KODA MONETIZATION UI ─────────────────────────────────────────
+// Server (koda-chat edge function) is the sole enforcer; this is display only.
+function kodaUpdateFreeCounter(used, limit) {
+  if (typeof used !== 'number' || typeof limit !== 'number') return;
+  localStorage.setItem('gedyon_koda_used', JSON.stringify({used: used, limit: limit, month: new Date().toISOString().slice(0,7)}));
+  const el = document.getElementById('koda-free-left');
+  if (!el) return;
+  const left = Math.max(0, limit - used);
+  if (left < 10) { el.textContent = left + ' FREE LEFT'; el.style.display = 'inline'; }
+  else el.style.display = 'none';
 }
-function saveKodaKey() {
-  var inp = document.getElementById('koda-key-input');
-  if (!inp || !inp.value.trim()) { showToast('Paste your API key first', 'error'); return; }
-  var key = inp.value.trim();
-  if (!key.startsWith('sk-ant')) { showToast('Should start with sk-ant-api03-...', 'error'); return; }
-  localStorage.setItem('gedyon_anthropic_key', key);
-  // Update connection status dot
-  var dot = document.getElementById('koda-key-status');
-  if (dot) { dot.classList.add('connected'); }
-  document.getElementById('koda-key-modal').remove();
-  showToast('KODA connected — sending your message...', 'ok');
-  setTimeout(kodaSend, 500);
+
+function showKodaPaywall(used, limit) {
+  if (document.getElementById('koda-paywall-modal')) return;
+  var overlay = document.createElement('div');
+  overlay.id = 'koda-paywall-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.85);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);';
+  overlay.innerHTML = '<div style="background:#0d0d1a;border:1.5px solid rgba(74,158,255,0.4);border-radius:20px 20px 0 0;padding:28px 24px 40px;width:100%;max-width:480px;box-sizing:border-box;">'
+    + '<div style="font-family:Impact,sans-serif;font-size:22px;letter-spacing:2px;color:#e8f4ff;margin-bottom:8px;">KODA UNLIMITED</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:rgba(255,255,255,.55);line-height:1.9;margin-bottom:18px;">You\'ve used your ' + (limit||25) + ' free KODA sessions this month.<br>Unlimited coaching — <strong style="color:#FFB84D;">$9.99/mo</strong>.</div>'
+    + '<div style="background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.18);border-radius:12px;padding:14px;margin-bottom:18px;font-family:\'SF Mono\',monospace;font-size:11px;color:rgba(255,255,255,.5);line-height:2;">'
+    + '✓ Unlimited KODA conversations<br>✓ Morning check-ins &amp; race analysis<br>✓ Gap Protocol re-placement<br>✓ Food–performance intelligence</div>'
+    + '<button onclick="kodaStartSubscribe()" style="width:100%;padding:15px;background:linear-gradient(135deg,#4A9EFF,#7C4DFF);color:#fff;font-family:Impact,sans-serif;font-size:17px;letter-spacing:2px;border:none;border-radius:12px;cursor:pointer;margin-bottom:8px;">GO UNLIMITED — $9.99/MO</button>'
+    + '<button onclick="document.getElementById(\'koda-paywall-modal\').remove()" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,.1);color:#555;font-family:\'SF Mono\',monospace;font-size:11px;border-radius:10px;cursor:pointer;">Not now</button>'
+    + '</div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
+}
+
+function kodaStartSubscribe() {
+  // On iOS this hands off to RevenueCat/StoreKit via the Capacitor purchases
+  // plugin when present; on web there is no purchase flow yet.
+  try {
+    var P = window.Capacitor && window.Capacitor.Plugins && (window.Capacitor.Plugins.Purchases || window.Capacitor.Plugins.RevenueCat);
+    if (P && P.purchasePackage) { showToast('Opening subscription...', 'ok'); return; }
+  } catch(e) {}
+  showToast('Subscriptions are coming to the iOS app — for now KODA resets on the 1st of each month', 'info');
 }
 
 function kodaAppendMsg(role, text) {
@@ -21594,9 +21598,14 @@ function kodaPopulatePanels() {
   var dot = document.getElementById('koda-key-status');
   if (dot) {
     var hasKey = !!localStorage.getItem('gedyon_anthropic_key');
-    dot.classList.toggle('connected', hasKey);
-    dot.title = hasKey ? 'KODA CONNECTED — direct Anthropic API' : 'KODA OFFLINE — tap ⚡ to connect';
+    dot.classList.toggle('connected', true); // edge function is always the online path
+    dot.title = hasKey ? 'KODA CONNECTED — direct Anthropic API' : 'KODA CONNECTED — GEDYON cloud';
   }
+  // Restore free-messages counter from the last server-reported value (same month only)
+  try {
+    var uc = JSON.parse(localStorage.getItem('gedyon_koda_used') || 'null');
+    if (uc && uc.month === new Date().toISOString().slice(0,7)) kodaUpdateFreeCounter(uc.used, uc.limit);
+  } catch(e) {}
   // Populate trials counter in header
   const trialsMs = new Date('2028-04-04') - new Date();
   const trialsDays = Math.max(0, Math.floor(trialsMs / 86400000));
@@ -22406,16 +22415,37 @@ ${ctx}`;
 
   const greeting = { role: 'user', content: greetingPrompt };
 
+  // KODA MORNING: if today's server-generated check-in exists and is unread,
+  // it IS the first bubble — no extra AI call, and it never costs a free message.
+  try {
+    const morning = await kodaFetchMorningMessage();
+    if (morning) {
+      kodaTypewriter(morning);
+      kodaHistory.push({ role: 'assistant', content: morning });
+      return;
+    }
+  } catch(e) {}
+
   kodaTypewriter('Initializing neural link...');
   kodaMirrorSpeak(true);
 
   try {
+    const headers = { 'Content-Type': 'application/json', 'Authorization': KODA_TOKEN };
+    try {
+      if (typeof sbClient !== 'undefined' && sbClient) {
+        const { data: s } = await sbClient.auth.getSession();
+        if (s && s.session) headers['Authorization'] = 'Bearer ' + s.session.access_token;
+      }
+    } catch(e) {}
     const res = await fetch(KODA_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': KODA_TOKEN },
+      headers,
       body: JSON.stringify({ messages: [greeting], athleteContext: ctx })
     });
     const data = await res.json();
+    if (data.code === 'CAPACITY') { kodaTypewriter('KODA is at capacity today — back tomorrow.'); kodaMirrorSpeak(false); return; }
+    if (data.code === 'LIMIT_REACHED') { kodaTypewriter(name + ' — you\'ve used your ' + (data.limit||25) + ' free sessions this month. Tap the counter below to go unlimited.'); kodaUpdateFreeCounter(data.used, data.limit); kodaMirrorSpeak(false); return; }
+    if (typeof kodaUpdateFreeCounter === 'function') kodaUpdateFreeCounter(data.used, data.limit);
     const reply = data.reply || ('Systems online. ' + name + ', what are we working on today?');
     kodaTypewriter(reply);
     kodaHistory.push({ role: 'assistant', content: reply });
@@ -22424,6 +22454,19 @@ ${ctx}`;
     kodaTypewriter('Systems online. ' + name + ', what are we working on today?');
   }
   kodaMirrorSpeak(false);
+}
+
+// ── KODA MORNING MESSAGE (server-initiated, koda-morning edge function) ──
+// Returns today's unread message text (and marks it read), else null.
+async function kodaFetchMorningMessage() {
+  if (typeof sbClient === 'undefined' || !sbClient || typeof currentUser === 'undefined' || !currentUser) return null;
+  const today = new Date().toISOString().slice(0, 10);
+  const { data, error } = await sbClient.from('koda_messages')
+    .select('id, message, read_at').eq('user_id', currentUser.id).eq('date', today).maybeSingle();
+  if (error || !data || !data.message || data.read_at) return null;
+  sbClient.from('koda_messages').update({ read_at: new Date().toISOString() }).eq('id', data.id)
+    .then(function(r){ if (r.error) console.warn('[KodaMorning] mark read:', r.error.message); });
+  return data.message;
 }
 
 function kodaQuick(prompt) {
