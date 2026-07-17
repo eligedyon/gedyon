@@ -19389,10 +19389,12 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
+var GEDYON_BUILD = 'v2026.07.17-12'; // bump on every deploy — shown in RUN CHECK
+
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
   if(!el) return;
-  el.innerHTML = '<span style="color:var(--gold);">Running diagnostics...</span>';
+  el.innerHTML = '<span style="color:var(--gold);">Running diagnostics... <span style="color:rgba(255,255,255,.35);font-size:.8em;">' + GEDYON_BUILD + '</span></span>';
 
   const srv = (localStorage.getItem('gedyon_server_url') || 'https://gedyon-server-production.up.railway.app').replace(/\/+$/,'');
 
@@ -19507,8 +19509,14 @@ async function runDiagnostic() {
     results.push({ ok: null, label: 'APPLE WATCH', detail: 'iOS only — open app on iPhone to connect' });
   }
 
-  // Render results
-  el.innerHTML = results.map(r => {
+  // Last recorded Strava handshake error — persists so it can be read and reported
+  const lastStravaErr = localStorage.getItem('gedyon_strava_last_error');
+  if(lastStravaErr && !stravaDirectTok){
+    results.push({ ok: false, label: 'STRAVA HANDSHAKE', detail: 'Last attempt: ' + lastStravaErr.slice(0,100) });
+  }
+
+  // Render results (build stamp first so we always know which version is running)
+  el.innerHTML = '<span style="color:rgba(255,255,255,.3);font-size:.75rem;">BUILD ' + GEDYON_BUILD + '</span><br>' + results.map(r => {
     const icon = r.ok === true  ? '<span style="color:#00e676;">●</span>'
                : r.ok === false ? '<span style="color:#ff5252;">●</span>'
                :                  '<span style="color:rgba(255,255,255,.3);">○</span>';
