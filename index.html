@@ -2432,6 +2432,247 @@ body.theme-keynote .nb.on .nl     { color: #8A6520 !important; }
 body.theme-keynote .topbar        { background: rgba(245,245,240,0.97) !important; border-bottom:1px solid rgba(184,150,90,0.2) !important; }
 body.theme-keynote .bnav          { background: rgba(245,245,240,0.97) !important; border-top:1px solid rgba(184,150,90,0.2) !important; }
 
+/* ═══════════════════════════════════════════════════════════
+   GEDYON POLISH LAYER v2 — Premium smooth feel
+   All overrides are additive; no layout logic is changed.
+═══════════════════════════════════════════════════════════ */
+
+/* ── Kill tap flash everywhere ── */
+*, *::before, *::after { -webkit-tap-highlight-color: transparent; }
+
+/* ── Hide scrollbars globally (keep scroll behaviour) ── */
+::-webkit-scrollbar { width: 0 !important; height: 0 !important; }
+* { scrollbar-width: none !important; }
+
+/* ── Page transitions — fade + lift in ── */
+.pg {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition:
+    opacity  0.28s cubic-bezier(0.16,1,0.3,1),
+    transform 0.28s cubic-bezier(0.16,1,0.3,1);
+}
+.pg.on {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ── Cards — glassmorphism upgrade ── */
+.card {
+  background: rgba(255,255,255,0.045) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  border-radius: 20px !important;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.07) inset,
+    0 10px 40px rgba(0,0,0,0.40),
+    0 2px 8px  rgba(0,0,0,0.25) !important;
+  transition:
+    box-shadow 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.18s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+.card:active { transform: scale(0.985) !important; }
+
+/* Card header */
+.ch {
+  padding: 13px 16px 11px !important;
+  background: rgba(255,255,255,0.025) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+}
+.ch .ct {
+  font-size: 10px !important;
+  letter-spacing: 0.16em !important;
+  opacity: 0.65 !important;
+}
+.cb { padding: 14px 16px !important; }
+
+/* Staggered card entrance */
+.card { animation: cardReveal 0.42s cubic-bezier(0.16,1,0.3,1) both !important; }
+.card:nth-child(1)  { animation-delay: 0.03s !important; }
+.card:nth-child(2)  { animation-delay: 0.07s !important; }
+.card:nth-child(3)  { animation-delay: 0.11s !important; }
+.card:nth-child(4)  { animation-delay: 0.15s !important; }
+.card:nth-child(5)  { animation-delay: 0.19s !important; }
+.card:nth-child(6)  { animation-delay: 0.23s !important; }
+.card:nth-child(7)  { animation-delay: 0.27s !important; }
+.card:nth-child(8)  { animation-delay: 0.31s !important; }
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)  scale(1);    }
+}
+
+/* ── Topbar — frosted glass ── */
+.topbar {
+  background: rgba(5,5,8,0.82) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.05), 0 4px 20px rgba(0,0,0,0.45) !important;
+}
+
+/* ── Bottom nav — frosted glass ── */
+.bnav {
+  background: rgba(5,5,8,0.85) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  border-top: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 -1px 0 rgba(255,255,255,0.04), 0 -8px 30px rgba(0,0,0,0.30) !important;
+}
+.nb {
+  position: relative !important;
+  transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+.nb:active { transform: scale(0.85) !important; }
+.nb.on .ni svg { filter: drop-shadow(0 0 5px var(--accent)) !important; }
+/* Active dot under nav icon */
+.nb.on::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+/* Nav pill — spring transition */
+.bnav-pill {
+  border-radius: 14px !important;
+  background: rgba(255,255,255,0.07) !important;
+  transition:
+    left   0.42s cubic-bezier(0.34,1.56,0.64,1),
+    width  0.42s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+
+/* ── Secondary (MORE) sub-nav ── */
+.snav {
+  background: rgba(0,0,0,0.35) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+}
+.snb {
+  border-radius: 10px !important;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+.snb.on { background: rgba(255,255,255,0.09) !important; }
+.snb:active { transform: scale(0.90) !important; }
+
+/* ── Primary button ── */
+.btn {
+  border-radius: 14px !important;
+  letter-spacing: 0.10em !important;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--gold,#C9A84C) 110%, #fff) 0%,
+    var(--gold,#C9A84C) 60%,
+    color-mix(in srgb, var(--gold,#C9A84C) 85%, #000) 100%
+  ) !important;
+  box-shadow:
+    0 4px 16px color-mix(in srgb, var(--gold,#C9A84C) 40%, transparent),
+    0 1px 0 rgba(255,255,255,0.22) inset !important;
+  transition:
+    transform 0.18s cubic-bezier(0.34,1.56,0.64,1),
+    box-shadow 0.2s ease !important;
+}
+.btn:active {
+  transform: scale(0.95) !important;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--gold,#C9A84C) 25%, transparent) !important;
+}
+
+/* Ghost button */
+.btn-ghost {
+  border-radius: 14px !important;
+  border: 1.5px solid rgba(255,255,255,0.14) !important;
+  background: rgba(255,255,255,0.05) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  transition: all 0.2s ease !important;
+}
+.btn-ghost:active {
+  background: rgba(255,255,255,0.10) !important;
+  transform: scale(0.96) !important;
+}
+
+/* Toggle buttons */
+.tog {
+  border-radius: 10px !important;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+.tog.on {
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--accent,#C9A84C) 35%, transparent) !important;
+}
+.tog:active { transform: scale(0.94) !important; }
+
+/* ── Input fields ── */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+textarea {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  border-radius: 12px !important;
+  color: #fff !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+  outline: none !important;
+}
+input:focus,
+textarea:focus {
+  border-color: var(--accent,#C9A84C) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent,#C9A84C) 18%, transparent) !important;
+}
+
+/* ── Day / Plan row tap feedback ── */
+.day-row, .wk-day, .plan-row {
+  border-radius: 12px !important;
+  transition: background 0.18s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+.day-row:active, .wk-day:active, .plan-row:active {
+  transform: scale(0.97) !important;
+}
+
+/* ── Day modal slide-up ── */
+#dayModal > div:last-child {
+  animation: modalSlideUp 0.38s cubic-bezier(0.16,1,0.3,1) !important;
+}
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(48px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Sub-title / section labels ── */
+.sh {
+  font-size: 10px !important;
+  letter-spacing: 0.15em !important;
+  opacity: 0.50 !important;
+}
+
+/* ── Post-workout insight sheet — spring up ── */
+#postWorkoutCard {
+  border-radius: 24px 24px 0 0 !important;
+  backdrop-filter: blur(30px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
+  border-top: 1px solid rgba(255,255,255,0.12) !important;
+}
+
+/* ── Holographic athlete card — smoother float ── */
+@keyframes card-float {
+  0%,100% { transform: translateY(0)    rotate(0deg);   }
+  33%      { transform: translateY(-7px) rotate(0.4deg); }
+  66%      { transform: translateY(-4px) rotate(-0.3deg); }
+}
+
+/* ── Theme keynote overrides keep frosted style ── */
+body.theme-keynote .topbar { backdrop-filter: blur(32px) saturate(200%) !important; -webkit-backdrop-filter: blur(32px) saturate(200%) !important; }
+body.theme-keynote .bnav   { backdrop-filter: blur(32px) saturate(200%) !important; -webkit-backdrop-filter: blur(32px) saturate(200%) !important; }
+body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; border: 1px solid rgba(184,150,90,0.18) !important; }
+
 </style>
 </head>
 <body class="theme-void">
@@ -3127,6 +3368,19 @@ body.theme-keynote .bnav          { background: rgba(245,245,240,0.97) !importan
       <!-- MILEAGE TRACKER + TODAY'S PLAN -->
       <div id="planMileageSummary" style="margin-bottom:10px;"></div>
       <div id="planTodayBox" style="margin-bottom:10px;"></div>
+      <!-- RECALIBRATE BANNER -->
+      <div style="margin-bottom:10px;">
+        <button onclick="showRecalibrationModal()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:20px;">⚡</div>
+            <div style="text-align:left;">
+              <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:16px;letter-spacing:2px;color:var(--gold);">RECALIBRATE TRAINING</div>
+              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:1px;">Find your true week based on fitness + time to Trials</div>
+            </div>
+          </div>
+          <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--gold);opacity:.6;">›</div>
+        </button>
+      </div>
       <!-- FILTER BY PHASE + WEEKS -->
       <div class="card" style="margin-top:0;"><div class="cb">
         <div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--grey);margin-bottom:8px;">FILTER BY PHASE</div>
@@ -3975,6 +4229,17 @@ body.theme-keynote .bnav          { background: rgba(245,245,240,0.97) !importan
           <button class="btn-ghost" style="margin-top:8px;" onclick="replayProductTour();"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align:middle;display:inline-block"><polygon points="6 3 20 12 6 21 6 3"/></svg> REPLAY GUIDED TOUR</button>
         </div></div>
         <div class="sh">INTEGRATIONS</div>
+        <!-- Connect All banner -->
+        <button onclick="showConnectAllWizard()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(100,210,255,.08));border:1px solid rgba(201,168,76,.28);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="font-size:22px;">🔗</div>
+            <div style="text-align:left;">
+              <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:17px;letter-spacing:2px;color:var(--gold);">CONNECT ALL TRAINING</div>
+              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:2px;">Strava · WHOOP · Oura · Peloton · Apple Watch</div>
+            </div>
+          </div>
+          <div style="font-family:'SF Mono',monospace;font-size:20px;color:var(--gold);opacity:.5;">›</div>
+        </button>
         <div class="card"><div class="cb" style="padding:0;" id="integrationsHub"></div></div>
         <!-- World Athletics -->
         <div class="card" style="margin-bottom:10px;">
@@ -9528,6 +9793,224 @@ function renderPlanTodayBox(){
   setTimeout(function(){ if(typeof updateDailyCalTotal==='function') updateDailyCalTotal(); },120);
 }
 
+// ─────────────────────────────────────────────────────────────
+//  TRAINING RECALIBRATION ENGINE
+//  Analyzes actual recent workouts, compares against plan phase
+//  targets, and repositions D.settings.start so that today falls
+//  on the best-fit week — respecting both fitness AND time-to-trials.
+// ─────────────────────────────────────────────────────────────
+
+// Weekly mileage targets per phase (non-deload week, all 7 sessions)
+// Derived from phaseConfig: baseMi*2.55 + reps*0.62 + threshMi*0.80 + longMi + 8.4
+var PHASE_TARGETS = [
+  {phase:1, wks:[1,12],   weeklyMi:38.8, longRun:10.5, name:'Foundation'},
+  {phase:2, wks:[13,28],  weeklyMi:47.8, longRun:14.0, name:'Aerobic Construction'},
+  {phase:3, wks:[29,48],  weeklyMi:52.6, longRun:16.0, name:'Threshold Peak'},
+  {phase:4, wks:[49,68],  weeklyMi:50.0, longRun:15.0, name:'Race Specific'},
+  {phase:5, wks:[69,100], weeklyMi:54.9, longRun:17.0, name:'Championship'},
+  {phase:6, wks:[101,110],weeklyMi:35.9, longRun:10.0, name:'Trials Taper'},
+];
+
+function recalibrateTrainingPlan(){
+  var today = td();
+  var todayMs = parseLocalDate(today).getTime();
+  var eightWeeksAgoMs = todayMs - 56 * 86400000;
+
+  // 1. Gather actual recent run data (last 8 weeks, outdoor runs only)
+  var recentRuns = (D.workouts||[]).filter(function(w){
+    if(!w.date || !w.dist || w.dist < 0.5) return false;
+    var wMs = parseLocalDate(w.date).getTime();
+    var type = _normType(w.type||'run');
+    return wMs >= eightWeeksAgoMs && wMs <= todayMs && (type==='run'||type==='walk');
+  });
+
+  // Group miles by calendar week (0 = this week, 1 = last week, …)
+  var weekBuckets = {};
+  recentRuns.forEach(function(w){
+    var wMs = parseLocalDate(w.date).getTime();
+    var bucket = Math.floor((todayMs - wMs) / (7*86400000));
+    weekBuckets[bucket] = (weekBuckets[bucket]||0) + (w.dist||0);
+  });
+  var activeWeekMiles = Object.values(weekBuckets).filter(function(m){ return m > 1; });
+  var avgWeeklyMiles = activeWeekMiles.length
+    ? Math.round(10 * activeWeekMiles.reduce(function(a,b){return a+b;},0) / activeWeekMiles.length) / 10
+    : 0;
+  var recentLongRun = recentRuns.length
+    ? Math.round(10 * Math.max.apply(null, recentRuns.map(function(w){return w.dist||0;}))) / 10
+    : 0;
+  var dataWeeks = activeWeekMiles.length;
+
+  // 2. Timeline constraint — count weeks until trials
+  var trialsDateStr = (D.settings&&D.settings.compDate) || '2028-04-04';
+  var trialsMs = parseLocalDate(trialsDateStr).getTime();
+  var weeksUntilTrials = Math.max(1, Math.ceil((trialsMs - todayMs) / (7*86400000)));
+  // Where you MUST be on the plan to finish on time
+  var timelineWeek = Math.max(1, Math.min(110, 111 - weeksUntilTrials));
+
+  // 3. Fitness-based phase matching
+  var bestPT = PHASE_TARGETS[0], bestScore = Infinity;
+  if(avgWeeklyMiles > 0){
+    PHASE_TARGETS.forEach(function(pt){
+      var miScore   = Math.abs(pt.weeklyMi - avgWeeklyMiles);
+      var longScore = recentLongRun > 0 ? Math.abs(pt.longRun - recentLongRun) * 0.6 : 0;
+      var score = miScore + longScore;
+      if(score < bestScore){ bestScore = score; bestPT = pt; }
+    });
+  }
+  // Mid-point of the fitness-appropriate phase
+  var fitnessWeek = Math.round((bestPT.wks[0] + bestPT.wks[1]) / 2);
+
+  // 4. Blend fitness + timeline (55% timeline, 45% fitness)
+  //    Never exceed timelineWeek by more than 3 (we can't skip ahead of schedule)
+  //    Never go below 1
+  var recommendedWeek = timelineWeek; // fallback if no data
+  if(avgWeeklyMiles > 0){
+    var blended = Math.round(0.55 * timelineWeek + 0.45 * fitnessWeek);
+    recommendedWeek = Math.max(1, Math.min(Math.min(110, timelineWeek + 3), blended));
+  }
+
+  // 5. Compute new start date so getWk(today) === recommendedWeek
+  //    floor((today - start) / 7) + 1 = recommendedWeek
+  //    → start = today − (recommendedWeek−1)*7 days, snapped to Monday
+  var newStartMs  = todayMs - (recommendedWeek - 1) * 7 * 86400000;
+  var newStartDt  = new Date(newStartMs);
+  var dow = newStartDt.getDay(); // 0=Sun
+  newStartDt.setDate(newStartDt.getDate() + (1 - dow + (dow===0?-6:0)));
+  var newStart = newStartDt.toISOString().split('T')[0];
+
+  var currentWeek  = getWk(today);
+  var currentPhase = getPhase(currentWeek);
+  var newPhase     = getPhase(recommendedWeek);
+
+  // Describe the gap
+  var weekDelta = recommendedWeek - currentWeek;
+  var gapText = weekDelta === 0 ? 'No change needed'
+    : weekDelta > 0 ? 'Move forward ' + weekDelta + ' week' + (Math.abs(weekDelta)>1?'s':'')
+    : 'Move back ' + Math.abs(weekDelta) + ' week' + (Math.abs(weekDelta)>1?'s':'');
+
+  return {
+    today, currentWeek, currentPhase, recommendedWeek, newPhase,
+    newStart, oldStart: (D.settings&&D.settings.start)||'2026-02-23',
+    avgWeeklyMiles, recentLongRun, weeksUntilTrials,
+    timelineWeek, fitnessWeek, dataWeeks, weekDelta, gapText,
+    phaseTarget: bestPT,
+  };
+}
+
+function applyRecalibration(newStart){
+  D.settings.start = newStart;
+  save();
+  // Re-render all plan-dependent UI
+  try{ renderPlanTodayBox(); }catch(e){}
+  try{ filtPlan('all', document.querySelector('#phFilter .tog')); }catch(e){}
+  try{ setTimeout(renderPlanMileage, 80); }catch(e){}
+  try{ renderDash(); }catch(e){}
+  showSyncToast('Training plan recalibrated — now on Week '+getWk(td()), 'green');
+}
+
+function showRecalibrationModal(){
+  var r = recalibrateTrainingPlan();
+
+  // Upcoming 3 sessions at new position
+  function sessionRow(label, plan){
+    var typeCol = {rest:'var(--grey)',easy:'var(--green)',long:'var(--blue)',threshold:'var(--red)'}[plan.type]||'var(--gold)';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);">'
+      +'<div style="width:3px;height:32px;border-radius:2px;background:'+typeCol+';flex-shrink:0;"></div>'
+      +'<div><div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.1em;">'+label+'</div>'
+      +'<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:15px;color:var(--white);letter-spacing:.05em;">'+plan.name+'</div>'
+      +'<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:'+typeCol+';">'+(plan.mi||0)+'mi · '+(plan.zone||'—')+'</div>'
+      +'</div></div>';
+  }
+  // Get next 3 training days (skip rest)
+  var upcomingSessions = [];
+  var checkDate = new Date(r.today+'T12:00:00');
+  // Temporarily set the new start to preview upcoming sessions
+  var savedStart = D.settings.start;
+  D.settings.start = r.newStart;
+  for(var i=1; i<=10 && upcomingSessions.length<3; i++){
+    checkDate.setDate(checkDate.getDate() + 1);
+    var ds = checkDate.toISOString().split('T')[0];
+    var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var plan = getDayPlan(ds);
+    if(plan.type !== 'rest') upcomingSessions.push({label: dayNames[checkDate.getDay()]+' · '+ds, plan});
+  }
+  D.settings.start = savedStart; // restore until user confirms
+
+  var noData = r.dataWeeks === 0;
+  var noChange = r.weekDelta === 0;
+
+  var modal = document.createElement('div');
+  modal.id = 'recalModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:99995;background:rgba(0,0,0,0.88);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);padding:0 0 env(safe-area-inset-bottom,0px);';
+
+  var accentCol = noChange ? 'var(--green)' : 'var(--gold)';
+
+  var html = '<div style="width:100%;max-width:480px;background:#0D0D18;border-radius:24px 24px 0 0;border-top:1px solid rgba(255,255,255,.12);max-height:92vh;overflow-y:auto;padding:0 0 24px;">';
+  // Handle bar
+  html += '<div style="display:flex;justify-content:center;padding:12px 0 4px;"><div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);"></div></div>';
+  // Header
+  html += '<div style="padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,.07);">';
+  html += '<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:26px;letter-spacing:2px;color:var(--white);">RECALIBRATE PLAN</div>';
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);margin-top:3px;letter-spacing:.08em;">Find your true position in the 110-week program</div>';
+  html += '</div>';
+
+  // Current status
+  html += '<div style="padding:16px 20px;">';
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;">Current Position</div>';
+  html += '<div style="display:flex;gap:12px;margin-bottom:14px;">';
+  html += _rcStatBox('WK '+r.currentWeek, r.currentPhase.name, 'var(--grey)');
+  html += _rcStatBox((r.avgWeeklyMiles||0)+' mi/wk', r.dataWeeks+' week'+(r.dataWeeks!==1?'s':'')+' of data', r.avgWeeklyMiles>0?'var(--blue)':'var(--grey)');
+  html += _rcStatBox(r.recentLongRun+' mi', 'Recent long run', 'var(--orange)');
+  html += '</div>';
+
+  if(noData){
+    html += '<div style="background:rgba(255,160,0,.08);border:1px solid rgba(255,160,0,.2);border-radius:12px;padding:12px 14px;font-family:\'SF Mono\',monospace;font-size:11px;color:rgba(255,160,0,.9);line-height:1.7;margin-bottom:14px;">No recent run data found. Connect Strava or log some workouts first for the best recalibration. Proceeding with timeline-only positioning.</div>';
+  }
+
+  // Recommendation
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;">Recommendation</div>';
+  html += '<div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:16px;padding:16px;margin-bottom:14px;">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">';
+  html += '<div><div style="font-family:Impact,Arial Narrow,sans-serif;font-size:36px;color:'+accentCol+';line-height:1;letter-spacing:1px;">WEEK '+r.recommendedWeek+'</div>';
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:var(--gold);margin-top:3px;">'+r.newPhase.name.toUpperCase()+'</div></div>';
+  html += '<div style="text-align:right;"><div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);">'+r.weeksUntilTrials+' wks to Trials</div>';
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:'+(r.weekDelta>0?'var(--green)':r.weekDelta<0?'var(--orange)':'var(--grey)')+';">'+r.gapText+'</div></div>';
+  html += '</div>';
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);line-height:1.8;">';
+  html += '📊 Fitness signals → Phase ' + r.phaseTarget.phase + ' (~'+r.phaseTarget.weeklyMi+'mi/wk target)<br>';
+  html += '📅 Timeline position → Week ' + r.timelineWeek + ' ('+r.weeksUntilTrials+' wks left)<br>';
+  html += '⚡ Blended recommendation → <strong style="color:var(--white);">Week '+r.recommendedWeek+'</strong>';
+  html += '</div></div>';
+
+  // Upcoming sessions preview
+  if(upcomingSessions.length > 0){
+    html += '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px;">Your Next Sessions at Week '+r.recommendedWeek+'</div>';
+    html += '<div style="background:rgba(255,255,255,.025);border-radius:12px;padding:0 12px;margin-bottom:16px;">';
+    upcomingSessions.forEach(function(s){ html += sessionRow(s.label, s.plan); });
+    html += '</div>';
+  }
+
+  // Action buttons
+  if(!noChange){
+    html += '<button onclick="applyRecalibration(\''+r.newStart+'\');document.getElementById(\'recalModal\').remove();" style="width:100%;padding:15px;background:var(--gold);color:#000;font-family:Impact,Arial Narrow,sans-serif;font-size:18px;letter-spacing:3px;border:none;border-radius:14px;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 20px rgba(201,168,76,.35);">APPLY — MOVE TO WEEK '+r.recommendedWeek+'</button>';
+  } else {
+    html += '<div style="text-align:center;padding:12px;font-family:\'SF Mono\',monospace;font-size:12px;color:var(--green);margin-bottom:10px;">✓ Already on the correct week</div>';
+  }
+  html += '<button onclick="document.getElementById(\'recalModal\').remove();" style="width:100%;padding:13px;background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--grey);font-family:\'SF Mono\',monospace;font-size:13px;border-radius:14px;cursor:pointer;">Cancel</button>';
+
+  html += '</div></div>';
+  modal.innerHTML = html;
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+
+function _rcStatBox(val, label, color){
+  return '<div style="flex:1;background:rgba(255,255,255,.04);border-radius:12px;padding:10px 12px;text-align:center;">'
+    +'<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:18px;color:'+(color||'var(--white)')+';letter-spacing:.5px;line-height:1;">'+val+'</div>'
+    +'<div style="font-family:\'SF Mono\',monospace;font-size:9px;color:var(--grey);margin-top:3px;letter-spacing:.08em;">'+label+'</div>'
+    +'</div>';
+}
+
 function buildNutritionPlan(plan){
   const cal = plan.cal || 2600;
   const type = plan.type || 'easy';
@@ -13393,15 +13876,34 @@ function testServerNow(){
 
   xhr.ontimeout = function(){
     setServerStatusUI('TIMEOUT','red');
-    showConnectStatus('Server timed out — Railway may be cold starting. Wait 30 sec and tap TEST → again.','red');
+    _showDirectOAuthStatus();
   };
 
   xhr.onerror = function(){
     setServerStatusUI(' OFFLINE','red');
-    showConnectStatus('Cannot reach server. Check the URL is correct.','red');
+    _showDirectOAuthStatus();
   };
 
   xhr.send();
+}
+
+function _showDirectOAuthStatus(){
+  var parts = [];
+  var stravaToken = localStorage.getItem('gedyon_strava_access_token') || localStorage.getItem('gedyon_strava_token');
+  var whoopToken  = localStorage.getItem('gedyon_whoop_direct_token') || localStorage.getItem('gedyon_whoop_token');
+  var pelotonCreds = localStorage.getItem('gedyon_peloton_creds');
+  var ouraToken   = localStorage.getItem('gedyon_oura_token');
+  if(stravaToken) parts.push('Strava ✓');
+  if(whoopToken)  parts.push('WHOOP ✓');
+  if(pelotonCreds) parts.push('Peloton ✓');
+  if(ouraToken)   parts.push('Oura ✓');
+  if(parts.length){
+    showConnectStatus('Server offline but direct connections active: ' + parts.join(' · '), 'gold');
+  } else {
+    showConnectStatus('Server offline — tap RUN CHECK below to see connection status or use CONNECT buttons to link your accounts', 'gold');
+  }
+  // Trigger the full diagnostic so the cards update
+  if(typeof runDiagnostic === 'function') setTimeout(runDiagnostic, 200);
 }
 
 async function fetchAndShowServerStatus(userId){
@@ -13512,15 +14014,21 @@ const WHOOP_API_BASE     = 'https://api.prod.whoop.com/developer/v1';
 const WHOOP_SCOPES       = 'read:recovery read:sleep read:workout read:profile read:cycles offline';
 
 function whoopConnectServer(){
+  // Always use direct OAuth — popup windows get blocked by browsers
+  const clientId = localStorage.getItem(WHOOP_CLIENT_ID_KEY || 'gedyon_whoop_client_id');
+  if(clientId){ whoopDirectConnect(); return; }
+  whoopDirectSetup();
+  // Legacy server popup path kept below (unreachable but preserved for reference)
+  if(false){
   const srv = getServerUrl();
   if(!srv){ showConnectStatus('Set your server URL and tap TEST → first','red'); return; }
   const btn = document.getElementById('whoopConnBtn');
-  if(btn) btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 00-.586-1.414L12 12l-4.414 4.414A2 2 0 007 17.828V22"/><path d="M7 2v4.172a2 2 0 00.586 1.414L12 12l4.414-4.414A2 2 0 0017 6.172V2"/></svg> OPENING...';
+  if(btn) btn.innerHTML = 'OPENING...';
   const popup = window.open(srv + '/auth/whoop', 'WHOOP Login', 'width=500,height=700,scrollbars=yes');
-  if(!popup){ 
-    showConnectStatus('Popup blocked! Allow popups for this page in your browser settings, then try again.','red');
+  if(!popup){
+    showConnectStatus('Popup blocked! Use direct OAuth instead.','red');
     if(btn) btn.textContent = 'CONNECT WHOOP';
-    return; 
+    return;
   }
   window.addEventListener('message', function handler(e){
     if(e.data && e.data.type === 'GEDYON_AUTH_SUCCESS' && e.data.service === 'whoop'){
@@ -13541,6 +14049,7 @@ function whoopConnectServer(){
       btn.textContent = 'CONNECT WHOOP'; btn.style.opacity = '1';
     }
   }, 3000);
+  } // end if(false)
 }
 
 
@@ -13980,38 +14489,55 @@ async function wakeServer(){
   }
 }
 function stravaConnectServer(){
-  // Try direct Strava OAuth first (no server needed)
+  // Always use direct OAuth — popup windows are blocked by browsers
+  // and the Railway server may be offline
   const clientId = localStorage.getItem('gedyon_strava_client_id');
-  if(clientId){
-    stravaDirectConnect();
-    return;
-  }
-  // Fallback to server-based auth
-  const srv = getServerUrl();
-  if(!srv){
-    // Prompt for direct Strava setup
-    stravaDirectSetup();
-    return;
-  }
-  const popup = window.open(srv + '/auth/strava', 'Strava Login', 'width=500,height=700,scrollbars=yes');
-  window.addEventListener('message', function handler(e){
-    if(e.data && e.data.type === 'GEDYON_AUTH_SUCCESS' && e.data.service === 'strava'){
-      window.removeEventListener('message', handler);
-      localStorage.setItem('gedyon_strava_server_user_id', e.data.userId);
-      loadServerWorkouts(e.data.userId);
-      alert('Strava connected! Your activities will sync automatically.');
-    }
-  });
+  if(clientId){ stravaDirectConnect(); return; }
+  stravaDirectSetup();
 }
 
 // ═══ DIRECT STRAVA API SYNC (no server needed) ═══
 function stravaDirectSetup(){
-  const clientId = prompt('Enter your Strava Client ID\n\n(Get it from strava.com/settings/api)\nSet "Authorization Callback Domain" to: ' + window.location.hostname);
-  if(!clientId) return;
-  const clientSecret = prompt('Enter your Strava Client Secret\n\n(From the same strava.com/settings/api page)');
-  if(!clientSecret) return;
+  // Use a proper modal instead of prompt() which is blocked in secure contexts
+  var existing = document.getElementById('stravaSetupModal');
+  if(existing) existing.remove();
+  var redirectUri = window.location.origin + window.location.pathname;
+  var modal = document.createElement('div');
+  modal.id = 'stravaSetupModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:99997;background:rgba(0,0,0,0.92);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(10px);';
+  modal.innerHTML = '<div style="width:100%;max-width:480px;background:#0D0D18;border-radius:24px 24px 0 0;border-top:1px solid rgba(252,76,2,.3);padding:24px 20px calc(28px + env(safe-area-inset-bottom,0px));">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">'
+    +'<div style="font-size:28px;">🟠</div>'
+    +'<div><div style="font-family:Impact,Arial Narrow,sans-serif;font-size:24px;letter-spacing:2px;color:#FC4C02;">CONNECT STRAVA</div>'
+    +'<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);margin-top:2px;">Direct OAuth — no server required</div></div>'
+    +'</div>'
+    +'<div style="background:rgba(252,76,2,.07);border:1px solid rgba(252,76,2,.2);border-radius:12px;padding:12px 14px;margin:14px 0;font-family:\'SF Mono\',monospace;font-size:11px;color:rgba(252,76,2,.9);line-height:1.9;">'
+    +'1. Go to <strong>strava.com/settings/api</strong><br>'
+    +'2. Create an app (or use existing)<br>'
+    +'3. Set <strong>Authorization Callback Domain</strong> to: <strong style="color:#fff;">'+window.location.hostname+'</strong><br>'
+    +'4. Copy your Client ID and Client Secret below'
+    +'</div>'
+    +'<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.1em;margin-bottom:6px;">CLIENT ID</div>'
+    +'<input id="stravaClientIdInput" type="text" placeholder="e.g. 12345" autocomplete="off" style="width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(252,76,2,.3);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:14px;margin-bottom:12px;box-sizing:border-box;outline:none;">'
+    +'<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.1em;margin-bottom:6px;">CLIENT SECRET</div>'
+    +'<input id="stravaClientSecretInput" type="password" placeholder="e.g. abc123def456..." autocomplete="off" style="width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(252,76,2,.3);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:14px;margin-bottom:16px;box-sizing:border-box;outline:none;">'
+    +'<button onclick="_stravaSetupConfirm()" style="width:100%;padding:14px;background:#FC4C02;color:#fff;font-family:Impact,Arial Narrow,sans-serif;font-size:18px;letter-spacing:3px;border:none;border-radius:14px;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 18px rgba(252,76,2,.35);">AUTHORIZE WITH STRAVA →</button>'
+    +'<button onclick="document.getElementById(\'stravaSetupModal\').remove();" style="width:100%;padding:12px;background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--grey);font-family:\'SF Mono\',monospace;font-size:12px;border-radius:12px;cursor:pointer;">Cancel</button>'
+    +'</div>';
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+  setTimeout(function(){ var el=document.getElementById('stravaClientIdInput'); if(el)el.focus(); }, 150);
+}
+
+function _stravaSetupConfirm(){
+  var clientId = (document.getElementById('stravaClientIdInput')||{}).value||'';
+  var clientSecret = (document.getElementById('stravaClientSecretInput')||{}).value||'';
+  if(!clientId.trim()){ showSyncToast('Enter your Strava Client ID','red'); return; }
+  if(!clientSecret.trim()){ showSyncToast('Enter your Strava Client Secret','red'); return; }
   localStorage.setItem('gedyon_strava_client_id', clientId.trim());
   localStorage.setItem('gedyon_strava_client_secret', clientSecret.trim());
+  var m = document.getElementById('stravaSetupModal');
+  if(m) m.remove();
   stravaDirectConnect();
 }
 
@@ -14238,11 +14764,34 @@ const WHOOP_CLIENT_SECRET_KEY = 'gedyon_whoop_client_secret';
 const WHOOP_API = 'https://api.prod.whoop.com';
 
 function whoopDirectSetup(){
-  const clientId = prompt('Enter your WHOOP Developer Client ID\n\nGet one at developer.whoop.com → Create App\nSet redirect URI to:\n' + location.origin + location.pathname);
-  if(!clientId) return;
+  var existingModal = document.getElementById('whoopSetupModal');
+  if(existingModal) existingModal.remove();
+  var redirectUri = location.origin + location.pathname;
+  var modal = document.createElement('div');
+  modal.id = 'whoopSetupModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);';
+  modal.innerHTML = '<div style="background:rgba(30,30,40,.97);border:1.5px solid rgba(180,130,60,.4);border-radius:20px;padding:28px 24px;width:min(440px,92vw);box-shadow:0 20px 60px rgba(0,0,0,.6);">'
+    + '<div style="font-size:1.4rem;font-weight:800;color:var(--gold);margin-bottom:6px;letter-spacing:.5px;">⚡ Connect WHOOP</div>'
+    + '<div style="color:rgba(255,255,255,.55);font-size:.82rem;margin-bottom:18px;line-height:1.5;">'
+    + 'Go to <strong style="color:var(--gold);">developer.whoop.com</strong> → Create App<br>'
+    + 'Set redirect URI to:<br><code style="background:rgba(255,255,255,.08);padding:2px 7px;border-radius:5px;font-size:.78rem;word-break:break-all;">' + redirectUri + '</code></div>'
+    + '<input id="whoopClientIdInput" placeholder="Client ID" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;padding:11px 14px;font-size:.92rem;margin-bottom:10px;outline:none;">'
+    + '<input id="whoopClientSecretInput" placeholder="Client Secret" type="password" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;padding:11px 14px;font-size:.92rem;margin-bottom:18px;outline:none;">'
+    + '<div style="display:flex;gap:10px;">'
+    + '<button onclick="_whoopSetupConfirm()" style="flex:1;background:linear-gradient(135deg,#B8860B,#DAA520);color:#000;border:none;border-radius:10px;padding:12px;font-weight:800;font-size:.95rem;cursor:pointer;">CONNECT →</button>'
+    + '<button onclick="document.getElementById(\'whoopSetupModal\').remove()" style="padding:12px 18px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.12);border-radius:10px;cursor:pointer;font-size:.9rem;">Cancel</button>'
+    + '</div></div>';
+  document.body.appendChild(modal);
+  setTimeout(function(){ var el=document.getElementById('whoopClientIdInput'); if(el) el.focus(); }, 80);
+}
+
+function _whoopSetupConfirm(){
+  var clientId = (document.getElementById('whoopClientIdInput')||{}).value||'';
+  var clientSecret = (document.getElementById('whoopClientSecretInput')||{}).value||'';
+  if(!clientId.trim()){ showSyncToast('Enter your WHOOP Client ID','red'); return; }
   localStorage.setItem(WHOOP_CLIENT_ID_KEY, clientId.trim());
-  const clientSecret = prompt('Enter your WHOOP Client Secret:');
-  if(clientSecret) localStorage.setItem(WHOOP_CLIENT_SECRET_KEY, clientSecret.trim());
+  if(clientSecret.trim()) localStorage.setItem(WHOOP_CLIENT_SECRET_KEY, clientSecret.trim());
+  var m = document.getElementById('whoopSetupModal'); if(m) m.remove();
   whoopDirectConnect();
 }
 
@@ -14592,7 +15141,10 @@ async function autoSyncOnLaunch(){
     const ouraToken = localStorage.getItem('gedyon_oura_token');
     if(ouraToken) promises.push(syncOuraData().then(()=>{ renderRaceReadyCard(); }));
     await Promise.allSettled(promises);
-    console.log('[AUTO-SYNC] Complete');
+    // Final cross-source dedup after all services have reported in
+    deduplicateWorkouts();
+    save();
+    console.log('[AUTO-SYNC] Complete —', (D.workouts||[]).length, 'unique workouts after dedup');
   } catch(e){
     console.warn('[AUTO-SYNC] Error:', e);
   }
@@ -14629,61 +15181,128 @@ function showSyncToast(msg, color='gold'){
   t._timeout = setTimeout(()=>{ t.style.opacity='0'; }, 4000);
 }
 
+// Source priority for dedup: higher = preferred when same run detected
+var SOURCE_PRIORITY = {strava:10, garmin:9, apple_health:7, whoop:5, oura:4, peloton:3, manual:1};
+function _srcPriority(src){ return SOURCE_PRIORITY[(src||'').toLowerCase()] || 2; }
+
+// Normalise activity type to a canonical string for cross-source comparison
+function _normType(t){
+  if(!t) return 'run';
+  var s = t.toLowerCase();
+  if(/run|jog/.test(s)) return 'run';
+  if(/ride|cycling|bike|peloton/.test(s)) return 'ride';
+  if(/swim/.test(s)) return 'swim';
+  if(/walk/.test(s)) return 'walk';
+  if(/strength|lift|gym|weight/.test(s)) return 'strength';
+  return s;
+}
+
+// Detect whether two workout records represent the same physical session.
+// Returns true when they clearly overlap — prevents double-counting.
+function _isSameWorkout(a, b){
+  if(!a.date || !b.date || a.date !== b.date) return false;
+  // Same source ID always wins
+  if(a.stravaId  && b.stravaId  && a.stravaId  === b.stravaId)  return true;
+  if(a.whoopId   && b.whoopId   && a.whoopId   === b.whoopId)   return true;
+  if(a.pelotonId && b.pelotonId && a.pelotonId === b.pelotonId) return true;
+  if(a.id        && b.id        && a.id        === b.id)        return true;
+  // Same source — different IDs means genuinely different sessions (e.g. two runs)
+  if(a.source && b.source && a.source === b.source) return false;
+  // Cross-source fuzzy match: type + duration proximity + optional distance proximity
+  var typeA = _normType(a.type), typeB = _normType(b.type);
+  if(typeA !== typeB) return false;
+  var durA = a.dur || a.duration || 0;
+  var durB = b.dur || b.duration || 0;
+  // Must both have meaningful duration
+  if(durA < 2 || durB < 2) return false;
+  // Duration within 15 min (covers autoPause, warmup walks, slight clock differences)
+  if(Math.abs(durA - durB) > 15) return false;
+  // If both have distance, they must also be within 20% or 0.5 mi of each other
+  var distA = a.dist || 0, distB = b.dist || 0;
+  if(distA > 0.1 && distB > 0.1){
+    var ratio = Math.min(distA,distB) / Math.max(distA,distB);
+    var absDiff = Math.abs(distA - distB);
+    if(ratio < 0.80 && absDiff > 0.5) return false;
+  }
+  return true;
+}
+
+// Merge two workout records: winner keeps GPS/distance data; loser donates HR/HRV/calories.
+function _mergeWorkoutData(winner, donor){
+  // Donor can contribute HR / calorie / strain data that winner may lack
+  if(donor.avgHR  && !winner.avgHR)  { winner.avgHR = donor.avgHR; winner.hr = donor.avgHR; }
+  if(donor.maxHR  && !winner.maxHR)  { winner.maxHR = donor.maxHR; winner.maxHr = donor.maxHR; }
+  if(donor.calories && !winner.calories) winner.calories = donor.calories;
+  if(donor.strain && !winner.strain)  winner.strain = donor.strain;
+  if(donor.elevation && !winner.elevation) winner.elevation = donor.elevation;
+  // GPS route: prefer whichever source has it (usually Strava)
+  if(!winner.polyline && donor.polyline) winner.polyline = donor.polyline;
+  if(!winner.startLat && donor.startLat) { winner.startLat = donor.startLat; winner.startLng = donor.startLng; }
+  // Tag which sources contributed
+  if(!winner.sources) winner.sources = [winner.source];
+  if(donor.source && !winner.sources.includes(donor.source)) winner.sources.push(donor.source);
+  winner.hr = winner.avgHR || winner.hr || 0;
+}
+
+// Convert raw server object into a normalised workout record
+function _normaliseWorkout(sw){
+  var rawDist = sw.dist || 0;
+  if(rawDist > 100) rawDist = rawDist / 1609.34; // meters → miles
+  return {
+    id:       sw.id || (Date.now() + Math.random()),
+    stravaId: sw.stravaId  || null,
+    whoopId:  sw.whoopId   || null,
+    pelotonId:sw.pelotonId || null,
+    date:     sw.date,
+    name:     sw.name || '',
+    dist:     Math.round(rawDist * 100) / 100,
+    dur:      sw.duration || sw.dur || 0,
+    duration: sw.duration || sw.dur || 0,
+    pace:     sw.pace  || null,
+    avgHR:    sw.avgHR || 0,
+    maxHR:    sw.maxHR || 0,
+    maxHr:    sw.maxHR || sw.maxHr || 0,
+    hr:       sw.avgHR || sw.hr || 0,
+    calories: sw.calories  || 0,
+    elevation:sw.elevation || 0,
+    output:   sw.output || 0,
+    strain:   sw.strain || 0,
+    source:   sw.source || 'unknown',
+    sources:  [sw.source || 'unknown'],
+    polyline: sw.polyline || sw.summary_polyline || sw.map_polyline || null,
+    type:     sw.type || sw.sport_type || 'run',
+    startLat: sw.start_latlng ? sw.start_latlng[0] : null,
+    startLng: sw.start_latlng ? sw.start_latlng[1] : null,
+  };
+}
+
 function mergeServerWorkouts(serverWorkouts){
   if(!D.workouts) D.workouts = [];
-  serverWorkouts.forEach(sw => {
-    const exists = D.workouts.find(w =>
-      (sw.stravaId && w.stravaId === sw.stravaId) ||
-      (sw.whoopId  && w.whoopId  === sw.whoopId)  ||
-      (sw.pelotonId&& w.pelotonId=== sw.pelotonId)||
-      (sw.id       && w.id       === sw.id) ||
-      // Cross-service dedup: same date + similar duration (within 5 min)
-      (sw.date && w.date === sw.date && w.source !== sw.source &&
-       Math.abs((w.dur||w.duration||0) - (sw.duration||sw.dur||0)) < 5 &&
-       (w.dur||w.duration||0) > 0 && (sw.duration||sw.dur||0) > 0)
-    );
-    if(!exists){  // accept all server workouts regardless of source
-      // Convert meters to miles if dist looks like meters (>100 = definitely meters, not miles)
-      var rawDist = sw.dist || 0;
-      if(rawDist > 100) rawDist = rawDist / 1609.34;
-      D.workouts.unshift({
-        id:       sw.id || Date.now() + Math.random(),
-        stravaId: sw.stravaId,
-        whoopId:  sw.whoopId,
-        pelotonId:sw.pelotonId,
-        date:     sw.date,
-        name:     sw.name,
-        dist:     Math.round(rawDist * 100) / 100,
-        dur:      sw.duration || sw.dur || 0,
-        duration: sw.duration || sw.dur || 0,
-        pace:     sw.pace || null,
-        avgHR:    sw.avgHR || 0,
-        maxHR:    sw.maxHR || 0,
-        maxHr:    sw.maxHR || sw.maxHr || 0,
-        calories: sw.calories || 0,
-        elevation:sw.elevation || 0,
-        output:   sw.output || 0,
-        strain:   sw.strain || 0,
-        source:   sw.source,
-        hr:       sw.avgHR || sw.hr || 0,
-        polyline: sw.polyline || sw.summary_polyline || sw.map_polyline || null,
-        type:     sw.type || sw.sport_type || null,
-        startLat: sw.start_latlng ? sw.start_latlng[0] : null,
-        startLng: sw.start_latlng ? sw.start_latlng[1] : null,
-      });
-    } else if(exists) {
-      // Update existing with richer server data
-      if(sw.avgHR && !exists.avgHR) exists.avgHR = sw.avgHR;
-      if(sw.maxHR && !exists.maxHR) { exists.maxHR = sw.maxHR; exists.maxHr = sw.maxHR; }
-      if(sw.dist  && !exists.dist)  exists.dist  = sw.dist;
-      if(sw.pace  && !exists.pace)  exists.pace  = sw.pace;
-      if(sw.calories && !exists.calories) exists.calories = sw.calories;
-      if((sw.duration||sw.dur) && !exists.dur) { exists.dur = sw.duration||sw.dur; exists.duration = exists.dur; }
-      if((sw.polyline||sw.summary_polyline) && !exists.polyline) exists.polyline = sw.polyline||sw.summary_polyline;
-      if(sw.type && !exists.type) exists.type = sw.type;
-      exists.hr = exists.avgHR || exists.hr || 0;
+  serverWorkouts.forEach(function(sw){
+    var existing = null;
+    for(var i=0; i<D.workouts.length; i++){
+      if(_isSameWorkout(D.workouts[i], sw)){ existing = D.workouts[i]; break; }
+    }
+    if(!existing){
+      D.workouts.unshift(_normaliseWorkout(sw));
+    } else {
+      // Decide which record is the authority
+      var incomingPriority = _srcPriority(sw.source);
+      var existingPriority = _srcPriority(existing.source);
+      if(incomingPriority > existingPriority){
+        // Incoming wins: update key fields, then let existing donate its HR/calories
+        var donor = Object.assign({}, existing);
+        Object.assign(existing, _normaliseWorkout(sw));
+        _mergeWorkoutData(existing, donor);
+      } else {
+        // Existing wins: let incoming donate supplemental data
+        _mergeWorkoutData(existing, _normaliseWorkout(sw));
+      }
     }
   });
+
+  // Final dedup pass — catches any duplicates that snuck in across multiple sync calls
+  deduplicateWorkouts();
   autoScoreAllWorkouts();
 
   // Post-workout analysis: trigger for any new today's workout with WHOOP data
@@ -14697,6 +15316,36 @@ function mergeServerWorkouts(serverWorkouts){
       }
     }
   } catch(e){}
+}
+
+// Remove duplicate workout entries that crept in across multiple sync calls.
+// Keeps the highest-priority source's record and merges supplemental data.
+function deduplicateWorkouts(){
+  if(!D.workouts || D.workouts.length < 2) return;
+  var kept = [];
+  D.workouts.forEach(function(wo){
+    var match = null;
+    for(var i=0; i<kept.length; i++){
+      if(_isSameWorkout(kept[i], wo)){ match = kept[i]; break; }
+    }
+    if(!match){
+      kept.push(wo);
+    } else {
+      // Merge into whichever has higher source priority
+      if(_srcPriority(wo.source) > _srcPriority(match.source)){
+        var donor = Object.assign({}, match);
+        Object.assign(match, wo);
+        _mergeWorkoutData(match, donor);
+      } else {
+        _mergeWorkoutData(match, wo);
+      }
+    }
+  });
+  if(kept.length !== D.workouts.length){
+    var removed = D.workouts.length - kept.length;
+    console.log('[DEDUP] Removed', removed, 'duplicate workout(s) across sources (Strava/Apple Watch/WHOOP)');
+    D.workouts = kept;
+  }
 }
 
 function autoScoreAllWorkouts(){
@@ -18213,7 +18862,234 @@ function buildEliasContext(){
 // ═══════════════════════════════════════════════════════
 // INTEGRATIONS HUB
 // ═══════════════════════════════════════════════════════
-function checkIntegrationStatuses(){return{appleHealth:!!localStorage.getItem('gedyon_apple_health_connected'),garmin:!!localStorage.getItem('gedyon_garmin_token'),strava:!!localStorage.getItem('gedyon_strava_token'),whoop:!!localStorage.getItem('gedyon_whoop_token'),oura:!!localStorage.getItem('gedyon_oura_token'),mfp:!!localStorage.getItem('gedyon_mfp_token')};}
+// ─────────────────────────────────────────────────────────────
+//  CONNECT ALL WIZARD
+//  Step-by-step guided flow to connect every training source.
+//  Tries the Railway server first (no API keys needed), falls
+//  back to direct OAuth / PAT with clear instructions.
+// ─────────────────────────────────────────────────────────────
+
+var _CAW_STEP = 0;
+var _CAW_SERVER_ALIVE = null; // null=unknown, true=alive, false=dead
+
+var CAW_STEPS = [
+  {key:'strava',  label:'Strava',       emoji:'🟠', color:'#FC4C02', desc:'GPS runs · Routes · Pace'},
+  {key:'whoop',   label:'WHOOP',        emoji:'🟢', color:'#00F19F', desc:'Recovery · Strain · Sleep'},
+  {key:'oura',    label:'Oura Ring',    emoji:'🟣', color:'#A78BFA', desc:'Readiness · HRV · Sleep stages'},
+  {key:'peloton', label:'Peloton',      emoji:'⚫', color:'#D4FF00', desc:'Indoor rides · Output · Cadence'},
+  {key:'apple',   label:'Apple Watch',  emoji:'🍎', color:'#FF3B5C', desc:'Steps · Calories · Heart rate (iPhone)'},
+];
+
+async function _cawPingServer(){
+  if(_CAW_SERVER_ALIVE !== null) return _CAW_SERVER_ALIVE;
+  try {
+    var r = await Promise.race([
+      fetch(OTA_SERVER + '/', {method:'GET'}),
+      new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 5000); })
+    ]);
+    _CAW_SERVER_ALIVE = r.ok || r.status < 500;
+  } catch(e){ _CAW_SERVER_ALIVE = false; }
+  return _CAW_SERVER_ALIVE;
+}
+
+function _cawIsConnected(key){
+  var st = checkIntegrationStatuses();
+  if(key==='strava')  return st.strava;
+  if(key==='whoop')   return st.whoop;
+  if(key==='oura')    return st.oura;
+  if(key==='peloton') return st.peloton;
+  if(key==='apple')   return st.appleHealth;
+  return false;
+}
+
+function showConnectAllWizard(step){
+  _CAW_STEP = (typeof step==='number') ? step : 0;
+  var modal = document.getElementById('cawModal');
+  if(modal) modal.remove();
+
+  var st = CAW_STEPS[_CAW_STEP];
+  if(!st){ _cawDone(); return; }
+
+  var connected = _cawIsConnected(st.key);
+  var total = CAW_STEPS.length;
+
+  modal = document.createElement('div');
+  modal.id = 'cawModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:99996;background:rgba(0,0,0,0.92);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(10px);';
+
+  // Progress dots
+  var dots = CAW_STEPS.map(function(s,i){
+    var active = i===_CAW_STEP;
+    var done = _cawIsConnected(s.key);
+    var col = done?'#30D158':active?'var(--gold)':'rgba(255,255,255,.2)';
+    return '<div style="width:'+(active?'20':'8')+'px;height:8px;border-radius:4px;background:'+col+';transition:all .3s;"></div>';
+  }).join('');
+
+  var html = '<div style="width:100%;max-width:480px;background:#0D0D18;border-radius:24px 24px 0 0;border-top:1px solid rgba(255,255,255,.12);padding:0 0 calc(24px + env(safe-area-inset-bottom,0px));">';
+  // Handle
+  html += '<div style="display:flex;justify-content:center;padding:12px 0 0;"><div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);"></div></div>';
+  // Header
+  html += '<div style="padding:16px 20px 0;display:flex;align-items:center;justify-content:space-between;">';
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.15em;">STEP '+(_CAW_STEP+1)+' OF '+total+'</div>';
+  html += '<button onclick="document.getElementById(\'cawModal\').remove();" style="background:transparent;border:none;color:var(--grey);font-size:20px;cursor:pointer;padding:4px;">✕</button>';
+  html += '</div>';
+  // Progress
+  html += '<div style="display:flex;gap:5px;align-items:center;padding:10px 20px 0;">'+dots+'</div>';
+
+  // Service card
+  html += '<div style="padding:20px 20px 16px;">';
+  html += '<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">';
+  html += '<div style="width:52px;height:52px;border-radius:16px;background:'+st.color+'18;border:1.5px solid '+st.color+'44;display:flex;align-items:center;justify-content:center;font-size:26px;">'+st.emoji+'</div>';
+  html += '<div><div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:28px;letter-spacing:2px;color:var(--white);">'+st.label.toUpperCase()+'</div>';
+  html += '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);margin-top:2px;">'+st.desc+'</div></div>';
+  html += '</div>';
+
+  if(connected){
+    html += '<div style="background:rgba(48,209,88,.08);border:1px solid rgba(48,209,88,.25);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:10px;margin-bottom:16px;">';
+    html += '<div style="font-size:20px;">✓</div>';
+    html += '<div><div style="font-family:Impact,Arial Narrow,sans-serif;font-size:16px;color:#30D158;letter-spacing:1px;">ALREADY CONNECTED</div>';
+    html += '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);margin-top:2px;">'+st.label+' is syncing your data</div></div>';
+    html += '</div>';
+    html += _cawNextButton(_CAW_STEP, total, 'NEXT →');
+  } else {
+    html += _cawServiceInstructions(st);
+  }
+
+  html += '</div></div>';
+  modal.innerHTML = html;
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+
+function _cawServiceInstructions(st){
+  var html = '';
+  if(st.key==='strava'){
+    html += '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);line-height:1.9;margin-bottom:16px;">';
+    html += '1. Go to <strong style="color:var(--white);">strava.com/settings/api</strong><br>';
+    html += '2. Create an app — set Auth Callback to this page URL<br>';
+    html += '3. Copy your <strong style="color:var(--white);">Client ID</strong> and <strong style="color:var(--white);">Client Secret</strong><br>';
+    html += '4. Tap CONNECT below and paste them in';
+    html += '</div>';
+    html += '<button onclick="document.getElementById(\'cawModal\').remove();stravaConnectServer();" style="'+_cawBtnStyle('#FC4C02')+'">CONNECT STRAVA</button>';
+    html += _cawSkipButton();
+  } else if(st.key==='whoop'){
+    html += '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);line-height:1.9;margin-bottom:16px;">';
+    html += '1. Go to <strong style="color:var(--white);">developer.whoop.com</strong><br>';
+    html += '2. Create an app — get your <strong style="color:var(--white);">Client ID</strong><br>';
+    html += '3. Set Redirect URI to this page URL<br>';
+    html += '4. Tap CONNECT and paste your Client ID';
+    html += '</div>';
+    html += '<button onclick="document.getElementById(\'cawModal\').remove();whoopDirectConnect();" style="'+_cawBtnStyle('#00F19F')+'">CONNECT WHOOP</button>';
+    html += _cawSkipButton();
+  } else if(st.key==='oura'){
+    html += '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);line-height:1.9;margin-bottom:16px;">';
+    html += '1. Go to <strong style="color:var(--white);">cloud.ouraring.com</strong><br>';
+    html += '2. Profile → Personal Access Tokens<br>';
+    html += '3. Create a new token → copy it<br>';
+    html += '4. Paste it below';
+    html += '</div>';
+    html += '<input id="cawOuraPat" type="password" placeholder="Paste Oura token here..." style="width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(167,139,250,.3);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:13px;margin-bottom:12px;box-sizing:border-box;outline:none;">';
+    html += '<button onclick="_cawConnectOura();" style="'+_cawBtnStyle('#A78BFA')+'">CONNECT OURA</button>';
+    html += _cawSkipButton();
+  } else if(st.key==='peloton'){
+    html += '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);line-height:1.9;margin-bottom:16px;">';
+    html += 'Enter your Peloton login credentials. No server needed — connects directly.';
+    html += '</div>';
+    html += '<input id="cawPelEmail" type="email" placeholder="Peloton email" style="'+_cawInputStyle()+'margin-bottom:8px;">';
+    html += '<input id="cawPelPass" type="password" placeholder="Peloton password" style="'+_cawInputStyle()+'margin-bottom:12px;">';
+    html += '<button onclick="_cawConnectPeloton();" style="'+_cawBtnStyle('#D4FF00','#000')+'">CONNECT PELOTON</button>';
+    html += _cawSkipButton();
+  } else if(st.key==='apple'){
+    html += '<div style="background:rgba(255,59,92,.07);border:1px solid rgba(255,59,92,.2);border-radius:14px;padding:14px 16px;margin-bottom:16px;font-family:\'SF Mono\',monospace;font-size:11px;color:rgba(255,59,92,.9);line-height:1.8;">';
+    html += '📱 Apple Health requires the GEDYON app on your iPhone.<br>';
+    html += 'Open GEDYON on your iPhone → More → Connect → Apple Health.<br>';
+    html += 'Your Garmin watch data flows through Apple Health automatically.';
+    html += '</div>';
+    html += _cawNextButton(_CAW_STEP, CAW_STEPS.length, 'OK, GOT IT →');
+  }
+  return html;
+}
+
+function _cawBtnStyle(color, textColor){
+  textColor = textColor||'#000';
+  return 'width:100%;padding:14px;background:'+color+';color:'+textColor+';font-family:Impact,Arial Narrow,sans-serif;font-size:17px;letter-spacing:3px;border:none;border-radius:14px;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 18px '+color+'44;';
+}
+function _cawInputStyle(){
+  return 'width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:13px;box-sizing:border-box;outline:none;display:block;';
+}
+function _cawSkipButton(){
+  var next = _CAW_STEP + 1;
+  return '<button onclick="showConnectAllWizard('+next+');" style="width:100%;padding:11px;background:transparent;border:1px solid rgba(255,255,255,.10);color:var(--grey);font-family:\'SF Mono\',monospace;font-size:12px;border-radius:12px;cursor:pointer;">Skip for now →</button>';
+}
+function _cawNextButton(step, total, label){
+  var next = step + 1;
+  if(next >= total) return '<button onclick="document.getElementById(\'cawModal\').remove();_cawDone();" style="'+_cawBtnStyle('var(--gold)')+'">'+label+'</button>';
+  return '<button onclick="showConnectAllWizard('+next+');" style="'+_cawBtnStyle('var(--gold)')+'">'+label+'</button>';
+}
+
+async function _cawConnectOura(){
+  var pat = (document.getElementById('cawOuraPat')||{}).value||'';
+  if(!pat.trim()){ showToast('Paste your Oura token first','error'); return; }
+  localStorage.setItem('gedyon_oura_token', pat.trim());
+  var modal = document.getElementById('cawModal');
+  if(modal) modal.remove();
+  try{ await syncOuraData(); showToast('Oura connected!','ok'); }catch(e){ showToast('Oura: check your token','error'); }
+  if(typeof initIntegrationsHub==='function') initIntegrationsHub();
+  showConnectAllWizard(_CAW_STEP + 1);
+}
+
+async function _cawConnectPeloton(){
+  var email = (document.getElementById('cawPelEmail')||{}).value||'';
+  var pass  = (document.getElementById('cawPelPass')||{}).value||'';
+  if(!email||!pass){ showToast('Enter your Peloton email + password','error'); return; }
+  var btn = document.querySelector('#cawModal button[onclick*="_cawConnectPeloton"]');
+  if(btn){ btn.textContent='Connecting...'; btn.disabled=true; }
+  try{
+    var r = await fetch('https://corsproxy.io/?'+encodeURIComponent('https://api.onepeloton.com/auth/login'),{
+      method:'POST', headers:{'Content-Type':'application/json','Peloton-Platform':'web'},
+      body: JSON.stringify({username_or_email:email, password:pass})
+    });
+    var data = await r.json();
+    if(!r.ok || !data.session_id) throw new Error(data.message||'Login failed');
+    localStorage.setItem('gedyon_peloton_creds', JSON.stringify({session_id:data.session_id, user_id:data.user_id, email:email}));
+    document.getElementById('cawModal').remove();
+    showToast('Peloton connected!','ok');
+    if(typeof initIntegrationsHub==='function') initIntegrationsHub();
+    showConnectAllWizard(_CAW_STEP + 1);
+  } catch(e){
+    showToast('Peloton login failed: '+e.message,'error');
+    if(btn){ btn.textContent='CONNECT PELOTON'; btn.disabled=false; }
+  }
+}
+
+function _cawDone(){
+  var st = checkIntegrationStatuses();
+  var connected = Object.values(st).filter(Boolean).length;
+  showSyncToast('Setup complete — '+connected+' source'+(connected!==1?'s':'')+' connected. Syncing...','green');
+  if(typeof autoSyncOnLaunch==='function') autoSyncOnLaunch();
+  if(typeof initIntegrationsHub==='function') initIntegrationsHub();
+}
+
+function checkIntegrationStatuses(){
+  // Check ALL possible token keys for each service (direct OAuth + server paths)
+  var stravaOk  = !!(localStorage.getItem('gedyon_strava_server_user_id') ||
+                     localStorage.getItem('gedyon_strava_access_token')    ||
+                     localStorage.getItem('gedyon_strava_token'));
+  var whoopOk   = !!(localStorage.getItem('gedyon_whoop_server_user_id')  ||
+                     localStorage.getItem('gedyon_whoop_direct_token')     ||
+                     localStorage.getItem('gedyon_whoop_token'));
+  var pelotonOk = !!(localStorage.getItem('gedyon_peloton_server_user_id')||
+                     localStorage.getItem('gedyon_peloton_creds'));
+  return {
+    appleHealth: !!localStorage.getItem('gedyon_apple_health_connected'),
+    garmin:      !!localStorage.getItem('gedyon_garmin_token'),
+    strava:      stravaOk,
+    whoop:       whoopOk,
+    oura:        !!localStorage.getItem('gedyon_oura_token'),
+    mfp:         !!localStorage.getItem('gedyon_mfp_token'),
+    peloton:     pelotonOk,
+  };
+}
 var HEALTH_READ_TYPES=['HKQuantityTypeIdentifierHeartRateVariabilitySDNN','HKCategoryTypeIdentifierSleepAnalysis','HKQuantityTypeIdentifierStepCount','HKQuantityTypeIdentifierActiveEnergyBurned','HKQuantityTypeIdentifierBodyMass','HKQuantityTypeIdentifierRestingHeartRate'];
 async function connectAppleHealth(){
   var isIOS=!!(window.Capacitor&&typeof window.Capacitor.isNativePlatform==='function'&&window.Capacitor.isNativePlatform()&&window.Capacitor.getPlatform()==='ios');
@@ -18929,101 +19805,141 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
-  const srv = (localStorage.getItem('gedyon_server_url') || 'https://gedyon-server-production.up.railway.app').replace(/\/+$/,'');
-  const suid = localStorage.getItem('gedyon_strava_server_user_id');
-  const wuid = localStorage.getItem('gedyon_whoop_server_user_id');
-  const puid = localStorage.getItem('gedyon_peloton_server_user_id');
-
+  if(!el) return;
   el.innerHTML = '<span style="color:var(--gold);">Running diagnostics...</span>';
+
+  const srv = (localStorage.getItem('gedyon_server_url') || 'https://gedyon-server-production.up.railway.app').replace(/\/+$/,'');
+
+  // Check all actual storage keys for each service
+  const stravaServerUid  = localStorage.getItem('gedyon_strava_server_user_id');
+  const stravaDirectTok  = localStorage.getItem('gedyon_strava_access_token') || localStorage.getItem('gedyon_strava_token');
+  const stravaClientId   = localStorage.getItem('gedyon_strava_client_id');
+  const whoopServerUid   = localStorage.getItem('gedyon_whoop_server_user_id');
+  const whoopDirectTok   = localStorage.getItem('gedyon_whoop_direct_token') || localStorage.getItem('gedyon_whoop_token');
+  const whoopClientId    = localStorage.getItem(WHOOP_CLIENT_ID_KEY || 'gedyon_whoop_client_id');
+  const pelotonServerUid = localStorage.getItem('gedyon_peloton_server_user_id');
+  const pelotonCreds     = localStorage.getItem('gedyon_peloton_creds');
+  const ouraToken        = localStorage.getItem('gedyon_oura_token');
+  const appleConnected   = localStorage.getItem('gedyon_apple_health_connected');
 
   const results = [];
 
-  // 1. Server check
+  // 1. Server ping (non-blocking — server being offline doesn't break direct connections)
+  let serverOnline = false;
   try {
     const r = await Promise.race([
       fetch(srv + '/'),
-      new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 8000))
+      new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 6000))
     ]);
-    if (r.ok) {
+    if(r.ok){
       const d = await r.json().catch(() => ({}));
-      results.push({ ok: true,  label: 'GEDYON SERVER', detail: 'Online · ' + (d.totalWorkouts || 0) + ' workouts stored' });
+      serverOnline = true;
+      results.push({ ok: true, label: 'GEDYON SERVER', detail: 'Online · ' + (d.totalWorkouts || 0) + ' workouts stored' });
     } else {
-      results.push({ ok: false, label: 'GEDYON SERVER', detail: 'HTTP ' + r.status + ' — check Railway deployment' });
+      results.push({ ok: false, label: 'GEDYON SERVER', detail: 'HTTP ' + r.status + ' — server error' });
     }
   } catch(e) {
-    const isTimeout = e.message === 'timeout';
-    results.push({ ok: false, label: 'GEDYON SERVER', detail: isTimeout ? 'TIMEOUT — Railway cold start, wait 30s and retry' : 'OFFLINE — verify URL: ' + srv });
+    results.push({ ok: false, label: 'GEDYON SERVER', detail: 'Offline — direct OAuth connections still work' });
   }
 
-  // 2. Strava
-  if (suid) {
+  // 2. Strava — check direct token first, then server
+  if(stravaDirectTok){
+    // Verify token works with a lightweight API call
     try {
-      const r = await fetch(srv + '/api/status?userId=' + suid);
+      const r = await Promise.race([
+        fetch('https://www.strava.com/api/v3/athlete', { headers: { Authorization: 'Bearer ' + stravaDirectTok } }),
+        new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 6000))
+      ]);
+      const d = await r.json().catch(() => ({}));
+      if(d.id){
+        results.push({ ok: true, label: 'STRAVA', detail: (d.firstname||'') + ' ' + (d.lastname||'') + ' · Direct OAuth ✓' });
+      } else {
+        results.push({ ok: false, label: 'STRAVA', detail: 'Token expired — tap CONNECT STRAVA to refresh' });
+      }
+    } catch(e){ results.push({ ok: false, label: 'STRAVA', detail: 'Token check failed — reconnect' }); }
+  } else if(stravaServerUid && serverOnline){
+    try {
+      const r = await fetch(srv + '/api/status?userId=' + stravaServerUid);
       const d = await r.json();
-      if (d.strava) results.push({ ok: true,  label: 'STRAVA', detail: (d.stravaName || 'Connected') + ' · ' + (d.stravaCount || 0) + ' activities' });
-      else          results.push({ ok: false, label: 'STRAVA', detail: 'Token invalid — reconnect below' });
-    } catch(e) { results.push({ ok: false, label: 'STRAVA', detail: 'Cannot check — server offline' }); }
+      if(d.strava) results.push({ ok: true, label: 'STRAVA', detail: (d.stravaName||'Connected') + ' · Server OAuth ✓' });
+      else         results.push({ ok: false, label: 'STRAVA', detail: 'Server token invalid — reconnect' });
+    } catch(e){ results.push({ ok: false, label: 'STRAVA', detail: 'Cannot verify — try reconnecting' }); }
+  } else if(stravaClientId){
+    results.push({ ok: null, label: 'STRAVA', detail: 'Client ID saved — tap CONNECT STRAVA to authorize' });
   } else {
-    results.push({ ok: null, label: 'STRAVA', detail: 'Not connected — tap CONNECT STRAVA below' });
+    results.push({ ok: null, label: 'STRAVA', detail: 'Not set up — tap CONNECT STRAVA' });
   }
 
-  // 3. WHOOP
-  if (wuid) {
+  // 3. WHOOP — check direct token first
+  if(whoopDirectTok){
     try {
-      const r = await fetch(srv + '/api/whoop/today?userId=' + wuid);
+      const r = await Promise.race([
+        fetch('https://api.prod.whoop.com/developer/v1/recovery?limit=1', { headers: { Authorization: 'Bearer ' + whoopDirectTok } }),
+        new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 6000))
+      ]);
+      if(r.ok){
+        const d = await r.json().catch(() => ({}));
+        const rec = d.records && d.records[0];
+        results.push({ ok: true, label: 'WHOOP', detail: rec ? 'Recovery: ' + Math.round((rec.score||{}).recovery_score||0) + '% · Direct OAuth ✓' : 'Connected · Direct OAuth ✓' });
+      } else if(r.status === 401){
+        results.push({ ok: false, label: 'WHOOP', detail: 'Token expired — tap CONNECT WHOOP to refresh' });
+      } else {
+        results.push({ ok: false, label: 'WHOOP', detail: 'API error ' + r.status + ' — try reconnecting' });
+      }
+    } catch(e){ results.push({ ok: false, label: 'WHOOP', detail: 'Token check failed — reconnect' }); }
+  } else if(whoopServerUid && serverOnline){
+    try {
+      const r = await fetch(srv + '/api/whoop/today?userId=' + whoopServerUid);
       const d = await r.json();
-      if (d.recovery != null) results.push({ ok: true,  label: 'WHOOP', detail: 'Recovery: ' + d.recovery + '% · HRV: ' + (d.hrv || '—') + 'ms' });
-      else                    results.push({ ok: false, label: 'WHOOP', detail: 'Connected but no data today' });
-    } catch(e) { results.push({ ok: false, label: 'WHOOP', detail: 'Cannot check — server offline' }); }
+      if(d.recovery != null) results.push({ ok: true,  label: 'WHOOP', detail: 'Recovery: ' + d.recovery + '% · HRV: ' + (d.hrv||'—') + 'ms' });
+      else                   results.push({ ok: false, label: 'WHOOP', detail: 'Server connected but no data today' });
+    } catch(e){ results.push({ ok: false, label: 'WHOOP', detail: 'Cannot verify — try reconnecting' }); }
+  } else if(whoopClientId){
+    results.push({ ok: null, label: 'WHOOP', detail: 'Client ID saved — tap CONNECT WHOOP to authorize' });
   } else {
-    results.push({ ok: null, label: 'WHOOP', detail: 'Not connected — tap CONNECT WHOOP below' });
+    results.push({ ok: null, label: 'WHOOP', detail: 'Not set up — tap CONNECT WHOOP' });
   }
 
   // 4. Peloton
-  if (puid) {
-    results.push({ ok: true, label: 'PELOTON', detail: 'Credentials saved · use SYNC to refresh' });
+  if(pelotonCreds || pelotonServerUid){
+    results.push({ ok: true, label: 'PELOTON', detail: 'Credentials saved · tap SYNC to import rides' });
   } else {
     results.push({ ok: null, label: 'PELOTON', detail: 'Not connected — enter credentials below' });
   }
 
-  // 5. AI (Anthropic key)
-  try {
-    const r = await fetch(srv + '/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [{ role: 'user', content: 'ping' }], max_tokens: 5 })
-    });
-    const d = await r.json().catch(() => ({}));
-    if (d.error && d.error.includes('ANTHROPIC_API_KEY')) {
-      results.push({ ok: false, label: 'ATLAS AI', detail: 'Missing ANTHROPIC_API_KEY in Railway vars' });
-    } else if (d.reply !== undefined || d.content) {
-      results.push({ ok: true, label: 'ATLAS AI', detail: 'Connected · AI coach ready' });
-    } else {
-      results.push({ ok: false, label: 'ATLAS AI', detail: 'Server responded but AI key may be missing' });
-    }
-  } catch(e) {
-    results.push({ ok: null, label: 'ATLAS AI', detail: 'Cannot check — server offline' });
+  // 5. Oura
+  if(ouraToken){
+    results.push({ ok: true, label: 'OURA', detail: 'Ring connected · token present' });
+  } else {
+    results.push({ ok: null, label: 'OURA', detail: 'Not connected' });
+  }
+
+  // 6. Apple Health / Watch
+  if(appleConnected){
+    results.push({ ok: true, label: 'APPLE WATCH', detail: 'HealthKit bridge active' });
+  } else {
+    results.push({ ok: null, label: 'APPLE WATCH', detail: 'iOS only — open app on iPhone to connect' });
   }
 
   // Render results
   el.innerHTML = results.map(r => {
-    const icon = r.ok === true ? '<span style="color:var(--green);"></span>' :
-                 r.ok === false ? '<span style="color:var(--red);"></span>' :
-                 '<span style="color:var(--grey);">○</span>';
-    const labelColor = r.ok === true ? 'var(--white)' : r.ok === false ? 'rgba(255,100,100,.9)' : 'var(--grey)';
-    return icon + ' <span style="color:' + labelColor + ';font-weight:bold;">' + r.label + '</span> <span style="color:var(--grey);">— ' + r.detail + '</span>';
+    const icon = r.ok === true  ? '<span style="color:#00e676;">●</span>'
+               : r.ok === false ? '<span style="color:#ff5252;">●</span>'
+               :                  '<span style="color:rgba(255,255,255,.3);">○</span>';
+    const labelColor = r.ok === true ? 'var(--white)' : r.ok === false ? 'rgba(255,100,100,.9)' : 'rgba(255,255,255,.5)';
+    return icon + ' <span style="color:' + labelColor + ';font-weight:700;">' + r.label + '</span> <span style="color:rgba(255,255,255,.4);font-size:.85rem;">— ' + r.detail + '</span>';
   }).join('<br>');
 
-  // Update connection cards
+  // Update connection card borders and status badges
+  const CARD_MAP   = { STRAVA: 'connCard-strava', WHOOP: 'connCard-whoop', PELOTON: 'connCard-pelo' };
+  const STATUS_MAP = { STRAVA: 'conn-strava-status', WHOOP: 'conn-whoop-status', PELOTON: 'conn-pelo-status' };
   results.forEach(r => {
-    const cardMap = { STRAVA: 'connCard-strava', WHOOP: 'connCard-whoop', PELOTON: 'connCard-pelo' };
-    const statusMap = { STRAVA: 'conn-strava-status', WHOOP: 'conn-whoop-status', PELOTON: 'conn-pelo-status' };
-    const card = document.getElementById(cardMap[r.label]);
-    const stat = document.getElementById(statusMap[r.label]);
-    if (card && r.ok === true) card.style.borderColor = 'rgba(0,230,118,.4)';
-    if (stat) {
-      stat.textContent = r.ok === true ? ' CONNECTED' : r.ok === false ? ' ERROR' : 'NOT SET UP';
-      stat.style.color = r.ok === true ? 'var(--green)' : r.ok === false ? 'var(--red)' : 'var(--grey)';
+    const card = document.getElementById(CARD_MAP[r.label]);
+    const stat = document.getElementById(STATUS_MAP[r.label]);
+    if(card) card.style.borderColor = r.ok === true ? 'rgba(0,230,118,.4)' : r.ok === false ? 'rgba(255,82,82,.3)' : 'rgba(255,255,255,.08)';
+    if(stat){
+      stat.textContent = r.ok === true ? '● CONNECTED' : r.ok === false ? '● ERROR' : '○ NOT SET UP';
+      stat.style.color = r.ok === true ? 'var(--green)' : r.ok === false ? 'var(--red)' : 'rgba(255,255,255,.35)';
     }
   });
 }
