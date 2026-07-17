@@ -14063,6 +14063,12 @@ function _whoopSetupConfirm(){
 }
 
 function whoopDirectConnect(){
+  const host = window.location.hostname;
+  const oauthOk = host === 'eligedyon.github.io' || host.endsWith('.netlify.app') || host === 'localhost' || host === '127.0.0.1';
+  if(!oauthOk){
+    showSyncToast('This is a preview — logins can\'t work here. Open eligedyon.github.io/gedyon in Safari and connect there.', 'red');
+    return;
+  }
   const clientId = localStorage.getItem(WHOOP_CLIENT_ID_KEY);
   if(!clientId){ whoopDirectSetup(); return; }
   const redirectUri = encodeURIComponent(location.origin + location.pathname);
@@ -14084,6 +14090,30 @@ function handleWhoopOAuthRedirect(){
   return true;
 }
 
+// WHOOP's token endpoint may also block browser calls \u2014 same
+// direct \u2192 relay ladder as Strava, with failures recorded for RUN CHECK.
+async function _whoopTokenPost(params){
+  const target = WHOOP_API + '/oauth/oauth2/token';
+  const qs = params.toString();
+  const attempts = [
+    { name:'direct',    url: target, opts:{ method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: qs } },
+    { name:'corsproxy', url: 'https://corsproxy.io/?url='+encodeURIComponent(target+'?'+qs), opts:{ method:'POST' } },
+    { name:'allorigins', url: 'https://api.allorigins.win/raw?url='+encodeURIComponent(target+'?'+qs), opts:{ method:'POST' } }
+  ];
+  const log = [];
+  for(var i=0;i<attempts.length;i++){
+    var a = attempts[i];
+    try{
+      var r = await fetch(a.url, a.opts);
+      if(r.ok) return r;
+      if(a.name==='direct' && r.status >= 400 && r.status < 500) return r;
+      log.push(a.name+':'+r.status);
+    }catch(e){ log.push(a.name+':'+(e.message||'blocked').slice(0,30)); }
+  }
+  localStorage.setItem('gedyon_whoop_last_error', log.join(' \u00b7 '));
+  throw new Error(log.join(' \u00b7 '));
+}
+
 async function whoopExchangeToken(code){
   const clientId = localStorage.getItem(WHOOP_CLIENT_ID_KEY);
   const clientSecret = localStorage.getItem(WHOOP_CLIENT_SECRET_KEY);
@@ -14091,20 +14121,26 @@ async function whoopExchangeToken(code){
     showSyncToast('Connecting to WHOOP...');
     const body = new URLSearchParams({grant_type:'authorization_code', code:code, client_id:clientId, redirect_uri:location.origin+location.pathname});
     if(clientSecret) body.append('client_secret', clientSecret);
-    const resp = await fetch(WHOOP_API + '/oauth/oauth2/token', {
-      method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:body
-    });
+    const resp = await _whoopTokenPost(body);
+    if(resp.status === 400 || resp.status === 401){
+      localStorage.removeItem(WHOOP_CLIENT_SECRET_KEY);
+      showSyncToast('WHOOP rejected the Client Secret \u2014 re-enter it (developer.whoop.com shows the current one)','red');
+      setTimeout(whoopDirectSetup, 600);
+      return;
+    }
     if(!resp.ok) throw new Error('Token exchange failed: '+resp.status);
     const data = await resp.json();
     localStorage.setItem(WHOOP_DIRECT_TOKEN, data.access_token);
     if(data.refresh_token) localStorage.setItem(WHOOP_DIRECT_REFRESH, data.refresh_token);
     localStorage.setItem(WHOOP_DIRECT_EXPIRY, (Date.now()+data.expires_in*1000).toString());
+    localStorage.removeItem('gedyon_whoop_last_error');
     showSyncToast('\u2713 WHOOP connected! Syncing data...','green');
     await whoopDirectFetchAll();
     updateWhoopDirectUI();
   }catch(e){
     console.error('[WHOOP DIRECT] Token exchange error:', e);
-    showSyncToast('\u26a0 WHOOP connection failed','red');
+    var detail = localStorage.getItem('gedyon_whoop_last_error') || e.message || '';
+    showSyncToast('WHOOP handshake failed ['+detail.slice(0,80)+'] \u2014 tap CONNECT WHOOP to retry','red');
   }
 }
 
@@ -14116,9 +14152,7 @@ async function whoopDirectRefresh(){
     const body = new URLSearchParams({grant_type:'refresh_token', refresh_token:refresh, client_id:clientId});
     const sec = localStorage.getItem(WHOOP_CLIENT_SECRET_KEY);
     if(sec) body.append('client_secret', sec);
-    const resp = await fetch(WHOOP_API+'/oauth/oauth2/token', {
-      method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:body
-    });
+    const resp = await _whoopTokenPost(body);
     if(!resp.ok) return null;
     const data = await resp.json();
     localStorage.setItem(WHOOP_DIRECT_TOKEN, data.access_token);
@@ -19553,7 +19587,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.17-16'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.17-17'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
@@ -19673,10 +19707,14 @@ async function runDiagnostic() {
     results.push({ ok: null, label: 'APPLE WATCH', detail: 'iOS only — open app on iPhone to connect' });
   }
 
-  // Last recorded Strava handshake error — persists so it can be read and reported
+  // Last recorded handshake errors — persist so they can be read and reported
   const lastStravaErr = localStorage.getItem('gedyon_strava_last_error');
   if(lastStravaErr && !stravaDirectTok){
     results.push({ ok: false, label: 'STRAVA HANDSHAKE', detail: 'Last attempt: ' + lastStravaErr.slice(0,100) });
+  }
+  const lastWhoopErr = localStorage.getItem('gedyon_whoop_last_error');
+  if(lastWhoopErr && !whoopDirectTok){
+    results.push({ ok: false, label: 'WHOOP HANDSHAKE', detail: 'Last attempt: ' + lastWhoopErr.slice(0,100) });
   }
 
   // Render results (build stamp first so we always know which version is running)
