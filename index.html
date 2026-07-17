@@ -3371,6 +3371,17 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
           <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--gold);opacity:.6;">›</div>
         </button>
       </div>
+      <!-- LOG RUN + SHARE WEEK -->
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button onclick="showLogRunModal()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:rgba(0,230,118,0.07);border:1px solid rgba(0,230,118,0.25);border-radius:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+          <div style="font-size:16px;">✏️</div>
+          <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:14px;letter-spacing:2px;color:#00E676;">LOG A RUN</div>
+        </button>
+        <button onclick="shareTrainingWeek()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.25);border-radius:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+          <div style="font-size:16px;">📤</div>
+          <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:14px;letter-spacing:2px;color:#4A9EFF;">SHARE WEEK</div>
+        </button>
+      </div>
       <!-- FILTER BY PHASE + WEEKS -->
       <div class="card" style="margin-top:0;"><div class="cb">
         <div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--grey);margin-bottom:8px;">FILTER BY PHASE</div>
@@ -18691,27 +18702,152 @@ function extractGapReason(text){
 }
 
 // Manual workout log fallback — athlete-reported, valid but unverified.
-async function logManualWorkout(date, minutes, effort){
+// Distance matters: the fitness placement engine reads w.dist, so manual
+// logs with real mileage feed recalibration exactly like synced runs.
+async function logManualWorkout(date, minutes, effort, distMi, type){
   if(!date || !minutes){ if(typeof showToast==='function') showToast('Need a date and duration','error'); return false; }
   effort = Math.max(1, Math.min(10, parseInt(effort)||5));
+  var dist = Math.max(0, parseFloat(distMi)||0);
   if(!D.workouts) D.workouts = [];
-  D.workouts.push({date: date, name: 'Manual log', dur: parseInt(minutes), dist: 0, effort: effort, source: 'manual', verified: false});
+  D.workouts.push({date: date, name: 'Manual log', type: type||'run', dur: parseInt(minutes), dist: dist, effort: effort, source: 'manual', verified: false});
   if(typeof deduplicateWorkouts === 'function') deduplicateWorkouts();
   saveData();
   if(typeof currentUser !== 'undefined' && currentUser && typeof sbClient !== 'undefined' && sbClient){
     try{
       var r = await sbClient.from('workouts').insert({
-        user_id: currentUser.id, date: date, minutes: parseInt(minutes), distance_mi: 0,
-        workout_type: 'manual', effort: effort, source: 'manual', verified: false
+        user_id: currentUser.id, date: date, minutes: parseInt(minutes), distance_mi: dist,
+        workout_type: type||'run', effort: effort, source: 'manual', verified: false
       });
       if(r.error) console.warn('[GapProtocol] manual workout:', r.error.message);
     }catch(e){}
   }
-  if(typeof showToast === 'function') showToast('Workout logged (manual — unverified)','ok');
-  // Re-assess: the gap may have just closed
+  if(typeof showToast === 'function') showToast('Run logged — ' + (dist ? dist + ' mi · ' : '') + minutes + ' min','ok');
+  // Re-assess: the gap may have just closed and placement may have changed
   assessTrainingGap().catch(function(){});
   return true;
 }
+
+// ── LOG A RUN modal — the no-Strava path to real fitness placement ──
+function showLogRunModal(){
+  var ex = document.getElementById('logRunModal'); if(ex) ex.remove();
+  var modal = document.createElement('div');
+  modal.id = 'logRunModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:99997;background:rgba(0,0,0,0.9);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);';
+  var today = new Date().toISOString().slice(0,10);
+  modal.innerHTML = '<div style="width:100%;max-width:480px;background:#0D1512;border-radius:24px 24px 0 0;border-top:1px solid rgba(0,230,118,.3);padding:24px 20px calc(28px + env(safe-area-inset-bottom,0px));">'
+    +'<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:24px;letter-spacing:2px;color:#00E676;margin-bottom:4px;">✏️ LOG A RUN</div>'
+    +'<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);margin-bottom:16px;">Counts toward your fitness placement — no Strava needed</div>'
+    +'<div style="display:flex;gap:10px;margin-bottom:12px;">'
+    +'<div style="flex:1;"><div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.1em;margin-bottom:5px;">DATE</div>'
+    +'<input id="lrDate" type="date" value="'+today+'" max="'+today+'" style="width:100%;padding:11px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(0,230,118,.25);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:13px;box-sizing:border-box;outline:none;color-scheme:dark;"></div>'
+    +'<div style="flex:1;"><div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.1em;margin-bottom:5px;">MILES</div>'
+    +'<input id="lrDist" type="number" inputmode="decimal" step="0.1" min="0" placeholder="6.0" style="width:100%;padding:11px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(0,230,118,.25);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:13px;box-sizing:border-box;outline:none;"></div>'
+    +'</div>'
+    +'<div style="display:flex;gap:10px;margin-bottom:16px;">'
+    +'<div style="flex:1;"><div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.1em;margin-bottom:5px;">MINUTES</div>'
+    +'<input id="lrMins" type="number" inputmode="numeric" min="1" placeholder="45" style="width:100%;padding:11px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(0,230,118,.25);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:13px;box-sizing:border-box;outline:none;"></div>'
+    +'<div style="flex:1;"><div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.1em;margin-bottom:5px;">EFFORT 1–10</div>'
+    +'<input id="lrEffort" type="number" inputmode="numeric" min="1" max="10" placeholder="5" style="width:100%;padding:11px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(0,230,118,.25);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:13px;box-sizing:border-box;outline:none;"></div>'
+    +'</div>'
+    +'<button onclick="_logRunConfirm()" style="width:100%;padding:14px;background:#00C853;color:#00210f;font-family:Impact,Arial Narrow,sans-serif;font-size:18px;letter-spacing:3px;border:none;border-radius:14px;cursor:pointer;margin-bottom:10px;">SAVE RUN</button>'
+    +'<button onclick="document.getElementById(\'logRunModal\').remove();" style="width:100%;padding:12px;background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--grey);font-family:\'SF Mono\',monospace;font-size:12px;border-radius:12px;cursor:pointer;">Cancel</button>'
+    +'</div>';
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+  setTimeout(function(){ var el=document.getElementById('lrDist'); if(el) el.focus(); }, 150);
+}
+
+async function _logRunConfirm(){
+  var date = (document.getElementById('lrDate')||{}).value || '';
+  var dist = (document.getElementById('lrDist')||{}).value || '';
+  var mins = (document.getElementById('lrMins')||{}).value || '';
+  var eff  = (document.getElementById('lrEffort')||{}).value || '5';
+  if(!date){ showSyncToast('Pick a date','red'); return; }
+  if(!mins || parseInt(mins) < 1){ showSyncToast('How many minutes did you run?','red'); return; }
+  var m = document.getElementById('logRunModal'); if(m) m.remove();
+  await logManualWorkout(date, mins, eff, dist, 'run');
+  try{ renderTrainingSummary(); }catch(e){}
+  // Fresh placement with the new mileage included
+  if(typeof autoFitnessCheck === 'function'){
+    localStorage.removeItem('gedyon_autorecal_shown'); // allow the modal to show for this
+    setTimeout(autoFitnessCheck, 400);
+  }
+}
+
+// ── SHARE WEEK — canvas training card + native share sheet ──────────
+async function shareTrainingWeek(){
+  try{
+    var today = new Date();
+    var weekNum = typeof getWk === 'function' ? getWk(today) : '—';
+    var trialsDays = Math.max(0, Math.floor((new Date('2028-04-04') - today)/864e5));
+    var cutoff = new Date(today.getTime() - 7*864e5).toISOString().slice(0,10);
+    var runs = (D.workouts||[]).filter(function(w){ return w.date && w.date >= cutoff && (w.dist||0) > 0; });
+    var miles = Math.round(10 * runs.reduce(function(s,w){ return s + (w.dist||0); }, 0)) / 10;
+    var longRun = runs.length ? Math.round(10 * Math.max.apply(null, runs.map(function(w){ return w.dist||0; }))) / 10 : 0;
+    var phase = '';
+    try{ if(typeof PHASE_TARGETS !== 'undefined' && typeof weekNum === 'number'){ var pt = PHASE_TARGETS.find(function(p){ return weekNum >= p.wks[0] && weekNum <= p.wks[1]; }); if(pt) phase = pt.name; } }catch(e){}
+
+    var c = document.createElement('canvas'); c.width = 1080; c.height = 1350;
+    var x = c.getContext('2d');
+    // Ground
+    var g = x.createLinearGradient(0, 0, 0, 1350);
+    g.addColorStop(0, '#0A0A14'); g.addColorStop(1, '#141008');
+    x.fillStyle = g; x.fillRect(0, 0, 1080, 1350);
+    // Gold frame
+    x.strokeStyle = 'rgba(201,168,76,.55)'; x.lineWidth = 3; x.strokeRect(40, 40, 1000, 1270);
+    // Wordmark
+    x.fillStyle = '#C9A84C'; x.font = '900 92px Impact, Arial Narrow, sans-serif';
+    x.textAlign = 'center'; x.fillText('G E D Y O N', 540, 190);
+    x.fillStyle = 'rgba(255,255,255,.45)'; x.font = '600 30px monospace';
+    x.fillText('ROAD TO THE 2028 OLYMPIC TRIALS', 540, 245);
+    // Divider
+    x.strokeStyle = 'rgba(201,168,76,.3)'; x.lineWidth = 1;
+    x.beginPath(); x.moveTo(140, 290); x.lineTo(940, 290); x.stroke();
+    // Big number: weekly miles
+    x.fillStyle = '#FFFFFF'; x.font = '900 300px Impact, Arial Narrow, sans-serif';
+    x.fillText(String(miles || 0), 540, 620);
+    x.fillStyle = 'rgba(255,255,255,.5)'; x.font = '600 40px monospace';
+    x.fillText('MILES THIS WEEK', 540, 685);
+    // Stats row
+    function stat(cx, big, small){
+      x.fillStyle = '#C9A84C'; x.font = '900 84px Impact, Arial Narrow, sans-serif'; x.fillText(String(big), cx, 880);
+      x.fillStyle = 'rgba(255,255,255,.45)'; x.font = '600 26px monospace'; x.fillText(small, cx, 925);
+    }
+    stat(255, runs.length, 'RUNS');
+    stat(540, longRun, 'LONGEST (MI)');
+    stat(825, 'W' + weekNum, 'OF 110');
+    if(phase){
+      x.fillStyle = 'rgba(201,168,76,.85)'; x.font = '700 34px monospace';
+      x.fillText('PHASE: ' + phase.toUpperCase(), 540, 1020);
+    }
+    // Countdown
+    x.fillStyle = '#FFFFFF'; x.font = '900 110px Impact, Arial Narrow, sans-serif';
+    x.fillText(trialsDays + ' DAYS', 540, 1160);
+    x.fillStyle = 'rgba(255,255,255,.5)'; x.font = '600 30px monospace';
+    x.fillText('UNTIL THE OLYMPIC TRIALS', 540, 1210);
+    x.fillStyle = 'rgba(255,255,255,.25)'; x.font = '600 24px monospace';
+    x.fillText('built with GEDYON · AI-powered training', 540, 1275);
+
+    var blob = await new Promise(function(res){ c.toBlob(res, 'image/png'); });
+    if(!blob){ showSyncToast('Could not build the card','red'); return; }
+    var file = new File([blob], 'gedyon-week-' + weekNum + '.png', { type: 'image/png' });
+    if(navigator.share && navigator.canShare && navigator.canShare({ files: [file] })){
+      await navigator.share({ files: [file], title: 'GEDYON — Week ' + weekNum, text: miles + ' miles this week. ' + trialsDays + ' days to the 2028 Olympic Trials.' });
+    } else {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'gedyon-week-' + weekNum + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      showSyncToast('Card saved — post it anywhere','green');
+    }
+  }catch(e){
+    if(e && e.name === 'AbortError') return; // user closed the share sheet
+    console.warn('[ShareWeek]', e);
+    showSyncToast('Share failed: ' + (e.message||'unknown').slice(0,50), 'red');
+  }
+}
+window.showLogRunModal = showLogRunModal;
+window.shareTrainingWeek = shareTrainingWeek;
 
 window.assessTrainingGap = assessTrainingGap;
 window.applyGapAdjustment = applyGapAdjustment;
@@ -19397,7 +19533,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.17-14'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.17-15'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
