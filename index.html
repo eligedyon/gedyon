@@ -3942,6 +3942,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
             </div>
             <div style="display:flex;gap:8px;">
               <button id="stravaConnBtn" onclick="stravaConnectServer()" style="flex:1;background:rgba(252,76,2,.15);border:1px solid rgba(252,76,2,.4);border-radius:10px;padding:12px;font-family:Impact,sans-serif;font-size:16px;letter-spacing:2px;color:#fc4c02;cursor:pointer;">CONNECT STRAVA</button>
+              <button onclick="localStorage.removeItem('gedyon_strava_client_id');localStorage.removeItem('gedyon_strava_client_secret');localStorage.removeItem('gedyon_strava_access_token');localStorage.removeItem('gedyon_strava_refresh_token');localStorage.removeItem('gedyon_strava_last_error');stravaDirectSetup();" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:12px 14px;font-family:'SF Mono',monospace;font-size:11px;color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;letter-spacing:1px;">RESET KEYS</button>
               <button id="stravaSyncBtn" onclick="stravaManualSync()" style="display:none;background:rgba(252,76,2,.08);border:1px solid rgba(252,76,2,.2);border-radius:10px;padding:12px 14px;font-family:'SF Mono',monospace;font-size:12px;color:#fc4c02;cursor:pointer;white-space:nowrap;letter-spacing:1px;">SYNC ALL</button>
             </div>
           </div>
@@ -19396,7 +19397,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.17-13'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.17-14'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
