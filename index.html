@@ -18417,6 +18417,14 @@ function checkIntegrationStatuses(){
   };
 }
 var HEALTH_READ_TYPES=['HKQuantityTypeIdentifierHeartRateVariabilitySDNN','HKCategoryTypeIdentifierSleepAnalysis','HKQuantityTypeIdentifierStepCount','HKQuantityTypeIdentifierActiveEnergyBurned','HKQuantityTypeIdentifierBodyMass','HKQuantityTypeIdentifierRestingHeartRate','HKQuantityTypeIdentifierVO2Max','HKWorkoutTypeIdentifier'];
+// Native bridge shim — the @perfood/capacitor-healthkit plugin registers as
+// "CapacitorHealthkit"; all app code looks for "HealthKit". Alias both ways.
+(function(){
+  try{
+    var P = window.Capacitor && window.Capacitor.Plugins;
+    if(P && !P.HealthKit && P.CapacitorHealthkit) P.HealthKit = P.CapacitorHealthkit;
+  }catch(e){}
+})();
 async function connectAppleHealth(){
   var isIOS=!!(window.Capacitor&&typeof window.Capacitor.isNativePlatform==='function'&&window.Capacitor.isNativePlatform()&&window.Capacitor.getPlatform()==='ios');
   if(!isIOS){showToast('Apple Health is only available on iPhone. Open GEDYON on your iPhone to connect.','info');return;}
@@ -19590,7 +19598,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.17-18'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.17-19'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
