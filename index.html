@@ -13876,15 +13876,34 @@ function testServerNow(){
 
   xhr.ontimeout = function(){
     setServerStatusUI('TIMEOUT','red');
-    showConnectStatus('Server timed out — Railway may be cold starting. Wait 30 sec and tap TEST → again.','red');
+    _showDirectOAuthStatus();
   };
 
   xhr.onerror = function(){
     setServerStatusUI(' OFFLINE','red');
-    showConnectStatus('Cannot reach server. Check the URL is correct.','red');
+    _showDirectOAuthStatus();
   };
 
   xhr.send();
+}
+
+function _showDirectOAuthStatus(){
+  var parts = [];
+  var stravaToken = localStorage.getItem('gedyon_strava_access_token') || localStorage.getItem('gedyon_strava_token');
+  var whoopToken  = localStorage.getItem('gedyon_whoop_direct_token') || localStorage.getItem('gedyon_whoop_token');
+  var pelotonCreds = localStorage.getItem('gedyon_peloton_creds');
+  var ouraToken   = localStorage.getItem('gedyon_oura_token');
+  if(stravaToken) parts.push('Strava ✓');
+  if(whoopToken)  parts.push('WHOOP ✓');
+  if(pelotonCreds) parts.push('Peloton ✓');
+  if(ouraToken)   parts.push('Oura ✓');
+  if(parts.length){
+    showConnectStatus('Server offline but direct connections active: ' + parts.join(' · '), 'gold');
+  } else {
+    showConnectStatus('Server offline — tap RUN CHECK below to see connection status or use CONNECT buttons to link your accounts', 'gold');
+  }
+  // Trigger the full diagnostic so the cards update
+  if(typeof runDiagnostic === 'function') setTimeout(runDiagnostic, 200);
 }
 
 async function fetchAndShowServerStatus(userId){
