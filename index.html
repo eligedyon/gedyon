@@ -9740,6 +9740,34 @@ function applyRecalibration(newStart){
   showSyncToast('Training plan recalibrated — now on Week '+getWk(td()), 'green');
 }
 
+// ── AUTO FITNESS CHECK ────────────────────────────────────────────
+// Runs the full "where do I stand" pass automatically after every
+// launch sync: 1) Gap Protocol (auto-applies rollbacks, once per gap)
+// 2) recalibration check — if placement is off by 2+ weeks, the
+// recalibration modal opens by itself (at most once per day).
+async function autoFitnessCheck(){
+  try{
+    // 1. Gap Protocol first — it may move the plan before we measure it
+    if(typeof assessTrainingGap === 'function'){
+      try{ await assessTrainingGap(); }catch(e){}
+    }
+    // 2. Placement check against fresh, deduped data
+    var r = recalibrateTrainingPlan();
+    console.log('[AutoFitnessCheck] week', r.currentWeek, '→ recommended', r.recommendedWeek,
+                '(' + r.gapText + ') · avg', r.avgWeeklyMiles, 'mi/wk over', r.dataWeeks, 'wks');
+    if(Math.abs(r.weekDelta) >= 2){
+      var today = td();
+      var lastShown = localStorage.getItem('gedyon_autorecal_shown');
+      if(lastShown !== today){
+        localStorage.setItem('gedyon_autorecal_shown', today);
+        showRecalibrationModal();
+      }
+    } else if(r.dataWeeks > 0){
+      showSyncToast('Placement checked — Week ' + r.currentWeek + ' is right ✓', 'green');
+    }
+  }catch(e){ console.warn('[AutoFitnessCheck]', e && e.message); }
+}
+
 function showRecalibrationModal(){
   var r = recalibrateTrainingPlan();
 
@@ -14306,6 +14334,8 @@ async function autoSyncOnLaunch(){
       console.log('[AUTO-SYNC] Skipped — last sync was', Math.round((now-lastSync)/1000), 'sec ago');
       renderTrainingSummary();
       renderWhoopDash();
+      // Placement check still runs on every open (cheap, local math)
+      if(typeof autoFitnessCheck === 'function') autoFitnessCheck();
       return;
     }
     // Default userIds based on how OAuth assigned them
@@ -14328,6 +14358,8 @@ async function autoSyncOnLaunch(){
     deduplicateWorkouts();
     save();
     console.log('[AUTO-SYNC] Complete —', (D.workouts||[]).length, 'unique workouts after dedup');
+    // Full fitness check on fresh data: gap protocol + plan placement
+    if(typeof autoFitnessCheck === 'function') autoFitnessCheck();
   } catch(e){
     console.warn('[AUTO-SYNC] Error:', e);
   }
