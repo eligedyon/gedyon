@@ -13777,17 +13777,29 @@ function handleStravaOAuthRedirect(){
   return true;
 }
 
+// Strava's /oauth/token endpoint blocks browser calls (no CORS headers),
+// so try direct first, then fall back to the same relay Peloton uses.
+async function _stravaTokenPost(payload){
+  const body = JSON.stringify(payload);
+  const opts = { method:'POST', headers:{'Content-Type':'application/json'}, body: body };
+  try{
+    const r = await fetch('https://www.strava.com/oauth/token', opts);
+    if(r.ok) return r;
+    // 4xx from Strava itself (bad creds) — surface it, don't retry via proxy
+    if(r.status >= 400 && r.status < 500) return r;
+    throw new Error('http '+r.status);
+  }catch(e){
+    return fetch('https://corsproxy.io/?'+encodeURIComponent('https://www.strava.com/oauth/token'), opts);
+  }
+}
+
 async function stravaExchangeToken(code){
   const clientId = localStorage.getItem('gedyon_strava_client_id');
   const clientSecret = localStorage.getItem('gedyon_strava_client_secret');
   if(!clientId||!clientSecret){ alert('Strava credentials missing. Reconnect in MORE tab.'); return; }
   try{
     showSyncToast('Connecting to Strava...');
-    const res = await fetch('https://www.strava.com/oauth/token', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({client_id:clientId,client_secret:clientSecret,code:code,grant_type:'authorization_code'})
-    });
+    const res = await _stravaTokenPost({client_id:clientId,client_secret:clientSecret,code:code,grant_type:'authorization_code'});
     if(!res.ok) throw new Error('Token exchange failed: '+res.status);
     const data = await res.json();
     localStorage.setItem('gedyon_strava_access_token', data.access_token);
@@ -13809,11 +13821,7 @@ async function stravaRefreshToken(){
   const refreshToken = localStorage.getItem('gedyon_strava_refresh_token');
   if(!clientId||!clientSecret||!refreshToken) return false;
   try{
-    const res = await fetch('https://www.strava.com/oauth/token', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({client_id:clientId,client_secret:clientSecret,refresh_token:refreshToken,grant_type:'refresh_token'})
-    });
+    const res = await _stravaTokenPost({client_id:clientId,client_secret:clientSecret,refresh_token:refreshToken,grant_type:'refresh_token'});
     if(!res.ok) return false;
     const data = await res.json();
     localStorage.setItem('gedyon_strava_access_token', data.access_token);
