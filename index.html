@@ -13757,6 +13757,14 @@ function _stravaSetupConfirm(){
 }
 
 function stravaDirectConnect(){
+  // OAuth can only round-trip from the real app domains — the Claude preview
+  // and other sandboxes produce Strava's "redirect_uri invalid" error.
+  const host = window.location.hostname;
+  const oauthOk = host === 'eligedyon.github.io' || host.endsWith('.netlify.app') || host === 'localhost' || host === '127.0.0.1';
+  if(!oauthOk){
+    showSyncToast('This is a preview — logins can\'t work here. Open eligedyon.github.io/gedyon in Safari and connect there.', 'red');
+    return;
+  }
   const clientId = localStorage.getItem('gedyon_strava_client_id');
   if(!clientId){ stravaDirectSetup(); return; }
   const redirectUri = window.location.origin + window.location.pathname;
