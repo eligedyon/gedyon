@@ -19235,6 +19235,233 @@ async function syncHealthData(){
 
 window.syncHealthData = syncHealthData;
 
+/* ==================== GAP PROTOCOL ==================== */
+// Training-absence detection + plan re-placement.
+// Tier table: 1-3d RESUME · 4-7d REDUCE_INTENSITY (2 days) ·
+// 8-14d ROLL_BACK_WEEKS (1-2) · 15-28d DROP_PHASE · 29+d ASSESSMENT_WEEK.
+// DATA_MISSING when dataGapDays > 3 while gapDays is unknown
+// ("didn't sync" is not "didn't train").
+// Tables: workouts + sync_state (phase1_health_sync.sql),
+// plan_position + gap_responses (gap_protocol.sql). All RLS owner-only.
+// Plan position source of truth in-app: D.settings.start → getWk().
+
+var _gapAssessment = null; // cached so buildKodaContext (sync) can read it
+
+async function assessTrainingGap(userId){
+  var now = new Date();
+  var uid = userId || (typeof currentUser !== 'undefined' && currentUser && currentUser.id);
+
+  // -- days since last synced workout (Supabase first, local D fallback) --
+  var lastWorkoutDate = null;
+  if(uid && typeof sbClient !== 'undefined' && sbClient){
+    try{
+      var r = await sbClient.from('workouts').select('date').eq('user_id', uid).order('date',{ascending:false}).limit(1);
+      if(!r.error && r.data && r.data.length) lastWorkoutDate = r.data[0].date;
+    }catch(e){}
+  }
+  if(!lastWorkoutDate && D.workouts && D.workouts.length){
+    lastWorkoutDate = D.workouts.map(function(w){return w.date;}).filter(Boolean).sort().pop();
+  }
+  var gapDays = lastWorkoutDate ? Math.floor((now - new Date(lastWorkoutDate + 'T12:00:00'))/864e5) : null;
+
+  // -- days since last successful data sync (distinct signal) --
+  var lastSyncMs = parseInt(localStorage.getItem('gedyon_hk_last_success')||'0') ||
+                   parseInt(localStorage.getItem('gedyon_apple_health_connected_last_sync')||'0') ||
+                   parseInt(localStorage.getItem('gedyon_last_auto_sync')||'0');
+  if(uid && typeof sbClient !== 'undefined' && sbClient){
+    try{
+      var sr = await sbClient.from('sync_state').select('last_healthkit_sync').eq('user_id', uid).maybeSingle();
+      if(sr && !sr.error && sr.data && sr.data.last_healthkit_sync){
+        lastSyncMs = Math.max(lastSyncMs, new Date(sr.data.last_healthkit_sync).getTime());
+      }
+    }catch(e){}
+  }
+  var dataGapDays = lastSyncMs ? Math.floor((now.getTime() - lastSyncMs)/864e5) : 999;
+
+  // -- planned vs completed workouts, last 14 days --
+  var daysPerWeek = (D.settings && parseInt(D.settings.daysPerWeek)) || 6;
+  var planned14 = Math.round(daysPerWeek * 2);
+  var cutoff = new Date(now.getTime() - 14*864e5).toISOString().slice(0,10);
+  var completed14 = (D.workouts||[]).filter(function(w){ return w.date && w.date >= cutoff; }).length;
+
+  // -- tier --
+  var tier, planAdjustment;
+  if(dataGapDays > 3 && gapDays === null){
+    tier = 'DATA_MISSING';
+    planAdjustment = {action:'none', note:'Cannot assess — no workout data and sync is ' + dataGapDays + ' days stale. Fix sync or log manually first.'};
+  } else if(gapDays === null || gapDays <= 3){
+    tier = 'RESUME';
+    planAdjustment = {action:'none', note:'On track — resume/reshuffle within the current week.'};
+  } else if(gapDays <= 7){
+    tier = 'REDUCE_INTENSITY';
+    planAdjustment = {action:'reduce_intensity', days:2, note:'Reduce intensity for 2 days, then resume plan as written.'};
+  } else if(gapDays <= 14){
+    var wksBack = gapDays <= 10 ? 1 : 2;
+    tier = 'ROLL_BACK_WEEKS';
+    planAdjustment = {action:'roll_back_weeks', weeks:wksBack, note:'Roll plan position back ' + wksBack + ' week(s).'};
+  } else if(gapDays <= 28){
+    tier = 'DROP_PHASE';
+    planAdjustment = {action:'drop_phase', note:'Drop back one training phase — re-enter 2 weeks before the current phase began.'};
+  } else {
+    tier = 'ASSESSMENT_WEEK';
+    planAdjustment = {action:'assessment_week', note:'Re-test protocol: 2 easy runs + one 20-min steady effort this week, then re-place from results.'};
+  }
+
+  _gapAssessment = {
+    gapDays: gapDays, dataGapDays: dataGapDays, tier: tier, planAdjustment: planAdjustment,
+    planned14: planned14, completed14: completed14,
+    lastWorkoutDate: lastWorkoutDate,
+    currentWeek: typeof getWk === 'function' ? getWk(now) : null,
+    reason: (D.gapReason && D.gapReason.text) || null
+  };
+
+  // Auto-apply plan re-placement ONCE per distinct gap (guarded by
+  // signature so re-opening KODA doesn't roll the plan back repeatedly).
+  try{
+    var sig = tier + '|' + (lastWorkoutDate||'none');
+    var applied = D.gapProtocol && D.gapProtocol.appliedSig;
+    if((tier === 'ROLL_BACK_WEEKS' || tier === 'DROP_PHASE' || tier === 'ASSESSMENT_WEEK') && applied !== sig){
+      await applyGapAdjustment(_gapAssessment);
+      if(!D.gapProtocol) D.gapProtocol = {};
+      D.gapProtocol.appliedSig = sig;
+      D.gapProtocol.appliedAt = new Date().toISOString();
+      saveData();
+    }
+  }catch(e){ console.warn('[GapProtocol] apply:', e && e.message); }
+
+  return _gapAssessment;
+}
+
+// Writes the rolled-back position so the WHOLE app reflects it, not just chat.
+// Week N is derived from D.settings.start via getWk(), so rolling back K weeks
+// moves the start date K*7 days later. Durable copy goes to plan_position.
+async function applyGapAdjustment(assessment){
+  var a = assessment || _gapAssessment;
+  if(!a || !a.planAdjustment) return false;
+  var adj = a.planAdjustment;
+  var weeksBack = 0;
+
+  if(adj.action === 'roll_back_weeks') weeksBack = adj.weeks || 1;
+
+  if(adj.action === 'drop_phase' && a.currentWeek){
+    var targetWeek;
+    if(typeof PHASE_TARGETS !== 'undefined'){
+      var cur = PHASE_TARGETS.find(function(p){ return a.currentWeek >= p.wks[0] && a.currentWeek <= p.wks[1]; });
+      targetWeek = cur ? Math.max(1, cur.wks[0] - 2) : Math.max(1, a.currentWeek - 4);
+    } else {
+      targetWeek = Math.max(1, a.currentWeek - 4);
+    }
+    weeksBack = Math.max(0, a.currentWeek - targetWeek);
+  }
+
+  if(adj.action === 'assessment_week'){
+    // Plan position is decided AFTER the re-test; only mark the week as started.
+    if(!D.gapProtocol) D.gapProtocol = {};
+    D.gapProtocol.assessmentWeekStarted = new Date().toISOString().slice(0,10);
+    saveData();
+  }
+
+  if(weeksBack > 0){
+    var start = new Date(D.settings.start + 'T12:00:00');
+    start.setDate(start.getDate() + weeksBack*7);
+    D.settings.start = start.toISOString().slice(0,10);
+    saveData();
+    if(typeof renderPlan === 'function') try{ renderPlan(); }catch(e){}
+    if(typeof renderTrainingSummary === 'function') try{ renderTrainingSummary(); }catch(e){}
+  }
+
+  // Durable position → Supabase plan_position (silent no-op if table missing)
+  if(typeof currentUser !== 'undefined' && currentUser && typeof sbClient !== 'undefined' && sbClient){
+    var wk = typeof getWk === 'function' ? getWk(new Date()) : null;
+    var ph = null;
+    if(typeof PHASE_TARGETS !== 'undefined' && wk){
+      var pt = PHASE_TARGETS.find(function(p){ return wk >= p.wks[0] && wk <= p.wks[1]; });
+      if(pt) ph = pt.name;
+    }
+    try{
+      var pr = await sbClient.from('plan_position').upsert({
+        user_id: currentUser.id, plan_start: D.settings.start, week_num: wk, phase: ph,
+        last_adjustment: adj.action, updated_at: new Date().toISOString()
+      }, {onConflict:'user_id'});
+      if(pr.error) console.warn('[GapProtocol] plan_position:', pr.error.message);
+    }catch(e){}
+  }
+  return true;
+}
+
+// Appended to buildKodaContext() output — reaches every KODA path
+// (edge-function greeting, direct Anthropic, streaming).
+function buildGapContext(){
+  var a = _gapAssessment;
+  if(!a) return '';
+  var L = [];
+  L.push('\nGAP PROTOCOL ASSESSMENT:');
+  L.push('  Days since last workout: ' + (a.gapDays === null ? 'UNKNOWN' : a.gapDays));
+  L.push('  Days since last data sync: ' + (a.dataGapDays >= 999 ? 'NEVER' : a.dataGapDays));
+  L.push('  Last 14 days: ' + a.completed14 + ' completed of ~' + a.planned14 + ' planned sessions');
+  L.push('  TIER: ' + a.tier + ' — ' + a.planAdjustment.note);
+  if(a.reason) L.push('  Athlete-stated reason for the gap: "' + a.reason + '" — adjust TONE to this, never the math.');
+  L.push('  KODA GAP RULES:');
+  if(a.tier !== 'RESUME'){
+    L.push('  - You MUST address this gap in your FIRST message, before any workout prescription.');
+    if(!a.reason){
+      L.push('  - Ask WHY the gap happened (injury? life? motivation?). When the athlete answers, append the tag [GAP_REASON: their answer] to the END of your reply so the app stores it. The reason changes your tone, never the math.');
+    }
+  }
+  if(a.tier === 'DATA_MISSING'){
+    L.push('  - Data is missing — that is NOT proof training stopped. REFUSE to prescribe quality workouts. First step: fix sync (Connect tab) or log recent sessions manually. Easy aerobic running only until data exists.');
+  }
+  if(a.tier === 'ASSESSMENT_WEEK'){
+    L.push('  - Prescribe the re-test week: 2 easy runs + one 20-minute steady effort. After the results are in, the athlete will be re-placed in the plan from actual fitness, not the calendar.');
+  }
+  L.push('  - NEVER guilt-trip. Direct, warm, forward-looking. The gap is data, not failure.');
+  L.push('  - Workouts with source "manual" are athlete-reported: valid but unverified — trust the athlete, note the flag.');
+  return L.join('\n');
+}
+
+// Parses [GAP_REASON: ...] from KODA replies (same pattern as CHIZAL memories)
+function extractGapReason(text){
+  try{
+    if(!text) return;
+    var m = String(text).match(/\[GAP_REASON:\s*([^\]]+)\]/i);
+    if(!m) return;
+    D.gapReason = {text: m[1].trim(), date: new Date().toISOString().slice(0,10)};
+    saveData();
+    if(typeof currentUser !== 'undefined' && currentUser && typeof sbClient !== 'undefined' && sbClient){
+      sbClient.from('gap_responses').insert({user_id: currentUser.id, reason: m[1].trim()})
+        .then(function(r){ if(r.error) console.warn('[GapProtocol] gap_responses:', r.error.message); });
+    }
+  }catch(e){}
+}
+
+// Manual workout log fallback — athlete-reported, valid but unverified.
+async function logManualWorkout(date, minutes, effort){
+  if(!date || !minutes){ if(typeof showToast==='function') showToast('Need a date and duration','error'); return false; }
+  effort = Math.max(1, Math.min(10, parseInt(effort)||5));
+  if(!D.workouts) D.workouts = [];
+  D.workouts.push({date: date, name: 'Manual log', dur: parseInt(minutes), dist: 0, effort: effort, source: 'manual', verified: false});
+  if(typeof deduplicateWorkouts === 'function') deduplicateWorkouts();
+  saveData();
+  if(typeof currentUser !== 'undefined' && currentUser && typeof sbClient !== 'undefined' && sbClient){
+    try{
+      var r = await sbClient.from('workouts').insert({
+        user_id: currentUser.id, date: date, minutes: parseInt(minutes), distance_mi: 0,
+        workout_type: 'manual', effort: effort, source: 'manual', verified: false
+      });
+      if(r.error) console.warn('[GapProtocol] manual workout:', r.error.message);
+    }catch(e){}
+  }
+  if(typeof showToast === 'function') showToast('Workout logged (manual — unverified)','ok');
+  // Re-assess: the gap may have just closed
+  assessTrainingGap().catch(function(){});
+  return true;
+}
+
+window.assessTrainingGap = assessTrainingGap;
+window.applyGapAdjustment = applyGapAdjustment;
+window.logManualWorkout = logManualWorkout;
+/* ================== END GAP PROTOCOL ================== */
+
 function connectGarmin(){
   var ahConnected=!!localStorage.getItem('gedyon_apple_health_connected');
   var modal=document.createElement('div');
@@ -20987,6 +21214,8 @@ function buildKodaContext() {
     lines.push('  KODA VOICE: reads data first, asks how race felt, gives one clear verdict. Never says "level up" without checking ALL metrics first.');
 
   } catch(e) {}
+  // GAP PROTOCOL: assessment + behavior rules ride along in every context build
+  try { var _gapBlock = typeof buildGapContext === 'function' ? buildGapContext() : ''; if(_gapBlock) lines.push(_gapBlock); } catch(e) {}
   return lines.join('\n');
 }
 
@@ -21346,6 +21575,7 @@ Athlete context:\n${ctx}`;
       if (typeof kodaFocusPanel === 'function') kodaFocusPanel(kodaDetectFocus(reply));
     }
     kodaHistory.push({ role: 'assistant', content: reply });
+    if (typeof extractGapReason === 'function') extractGapReason(reply); // GAP PROTOCOL
     setTimeout(() => kodaSetState('idle'), Math.min(reply.length * 8, 4000));
   } catch(e) {
     window._kodaStreaming = false;
@@ -22935,6 +23165,8 @@ async function kodaInit() {
   }
 
   const name = (typeof D !== 'undefined' && D.settings && D.settings.name) ? D.settings.name.split(' ')[0] : 'Elias';
+  // GAP PROTOCOL: assess (and auto-apply re-placement, once per gap) before building context
+  try { await assessTrainingGap(); } catch(e) { console.warn('[GapProtocol] assess:', e && e.message); }
   const ctx = buildKodaContext();
 
   // Detect recent race — if athlete just raced, open with that
@@ -23000,6 +23232,7 @@ ${ctx}`;
     const reply = data.reply || ('Systems online. ' + name + ', what are we working on today?');
     kodaTypewriter(reply);
     kodaHistory.push({ role: 'assistant', content: reply });
+    if (typeof extractGapReason === 'function') extractGapReason(reply); // GAP PROTOCOL
   } catch(e) {
     kodaTypewriter('Systems online. ' + name + ', what are we working on today?');
   }
