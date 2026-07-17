@@ -13785,20 +13785,34 @@ function handleStravaOAuthRedirect(){
   return true;
 }
 
-// Strava's /oauth/token endpoint blocks browser calls (no CORS headers),
-// so try direct first, then fall back to the same relay Peloton uses.
+// Strava's /oauth/token endpoint blocks browser calls (no CORS headers).
+// Try direct, then two relays. Every failure is recorded so the user
+// sees WHAT failed, not just "not connected".
 async function _stravaTokenPost(payload){
-  const body = JSON.stringify(payload);
-  const opts = { method:'POST', headers:{'Content-Type':'application/json'}, body: body };
-  try{
-    const r = await fetch('https://www.strava.com/oauth/token', opts);
-    if(r.ok) return r;
-    // 4xx from Strava itself (bad creds) — surface it, don't retry via proxy
-    if(r.status >= 400 && r.status < 500) return r;
-    throw new Error('http '+r.status);
-  }catch(e){
-    return fetch('https://corsproxy.io/?'+encodeURIComponent('https://www.strava.com/oauth/token'), opts);
+  const target = 'https://www.strava.com/oauth/token';
+  // Strava's token endpoint also accepts form-encoded params in the URL,
+  // which survives relays that mangle POST bodies.
+  const qs = Object.keys(payload).map(function(k){ return k+'='+encodeURIComponent(payload[k]); }).join('&');
+  const attempts = [
+    { name: 'direct',    url: target, opts: { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) } },
+    { name: 'corsproxy', url: 'https://corsproxy.io/?url='+encodeURIComponent(target+'?'+qs), opts: { method:'POST' } },
+    { name: 'allorigins', url: 'https://api.allorigins.win/raw?url='+encodeURIComponent(target+'?'+qs), opts: { method:'POST' } }
+  ];
+  const log = [];
+  for (var i = 0; i < attempts.length; i++){
+    var a = attempts[i];
+    try{
+      var r = await fetch(a.url, a.opts);
+      if(r.ok){ localStorage.setItem('gedyon_strava_last_route', a.name); return r; }
+      // 400/401 from Strava itself = bad creds/code — surface immediately, relays won't help
+      if(a.name === 'direct' && r.status >= 400 && r.status < 500) return r;
+      log.push(a.name + ':' + r.status);
+    }catch(e){
+      log.push(a.name + ':' + (e.message||'blocked').slice(0,30));
+    }
   }
+  localStorage.setItem('gedyon_strava_last_error', log.join(' · '));
+  throw new Error(log.join(' · '));
 }
 
 async function stravaExchangeToken(code){
@@ -13819,7 +13833,8 @@ async function stravaExchangeToken(code){
     await stravaFetchActivities();
   }catch(e){
     console.error('Strava token exchange error:', e);
-    showSyncToast('Strava connection failed — check your Client ID/Secret', 'red');
+    var detail = localStorage.getItem('gedyon_strava_last_error') || e.message || '';
+    showSyncToast('Strava handshake failed [' + detail.slice(0,80) + '] — tap CONNECT STRAVA to retry', 'red');
   }
 }
 
