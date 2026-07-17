@@ -13747,7 +13747,7 @@ function stravaDirectSetup(){
     +'4. Copy your Client ID and Client Secret below'
     +'</div>'
     +'<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.1em;margin-bottom:6px;">CLIENT ID</div>'
-    +'<input id="stravaClientIdInput" type="text" placeholder="e.g. 12345" autocomplete="off" style="width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(252,76,2,.3);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:14px;margin-bottom:12px;box-sizing:border-box;outline:none;">'
+    +'<input id="stravaClientIdInput" type="text" placeholder="e.g. 12345" autocomplete="off" value="'+(localStorage.getItem('gedyon_strava_client_id')||'')+'" style="width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(252,76,2,.3);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:14px;margin-bottom:12px;box-sizing:border-box;outline:none;">'
     +'<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.1em;margin-bottom:6px;">CLIENT SECRET</div>'
     +'<input id="stravaClientSecretInput" type="password" placeholder="e.g. abc123def456..." autocomplete="off" style="width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(252,76,2,.3);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:14px;margin-bottom:16px;box-sizing:border-box;outline:none;">'
     +'<button onclick="_stravaSetupConfirm()" style="width:100%;padding:14px;background:#FC4C02;color:#fff;font-family:Impact,Arial Narrow,sans-serif;font-size:18px;letter-spacing:3px;border:none;border-radius:14px;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 18px rgba(252,76,2,.35);">AUTHORIZE WITH STRAVA →</button>'
@@ -13780,7 +13780,10 @@ function stravaDirectConnect(){
     return;
   }
   const clientId = localStorage.getItem('gedyon_strava_client_id');
-  if(!clientId){ stravaDirectSetup(); return; }
+  const clientSecret = localStorage.getItem('gedyon_strava_client_secret');
+  // BOTH are needed to finish the handshake after the bounce-back —
+  // going to Strava with only an ID strands the user with a missing-secret error.
+  if(!clientId || !clientSecret){ stravaDirectSetup(); return; }
   const redirectUri = window.location.origin + window.location.pathname;
   const scope = 'read,activity:read_all';
   const authUrl = 'https://www.strava.com/oauth/authorize?client_id='+clientId+'&response_type=code&redirect_uri='+encodeURIComponent(redirectUri)+'&scope='+scope+'&approval_prompt=auto';
@@ -19587,7 +19590,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.17-17'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.17-18'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
