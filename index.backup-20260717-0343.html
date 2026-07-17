@@ -1988,6 +1988,16 @@ canvas{width:100%;display:block;}
 #aiGlowOrb.state-idle{background:radial-gradient(circle,rgba(168,196,232,.35),transparent 70%);animation:glowPulse 3s ease-in-out infinite;}
 .ai-ripple{position:absolute;left:50%;top:calc(45% - 80px);width:160px;height:160px;border-radius:50%;border:2px solid rgba(255,255,255,.30);pointer-events:none;animation:rippleOut .8s ease-out forwards;}
 
+/* ── DUO ───────────────────────────────────────────────── */
+@keyframes gokuIdle{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-12px) scale(1.03);}}
+@keyframes chariIdle{0%,100%{transform:translateY(0) rotate(0);}50%{transform:translateY(-8px) rotate(-1.5deg);}}
+@keyframes gokuTalk{0%,100%{transform:translateY(0);}25%{transform:translateY(-14px) scale(1.05);}75%{transform:translateY(-8px) scale(1.02);}}
+@keyframes chariTalk{0%,100%{transform:translateY(0) rotate(0);}25%{transform:translateY(-10px) rotate(-3deg);}75%{transform:translateY(-6px) rotate(2deg);}}
+@keyframes bondPulse{0%,100%{stroke:rgba(255,255,255,0);}50%{stroke:rgba(255,255,255,.40);}}
+#gokuAvatar.talking{animation:gokuTalk .4s ease-in-out infinite!important;}
+#chariAvatar.talking{animation:chariTalk .5s ease-in-out infinite!important;}
+#bondSvgLine.active{animation:bondPulse 1.5s ease-in-out infinite;}
+
 /* ── ANIMATIONS ────────────────────────────────────────── */
 @keyframes cardReveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes gaugeReveal{from{stroke-dashoffset:var(--dash-total)}to{stroke-dashoffset:var(--dash-offset)}}
@@ -3744,12 +3754,108 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
         </div>
       </div>
 
-      <!-- SETTINGS -->
-      <!-- ══════════════════════════════════════════
-           LIVE CONNECTIONS — WHOOP + PELOTON
-      <!-- ═══ AI — INTEL NUTRITION CHAT ═══ -->
+      <!-- ═══ AI COMPANION ═══ -->
       <div id="ms-ai" class="msec">
+
+  <!-- GEDYON COMPANION DUO locked:EG2028OT -->
   <div id="aiDuoStage">
+    <div id="aiLockWarn" style="display:none;background:rgba(255,61,87,.08);border:1px solid rgba(255,61,87,.3);border-radius:14px;padding:16px;text-align:center;margin-bottom:10px;">
+      <div style="font-size:24px;margin-bottom:6px;"></div>
+      <div style="font-family:Impact,sans-serif;font-size:16px;color:var(--red);letter-spacing:2px;">COMPANION LOCKED</div>
+      <div style="font-family:'SF Mono',monospace;font-size:12px;color:var(--grey);margin-top:6px;line-height:2;">Bound to ELIAS GEDYON only.</div>
+    </div>
+    <!-- THE SCENE — Goku + Shenron drawn live on canvas -->
+    <div id="aiSceneWrap" style="position:relative;width:100%;height:500px;border-radius:22px;overflow:hidden;margin-bottom:10px;background:#000;">
+      <!-- Main scene canvas — everything drawn here -->
+      <canvas id="aiSceneCanvas" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas>
+      <!-- UI overlay -->
+      <div id="duoStateBadge" style="position:absolute;top:12px;right:12px;font-family:'SF Mono',monospace;font-size:11px;letter-spacing:1.5px;padding:4px 10px;border-radius:20px;background:rgba(0,230,118,.12);border:1px solid rgba(0,230,118,.25);color:#00E676;z-index:10;">&#x25CF; READY</div>
+      <div style="position:absolute;top:12px;left:12px;font-family:'SF Mono',monospace;font-size:11px;padding:3px 8px;border-radius:20px;background:rgba(245,196,0,.08);border:1px solid rgba(245,196,0,.15);color:rgba(245,196,0,.5);z-index:10;">GEDYON BOUND</div>
+      <!-- Tap zones (invisible, over drawn characters) -->
+      <div id="gokuTapZone" style="position:absolute;bottom:60px;right:15%;width:100px;height:200px;z-index:5;cursor:pointer;" onclick="duoTap('goku')"></div>
+      <div id="shenronTapZone" style="position:absolute;top:20px;left:0;right:0;bottom:50%;z-index:4;cursor:pointer;" onclick="duoTap('shenron')"></div>
+      <!-- Speech bubble — Goku -->
+      <div id="gokuBubble" style="position:absolute;bottom:200px;right:8px;max-width:58%;background:rgba(8,6,0,.93);border:1px solid rgba(245,196,0,.4);border-radius:14px 14px 4px 14px;padding:10px 13px;z-index:9;display:none;">
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:rgba(245,196,0,.55);letter-spacing:1px;margin-bottom:4px;">GOKU</div>
+        <div id="gokuBubbleTxt" style="font-family:'SF Mono',monospace;font-size:13px;color:rgba(255,255,255,.92);line-height:1.75;"></div>
+      </div>
+      <!-- Speech bubble — Shenron -->
+      <div id="chariBubble" style="position:absolute;top:60px;left:8px;max-width:58%;background:rgba(0,8,4,.93);border:1px solid rgba(0,180,80,.4);border-radius:14px 14px 14px 4px;padding:10px 13px;z-index:9;display:none;">
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:rgba(0,220,100,.55);letter-spacing:1px;margin-bottom:4px;">SHENRON</div>
+        <div id="chariBubbleTxt" style="font-family:'SF Mono',monospace;font-size:13px;color:rgba(255,255,255,.92);line-height:1.75;"></div>
+      </div>
+      <!-- Thinking dots -->
+      <div id="duoThinkDots" style="position:absolute;bottom:160px;left:50%;transform:translateX(-50%);display:none;gap:5px;z-index:9;">
+        <div style="width:7px;height:7px;border-radius:50%;background:var(--gold);animation:dot1 1.2s infinite;"></div>
+        <div style="width:7px;height:7px;border-radius:50%;background:var(--gold);animation:dot1 1.2s infinite .2s;"></div>
+        <div style="width:7px;height:7px;border-radius:50%;background:var(--gold);animation:dot1 1.2s infinite .4s;"></div>
+      </div>
+      <!-- Owner tag -->
+      <div style="position:absolute;bottom:10px;left:0;right:0;text-align:center;z-index:10;">
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:rgba(255,255,255,.12);letter-spacing:2px;">ELIAS GEDYON · ROAD TO 2028</div>
+      </div>
+      <!-- XP bar top -->
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:rgba(0,0,0,.5);z-index:10;">
+        <div id="duoXPBar" style="height:100%;background:linear-gradient(90deg,#00C853,#F5C400,#FF6D00);border-radius:0 2px 2px 0;transition:width 1.2s ease;width:0%;"></div>
+      </div>
+    </div>
+
+    <!-- Level cards -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div style="background:linear-gradient(135deg,rgba(0,180,80,.08),rgba(0,100,40,.04));border:1px solid rgba(0,180,80,.2);border-radius:12px;padding:12px 14px;text-align:center;">
+        <div id="chariLvl" style="font-family:Impact,sans-serif;font-size:22px;color:#00C853;line-height:1;">LVL 1</div>
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);margin-top:3px;">SHENRON</div>
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:rgba(0,180,80,.5);margin-top:2px;">Ancient · Wise · Boundless</div>
+      </div>
+      <div style="background:linear-gradient(135deg,rgba(245,196,0,.08),rgba(255,150,0,.04));border:1px solid rgba(245,196,0,.2);border-radius:12px;padding:12px 14px;text-align:center;">
+        <div id="gokuLvl" style="font-family:Impact,sans-serif;font-size:22px;color:#F5C400;line-height:1;">LVL 1</div>
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);margin-top:3px;">GOKU</div>
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:rgba(245,196,0,.5);margin-top:2px;">Saiyan · Relentless · Real</div>
+      </div>
+    </div>
+
+        <!-- Level cards -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div style="background:linear-gradient(135deg,rgba(255,100,0,.08),rgba(255,50,0,.04));border:1px solid rgba(255,100,0,.2);border-radius:12px;padding:12px 14px;text-align:center;">
+        <div id="chariLvl" style="font-family:Impact,sans-serif;font-size:22px;color:#FF6400;line-height:1;">LVL 1</div>
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);margin-top:3px;">CHARIZARD</div>
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:rgba(255,100,0,.5);margin-top:2px;">Fire · Loyal · Fearless</div>
+      </div>
+      <div style="background:linear-gradient(135deg,rgba(245,196,0,.08),rgba(100,200,255,.04));border:1px solid rgba(245,196,0,.2);border-radius:12px;padding:12px 14px;text-align:center;">
+        <div id="gokuLvl" style="font-family:Impact,sans-serif;font-size:22px;color:#F5C400;line-height:1;">LVL 1</div>
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);margin-top:3px;">GOKU</div>
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:rgba(245,196,0,.5);margin-top:2px;">Saiyan · Relentless · Pure</div>
+      </div>
+    </div>
+    <!-- Action buttons -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <button onclick="duoSpeak('goku','hype')" style="background:rgba(245,196,0,.08);border:1px solid rgba(245,196,0,.25);border-radius:12px;padding:12px 8px;font-family:'SF Mono',monospace;font-size:12px;color:#F5C400;cursor:pointer;">
+        <div style="font-size:22px;margin-bottom:4px;">&#x26A1;</div>GOKU HYPES YOU
+      </button>
+      <button onclick="duoSpeak('chari','hype')" style="background:rgba(255,100,0,.08);border:1px solid rgba(255,100,0,.25);border-radius:12px;padding:12px 8px;font-family:'SF Mono',monospace;font-size:12px;color:#FF6400;cursor:pointer;">
+        <div style="font-size:22px;margin-bottom:4px;"></div>CHARI FIRES UP
+      </button>
+      <button onclick="duoSpeak('goku','analyze')" style="background:rgba(0,180,255,.07);border:1px solid rgba(0,180,255,.2);border-radius:12px;padding:12px 8px;font-family:'SF Mono',monospace;font-size:12px;color:var(--blue);cursor:pointer;">
+        <div style="font-size:22px;margin-bottom:4px;"></div>GOKU ANALYZES
+      </button>
+      <button onclick="duoBoth()" style="background:linear-gradient(135deg,rgba(245,196,0,.08),rgba(255,100,0,.08));border:1px solid rgba(179,136,255,.25);border-radius:12px;padding:12px 8px;font-family:'SF Mono',monospace;font-size:12px;color:var(--purple);cursor:pointer;">
+        <div style="font-size:22px;margin-bottom:4px;"></div>DUO SPEAKS
+      </button>
+    </div>
+    <!-- Chat -->
+    <div style="background:var(--card);border:1px solid rgba(245,196,0,.15);border-radius:14px;padding:12px 14px;margin-bottom:10px;">
+      <div style="font-family:'SF Mono',monospace;font-size:11px;color:rgba(245,196,0,.5);letter-spacing:1.5px;margin-bottom:8px;">TALK TO YOUR CREW</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <input type="text" id="duoChatInput" placeholder="Ask Goku or Charizard anything..." style="flex:1;font-size:13px;background:#0A0A00;border-color:rgba(245,196,0,.2);" onkeydown="if(event.key==='Enter')duoChat()">
+        <button onclick="duoChat()" style="background:linear-gradient(135deg,#F5C400,#FF6400);border:none;border-radius:10px;padding:10px 14px;font-family:Impact,sans-serif;font-size:14px;color:#000;cursor:pointer;letter-spacing:1px;">SEND</button>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button id="duoWhoGoku" onclick="setDuoWho('goku')" style="flex:1;background:rgba(245,196,0,.1);border:1px solid rgba(245,196,0,.3);border-radius:8px;padding:6px;font-family:'SF Mono',monospace;font-size:11px;color:#F5C400;cursor:pointer;">&#x26A1; GOKU</button>
+        <button id="duoWhoChari" onclick="setDuoWho('chari')" style="flex:1;background:rgba(255,100,0,.06);border:1px solid rgba(255,100,0,.15);border-radius:8px;padding:6px;font-family:'SF Mono',monospace;font-size:11px;color:rgba(255,100,0,.6);cursor:pointer;"> SHENRON</button>
+        <button id="duoWhoBoth" onclick="setDuoWho('both')" style="flex:1;background:rgba(179,136,255,.06);border:1px solid rgba(179,136,255,.15);border-radius:8px;padding:6px;font-family:'SF Mono',monospace;font-size:11px;color:rgba(179,136,255,.6);cursor:pointer;"> BOTH</button>
+      </div>
+    </div>
+
     <!-- ═══ NAHCUM — NUTRITION AI THAT LEARNS FROM YOU ═══ -->
     <div style="background:var(--card);border:1px solid rgba(232,147,58,.25);border-radius:14px;overflow:hidden;margin-bottom:10px;">
       <!-- Header -->
@@ -3811,10 +3917,69 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
         </div>
       </div>
     </div>
+
+    <!-- Lock card -->
+    <div style="background:rgba(0,0,0,.4);border:1px solid rgba(245,196,0,.12);border-radius:12px;padding:12px 16px;margin-bottom:10px;">
+      <div style="display:flex;gap:10px;align-items:center;">
+        <div style="font-size:18px;"></div>
+        <div style="font-family:'SF Mono',monospace;font-size:12px;color:var(--grey);line-height:1.8;">Goku &amp; Charizard are permanently bound to ELIAS GEDYON. Their memory, personality and training history are non-transferable. Protected under Gedyon IP &copy; 2026.</div>
+      </div>
+    </div>
+    <!-- Battle Arena teaser -->
+    <div style="background:linear-gradient(135deg,rgba(255,61,87,.07),rgba(245,196,0,.04));border:1px solid rgba(255,61,87,.2);border-radius:14px;padding:16px 18px;margin-bottom:10px;">
+      <div style="font-family:Impact,sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:6px;">&#x2694;&#xFE0F; <span style="color:var(--red);">BATTLE</span> <span style="color:var(--gold);">ARENA</span></div>
+      <div style="font-family:'SF Mono',monospace;font-size:12px;color:var(--off);line-height:2;margin-bottom:8px;">Your duo fights other athletes powered by your real training data. Train harder — Goku and Charizard get stronger.</div>
+      <div style="display:inline-block;background:rgba(255,61,87,.1);border:1px solid rgba(255,61,87,.25);border-radius:20px;padding:5px 14px;font-family:'SF Mono',monospace;font-size:12px;color:var(--red);">COMING IN V2</div>
+    </div>
     <div style="font-family:'SF Mono',monospace;font-size:11px;color:#1A1A2E;text-align:center;padding:6px;">&#169; 2026 Elias Gedyon&#x2122; &middot; AI Companion &middot; Proprietary IP</div>
   </div>
-      </div>
 
+  <!-- ══ CREATE FORM ══ -->
+  <div id="aiCreateForm" style="display:none;">
+    <div class="card" style="border-color:rgba(179,136,255,.25);margin-bottom:10px;">
+      <div class="ch" style="background:rgba(179,136,255,.06);"><div class="ct" style="color:var(--purple);">BUILD YOUR AI COMPANION</div></div>
+      <div class="cb">
+        <div class="fr"><div class="fl">Name</div><input type="text" id="aiNameInp" placeholder="Max · Sensei · Ghost · Blaze…" style="font-size:17px;color:var(--purple);"></div>
+        <div class="fr">
+          <div class="fl">Upload Image</div>
+          <div style="position:relative;background:var(--raised);border:2px dashed rgba(179,136,255,.3);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:border-color .2s;" onmouseenter="this.style.borderColor='var(--purple)'" onmouseleave="this.style.borderColor='rgba(179,136,255,.3)'">
+            <input type="file" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;" onchange="previewAIAvatar(event)">
+            <div id="aiAvatarPreview" style="font-size:48px;margin-bottom:6px;"></div>
+            <div style="font-family:'SF Mono',monospace;font-size:12px;color:var(--grey);">Your pet · A drawing · AI art · Anything<br><span style="color:rgba(179,136,255,.5);">This image becomes your living character</span></div>
+          </div>
+        </div>
+        <div class="fr"><div class="fl">Their Story</div><textarea id="aiStory" rows="3" placeholder='"My dog Max who ran with me every morning for 10 years."&#10;"My future self who already completed the Trials."' style="font-size:12px;"></textarea></div>
+        <div class="fr">
+          <div class="fl">Personality</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;" id="grp-aipersona">
+            <button class="tog on" data-v="intense competitive rival who constantly challenges you and never lets you settle" onclick="selTog(this,'grp-aipersona')">Rival</button>
+            <button class="tog" data-v="tough drill sergeant who pushes hard and never accepts excuses" onclick="selTog(this,'grp-aipersona')">Drill Sergeant</button>
+            <button class="tog" data-v="warm encouraging friend who always believes in you no matter what" onclick="selTog(this,'grp-aipersona')"> Encourager</button>
+            <button class="tog" data-v="comedian who makes training hilarious and fun" onclick="selTog(this,'grp-aipersona')"> Comedian</button>
+            <button class="tog" data-v="zen master with deep calm wisdom and long-term perspective" onclick="selTog(this,'grp-aipersona')"> Zen Master</button>
+            <button class="tog" data-v="analytical strategist who dissects every performance metric" onclick="selTog(this,'grp-aipersona')">Analyst</button>
+          </div>
+        </div>
+        <div class="fr">
+          <div class="fl">Purpose</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;" id="grp-aipurpose">
+            <button class="tog on" data-v="accountability partner" onclick="selTog(this,'grp-aipurpose')">Accountability</button>
+            <button class="tog" data-v="motivational coach" onclick="selTog(this,'grp-aipurpose')">Coach</button>
+            <button class="tog" data-v="training strategist" onclick="selTog(this,'grp-aipurpose')"> Strategist</button>
+            <button class="tog" data-v="race day companion" onclick="selTog(this,'grp-aipurpose')">Race Day</button>
+          </div>
+        </div>
+        <div class="fr"><div class="fl">Special Power</div><input type="text" id="aiPower" placeholder='"Can predict when I am about to quit"' style="font-size:12px;"></div>
+        <button class="btn" style="background:linear-gradient(135deg,#B388FF,#7C4DFF);font-size:16px;letter-spacing:2px;" onclick="saveAICompanion()">ACTIVATE COMPANION</button>
+        <button class="btn-ghost" onclick="$('aiCreateForm').style.display='none';if(loadAIComp())$('aiLiveStage').style.display='block'">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+      <!-- SETTINGS -->
+      <!-- ══════════════════════════════════════════
+           LIVE CONNECTIONS — WHOOP + PELOTON
            ══════════════════════════════════════════ -->
       <div id="ms-connect" class="msec">
         <div class="sh" style="margin-top:0;">CONNECT YOUR DEVICES</div>
@@ -4679,7 +4844,9 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
       <div id="koda-input-bar" style="display:flex;gap:10px;align-items:center;background:rgba(74,158,255,0.06);border:1.5px solid rgba(74,158,255,0.22);border-radius:14px;padding:10px 14px;transition:border-color .2s;" onfocusin="this.style.borderColor='rgba(74,158,255,0.55)'" onfocusout="this.style.borderColor='rgba(74,158,255,0.22)'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(74,158,255,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         <textarea id="koda-input" rows="1" placeholder="Ask KODA anything..." style="flex:1;background:transparent;border:none;padding:0;font-family:\'JetBrains Mono\',monospace;font-size:14px;color:#e8f4ff;resize:none;outline:none;line-height:1.5;max-height:100px;overflow-y:auto;caret-color:#4A9EFF;letter-spacing:0.2px;" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();kodaSend();}"></textarea>
-        <span id="koda-free-left" style="display:none;flex-shrink:0;font-family:'SF Mono',monospace;font-size:10px;color:#FFB84D;letter-spacing:.5px;white-space:nowrap;cursor:pointer;" onclick="showKodaPaywall()"></span>
+        <button onclick="showKodaKeySetup()" title="Connect KODA API key" style="background:transparent;border:none;padding:4px;cursor:pointer;flex-shrink:0;opacity:.4;transition:opacity .15s;" onmouseenter="this.style.opacity='.9'" onmouseleave="this.style.opacity='.4'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4A9EFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+        </button>
         <button onclick="kodaSend()" id="koda-send-btn" style="background:#4A9EFF;border:none;border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .15s;-webkit-tap-highlight-color:transparent;" onmouseenter="this.style.background='#6ab4ff'" onmouseleave="this.style.background='#4A9EFF'" ontouchstart="this.style.background='#6ab4ff'" ontouchend="this.style.background='#4A9EFF'">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
@@ -5522,6 +5689,7 @@ function showMore(tab){
   if(tab==='wt')renderWeightMore();
   else if(tab==='rl'){renderAthleteProfile();renderRaceHistory();autoSyncRaces();}
   else if(tab==='social')setTimeout(renderSocialFeed,50);
+  else if(tab==='ai')setTimeout(renderAIComp,50);
   else if(tab==='connect')setTimeout(renderConnectPage,60);
   else if(tab==='athletes')setTimeout(renderAthletesBenchmark,60);
 }
@@ -9740,40 +9908,6 @@ function applyRecalibration(newStart){
   showSyncToast('Training plan recalibrated — now on Week '+getWk(td()), 'green');
 }
 
-// ── AUTO FITNESS CHECK ────────────────────────────────────────────
-// Runs the full "where do I stand" pass automatically after every
-// launch sync: 1) Gap Protocol (auto-applies rollbacks, once per gap)
-// 2) recalibration check — if placement is off by 2+ weeks, the
-// recalibration modal opens by itself (at most once per day).
-async function autoFitnessCheck(){
-  try{
-    // 1. Gap Protocol first — it may move the plan before we measure it
-    if(typeof assessTrainingGap === 'function'){
-      try{ await assessTrainingGap(); }catch(e){}
-    }
-    // 2. Placement check against fresh, deduped data
-    var r = recalibrateTrainingPlan();
-    console.log('[AutoFitnessCheck] week', r.currentWeek, '→ recommended', r.recommendedWeek,
-                '(' + r.gapText + ') · avg', r.avgWeeklyMiles, 'mi/wk over', r.dataWeeks, 'wks');
-    if(r.dataWeeks === 0){
-      // No run data = the week number is ONLY the calendar. Say so loudly —
-      // silent fallback made it look like fitness had been assessed.
-      showSyncToast('Week ' + r.currentWeek + ' is calendar-only — no runs synced yet. Connect Strava/Apple Watch or log runs so I can place you by real fitness.', 'gold');
-      return;
-    }
-    if(Math.abs(r.weekDelta) >= 2){
-      var today = td();
-      var lastShown = localStorage.getItem('gedyon_autorecal_shown');
-      if(lastShown !== today){
-        localStorage.setItem('gedyon_autorecal_shown', today);
-        showRecalibrationModal();
-      }
-    } else {
-      showSyncToast('Placement checked — Week ' + r.currentWeek + ' matches your last ' + r.dataWeeks + ' weeks of running (' + r.avgWeeklyMiles + ' mi/wk) ✓', 'green');
-    }
-  }catch(e){ console.warn('[AutoFitnessCheck]', e && e.message); }
-}
-
 function showRecalibrationModal(){
   var r = recalibrateTrainingPlan();
 
@@ -12923,6 +13057,7 @@ function renderSocialFeed(){
         <div style="display:flex;gap:12px;margin-top:5px;">
           <span style="font-family:'SF Mono',monospace;font-size:12px;color:var(--grey);cursor:pointer;" onclick="likeSocialPost(${socialPosts.indexOf(p)})">${p.likes||0}</span>
           <span style="font-family:'SF Mono',monospace;font-size:12px;color:var(--grey);"> ${p.comments||0}</span>
+          <span style="font-family:'SF Mono',monospace;font-size:12px;color:var(--grey);cursor:pointer;">Share</span>
         </div>
       </div>
     </div>`).join('');
@@ -12943,6 +13078,7 @@ function renderSocialFeed(){
       <div style="display:flex;gap:14px;">
         <button style="background:none;border:none;font-family:'SF Mono',monospace;font-size:13px;color:var(--grey);cursor:pointer;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,.04);" onclick="this.style.color='#FF3D57';DEMO_POSTS[${i}].likes++;renderSocialFeed()">${p.likes}</button>
         <button style="background:rgba(255,255,255,.04);border:none;font-family:'SF Mono',monospace;font-size:13px;color:var(--grey);cursor:pointer;padding:4px 8px;border-radius:6px;"> ${p.comments}</button>
+        <button style="background:rgba(255,255,255,.04);border:none;font-family:'SF Mono',monospace;font-size:13px;color:var(--grey);cursor:pointer;padding:4px 8px;border-radius:6px;">Share</button>
       </div>
     </div>`).join('');
 }
@@ -12992,6 +13128,655 @@ function submitSocialPost(){
 
 
 
+// ══════════════════════════════════════════════
+// GOKU + SHENRON — DRAWN CHARACTERS ENGINE
+// Locked to ELIAS GEDYON · EG2028OT
+// ══════════════════════════════════════════════
+const DUO_DNA_KEY  = 'gedyon_duo_dna';
+const DUO_LOCK_SIG = 'EG2028OT_TRIALS';
+
+let duoChatHistory = [];
+let duoWho = 'goku';
+let duoRaf = null;
+let duoActive = false;
+let duoT = 0; // global animation time
+let duoTalkState = { goku: false, shenron: false };
+
+function loadAIComp(){ return JSON.parse(localStorage.getItem('gedyon_ai_comp')||'null'); }
+function saveAICompData(d){ localStorage.setItem('gedyon_ai_comp', JSON.stringify(d)); }
+
+function duoCheckLock(){
+  let dna = localStorage.getItem(DUO_DNA_KEY);
+  if(!dna){ localStorage.setItem(DUO_DNA_KEY, DUO_LOCK_SIG+'_'+Date.now()); return true; }
+  return dna.startsWith(DUO_LOCK_SIG);
+}
+
+// ════════════════════════════════════════════
+// CANVAS DRAWING ENGINE
+// ════════════════════════════════════════════
+function initDuoScene(){
+  const canvas = document.getElementById('aiSceneCanvas');
+  if(!canvas || duoRaf) return;
+  const ctx = canvas.getContext('2d');
+  
+  function resize(){
+    const wrap = document.getElementById('aiSceneWrap');
+    const ww = wrap ? wrap.offsetWidth  : 0;
+    const wh = wrap ? wrap.offsetHeight : 0;
+    // Only resize if we have a real size — prevents NaN/0 canvas errors
+    canvas.width  = ww  > 10 ? ww  : 340;
+    canvas.height = wh  > 10 ? wh  : 500;
+  }
+  resize();
+  const W = () => canvas.width;
+  const H = () => canvas.height;
+
+  // ── Stars ──────────────────────────────────
+  let stars = [];
+  function mkStars(){
+    stars = Array.from({length:120}, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height * .7,
+      r: Math.random() * 1.4 + .2,
+      a: Math.random() * .7 + .1,
+      twinkle: Math.random() * Math.PI * 2
+    }));
+  }
+  mkStars();
+
+  // ── Draw sky ───────────────────────────────
+  function drawSky(){
+    const w = W(), h = H();
+    // Deep night sky gradient
+    if(!h || h < 1) return;
+    const sky = ctx.createLinearGradient(0, 0, 0, h * .7);
+    sky.addColorStop(0, '#010208');
+    sky.addColorStop(.4, '#020510');
+    sky.addColorStop(.7, '#050A18');
+    sky.addColorStop(1, '#080C14');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, w, h);
+    
+    // Ground — dark stone/earth
+    if(!h || h < 1) return;
+    const grd = ctx.createLinearGradient(0, h * .75, 0, h);
+    grd.addColorStop(0, '#0A0810');
+    grd.addColorStop(1, '#050306');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, h * .75, w, h * .25);
+    
+    // Horizon glow (dragon energy)
+    const hGlow = ctx.createRadialGradient(w * .45, h * .72, 5, w * .45, h * .72, w * .6);
+    hGlow.addColorStop(0, 'rgba(0,180,80,.12)');
+    hGlow.addColorStop(.5, 'rgba(0,100,40,.05)');
+    hGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = hGlow;
+    ctx.fillRect(0, h * .4, w, h * .6);
+    
+    // Stars
+    const talking = duoTalkState.goku || duoTalkState.shenron;
+    stars.forEach(s => {
+      s.twinkle += 0.02;
+      const brightness = s.a + Math.sin(s.twinkle) * .25 * (talking ? 1.8 : 1);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(220,230,255,${Math.max(0,Math.min(1,brightness))})`;
+      ctx.fill();
+    });
+  }
+
+  // ── Draw Shenron (the dragon) ─────────────
+  function drawShenron(t){
+    const w = W(), h = H();
+    const talking = duoTalkState.shenron;
+    
+    // Shenron's serpentine body curves across the sky
+    // Body color: dark green with golden/emerald shimmer
+    const bodyPts = [];
+    const segments = 18;
+    const amplitude = talking ? 22 : 15;
+    
+    for(let i = 0; i <= segments; i++){
+      const prog = i / segments;
+      // Sweeping S-curve across the sky
+      const bx = w * (.02 + prog * 1.05);
+      const by = h * (.08 + Math.sin(prog * Math.PI * 2.2 + t * (talking ? 1.2 : .5)) * (amplitude/h) + prog * .38);
+      bodyPts.push({x: bx, y: by});
+    }
+
+    // Body thickness varies (fat in middle, tapers at tail)
+    function bodyRadius(prog){ return (8 + Math.sin(prog * Math.PI) * 14) * (w/340); }
+    
+    // Draw body segments from tail to head
+    for(let i = segments; i >= 1; i--){
+      const prog = i / segments;
+      const pt  = bodyPts[i];
+      const ppt = bodyPts[i-1];
+      const r   = bodyRadius(prog);
+      
+      // Dragon body gradient — guard against NaN/zero canvas
+      if(!isFinite(pt.x) || !isFinite(pt.y) || !isFinite(r) || r < 0.1) continue;
+      const gGrad = ctx.createLinearGradient(pt.x - r, pt.y - r, pt.x + r, pt.y + r);
+      const glowAmt = talking ? .9 : .6;
+      gGrad.addColorStop(0, `rgba(0,${Math.floor(160*glowAmt)},60,.9)`);
+      gGrad.addColorStop(.4, `rgba(0,${Math.floor(120*glowAmt)},40,.95)`);
+      gGrad.addColorStop(1, `rgba(0,60,20,.85)`);
+      
+      ctx.beginPath();
+      ctx.lineWidth = r * 2;
+      ctx.strokeStyle = gGrad;
+      ctx.lineCap = 'round';
+      ctx.moveTo(ppt.x, ppt.y);
+      ctx.lineTo(pt.x, pt.y);
+      ctx.stroke();
+      
+      // Scales pattern (subtle)
+      if(i % 2 === 0){
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, r * .6, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,${Math.floor(180*glowAmt)},70,.15)`;
+        ctx.fill();
+      }
+    }
+    
+    // Shenron's HEAD (large, imposing, dragon-like)
+    const head = bodyPts[0];
+    const neck = bodyPts[1];
+    const headSize = (32 + Math.sin(t * .8) * (talking ? 4 : 1.5)) * (w/340);
+    
+    // Head glow aura
+    const headGlow = ctx.createRadialGradient(head.x, head.y, 2, head.x, head.y, headSize * 2.5);
+    headGlow.addColorStop(0, `rgba(0,230,80,${talking ? .35 : .18})`);
+    headGlow.addColorStop(.5, `rgba(0,180,60,${talking ? .15 : .07})`);
+    headGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = headGlow;
+    ctx.beginPath();
+    ctx.arc(head.x, head.y, headSize * 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Head shape — elongated dragon skull
+    ctx.save();
+    const headAngle = Math.atan2(neck.y - head.y, neck.x - head.x);
+    ctx.translate(head.x, head.y);
+    ctx.rotate(headAngle + Math.PI);
+    
+    // Main head
+    ctx.beginPath();
+    ctx.ellipse(0, 0, headSize * 1.6, headSize * .85, 0, 0, Math.PI * 2);
+    const hFill = ctx.createRadialGradient(-headSize*.3, -headSize*.3, 2, 0, 0, headSize * 1.5);
+    hFill.addColorStop(0, `rgba(0,${talking?220:180},80,.95)`);
+    hFill.addColorStop(.6, `rgba(0,120,45,.92)`);
+    hFill.addColorStop(1, `rgba(0,60,20,.88)`);
+    ctx.fillStyle = hFill;
+    ctx.fill();
+    ctx.strokeStyle = `rgba(0,${talking?255:200},100,.4)`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    
+    // Snout extension
+    ctx.beginPath();
+    ctx.ellipse(headSize * 1.2, 0, headSize * .7, headSize * .4, 0, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,140,50,.9)`;
+    ctx.fill();
+    
+    // Nostrils
+    ctx.beginPath();
+    ctx.arc(headSize * 1.6, -headSize*.15, headSize*.12, 0, Math.PI*2);
+    ctx.arc(headSize * 1.6, headSize*.15, headSize*.12, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,.7)';
+    ctx.fill();
+    
+    // Eyes — glowing red/gold
+    const eyeGlow = talking ? `rgba(255,${Math.floor(100+Math.sin(t*4)*80)},0,.9)` : 'rgba(255,60,0,.7)';
+    ctx.beginPath();
+    ctx.arc(-headSize * .2, -headSize * .38, headSize * .22, 0, Math.PI * 2);
+    ctx.fillStyle = eyeGlow;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(-headSize * .2, -headSize * .38, headSize * .1, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,200,0,.95)';
+    ctx.fill();
+    
+    // Horns
+    ctx.beginPath();
+    ctx.moveTo(-headSize*.5, -headSize*.5);
+    ctx.lineTo(-headSize*.2, -headSize*1.4);
+    ctx.lineTo(-headSize*.1, -headSize*.5);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(0,150,55,.8)';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(-headSize*.6, -headSize*.3);
+    ctx.lineTo(-headSize*.3, -headSize*1.1);
+    ctx.lineTo(-headSize*.15, -headSize*.3);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(0,180,65,.7)';
+    ctx.fill();
+    
+    // Beard tendrils
+    ctx.beginPath();
+    ctx.moveTo(headSize*.8, headSize*.3);
+    ctx.quadraticCurveTo(headSize*1.4, headSize*.9, headSize*.6, headSize*1.3);
+    ctx.strokeStyle = 'rgba(0,200,80,.5)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(headSize*.4, headSize*.5);
+    ctx.quadraticCurveTo(headSize*.8, headSize*1.1, headSize*.2, headSize*1.5);
+    ctx.stroke();
+    
+    // Mouth — opens when talking
+    if(talking){
+      const mouthOpen = Math.abs(Math.sin(t * 6)) * headSize * .4;
+      ctx.beginPath();
+      ctx.moveTo(headSize * .5, 0);
+      ctx.lineTo(headSize * 1.7, -mouthOpen * .5);
+      ctx.lineTo(headSize * 1.8, mouthOpen * .5);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(0,0,0,.8)';
+      ctx.fill();
+      // Teeth
+      ctx.beginPath();
+      ctx.moveTo(headSize * .7, -headSize*.08);
+      ctx.lineTo(headSize * .9, -headSize*.25);
+      ctx.lineTo(headSize * 1.1, -headSize*.05);
+      ctx.fillStyle = 'rgba(220,255,230,.9)';
+      ctx.fill();
+    }
+    
+    ctx.restore();
+    
+    // Energy orbs along body when talking
+    if(talking){
+      for(let i = 2; i < segments - 2; i += 3){
+        const pt2 = bodyPts[i];
+        const orbGlow = ctx.createRadialGradient(pt2.x, pt2.y, 1, pt2.x, pt2.y, 12);
+        orbGlow.addColorStop(0, `rgba(0,255,100,${.3 + Math.sin(t*3+i)*.2})`);
+        orbGlow.addColorStop(1, 'transparent');
+        ctx.fillStyle = orbGlow;
+        ctx.beginPath();
+        ctx.arc(pt2.x, pt2.y, 12, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+
+  // ── Draw Goku ──────────────────────────────
+  function drawGoku(t){
+    const w = W(), h = H();
+    const talking = duoTalkState.goku;
+    
+    // Position — right side, standing on ground
+    const gx = w * .72;
+    const gy = h * .73;
+    const scale = (h / 500) * (w / 340 * .85);
+    const bob = talking 
+      ? Math.sin(t * 8) * 3  // talking: energetic movement
+      : Math.sin(t * 1.5) * 4; // idle: gentle breathing
+    
+    ctx.save();
+    ctx.translate(gx, gy + bob);
+    ctx.scale(scale, scale);
+    
+    // Ki aura (when talking — SSJ-style glow)
+    if(talking){
+      const auraIntensity = .4 + Math.sin(t * 5) * .2;
+      for(let ring = 0; ring < 3; ring++){
+        const aura = ctx.createRadialGradient(0, -60, 5, 0, -60, 80 + ring * 30);
+        aura.addColorStop(0, `rgba(245,196,0,${auraIntensity - ring*.1})`);
+        aura.addColorStop(.4, `rgba(180,230,255,${(auraIntensity-.1) - ring*.08})`);
+        aura.addColorStop(1, 'transparent');
+        ctx.fillStyle = aura;
+        ctx.beginPath();
+        ctx.arc(0, -60, 80 + ring * 30, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else {
+      // Idle ki glow
+      const idleAura = ctx.createRadialGradient(0, -50, 5, 0, -50, 50);
+      idleAura.addColorStop(0, 'rgba(245,196,0,.08)');
+      idleAura.addColorStop(1, 'transparent');
+      ctx.fillStyle = idleAura;
+      ctx.beginPath();
+      ctx.arc(0, -50, 50, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    // LEGS — orange gi pants
+    ctx.fillStyle = '#D35400';
+    // Left leg
+    ctx.beginPath();
+    ctx.roundRect(-16, 20, 14, 55, 3);
+    ctx.fill();
+    // Right leg
+    ctx.beginPath();
+    ctx.roundRect(2, 20, 14, 55, 3);
+    ctx.fill();
+    // Boots — dark
+    ctx.fillStyle = '#1a0a00';
+    ctx.beginPath(); ctx.roundRect(-17, 68, 16, 14, 2); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(1, 68, 16, 14, 2); ctx.fill();
+    
+    // BODY — orange gi top
+    ctx.fillStyle = '#E8620A';
+    ctx.beginPath();
+    ctx.roundRect(-22, -20, 44, 44, 4);
+    ctx.fill();
+    // Gi chest line / fold detail
+    ctx.strokeStyle = 'rgba(0,0,0,.25)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(0, -20); ctx.lineTo(0, 20); ctx.stroke();
+    
+    // Blue undershirt visible at collar
+    ctx.fillStyle = '#2980B9';
+    ctx.beginPath();
+    ctx.moveTo(-8, -20); ctx.lineTo(8, -20); ctx.lineTo(4, -8); ctx.lineTo(-4, -8);
+    ctx.closePath(); ctx.fill();
+    
+    // Belt
+    ctx.fillStyle = '#1a1a00';
+    ctx.beginPath(); ctx.roundRect(-22, 18, 44, 6, 2); ctx.fill();
+    ctx.fillStyle = '#F5C400';
+    ctx.beginPath(); ctx.roundRect(-5, 18, 10, 6, 1); ctx.fill();
+    
+    // ARMS
+    const armSwing = talking ? Math.sin(t * 8) * 18 : Math.sin(t * 1.5) * 5;
+    // Left arm (reaching forward when talking)
+    ctx.save();
+    ctx.translate(-22, -10);
+    ctx.rotate((armSwing * .02) + (talking ? -.4 : 0));
+    ctx.fillStyle = '#E8620A';
+    ctx.beginPath(); ctx.roundRect(-7, 0, 14, 40, 4); ctx.fill();
+    // Hand
+    ctx.fillStyle = '#F0A070';
+    ctx.beginPath(); ctx.ellipse(0, 42, 7, 9, 0, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+    // Right arm
+    ctx.save();
+    ctx.translate(22, -10);
+    ctx.rotate((-armSwing * .02) + (talking ? .3 : 0));
+    ctx.fillStyle = '#E8620A';
+    ctx.beginPath(); ctx.roundRect(-7, 0, 14, 40, 4); ctx.fill();
+    ctx.fillStyle = '#F0A070';
+    ctx.beginPath(); ctx.ellipse(0, 42, 7, 9, 0, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+    
+    // NECK
+    ctx.fillStyle = '#F0A070';
+    ctx.beginPath(); ctx.roundRect(-8, -30, 16, 14, 3); ctx.fill();
+    
+    // HEAD
+    const headTilt = talking ? Math.sin(t * 6) * 5 : 0;
+    ctx.save();
+    ctx.rotate(headTilt * Math.PI / 180);
+    
+    // Face — skin
+    ctx.fillStyle = '#F5A878';
+    ctx.beginPath(); ctx.ellipse(0, -52, 22, 26, 0, 0, Math.PI * 2); ctx.fill();
+    
+    // Eyes — Goku's friendly but fierce eyes
+    const eyeOpenness = talking ? (.5 + Math.abs(Math.sin(t*8))*.5) : 1;
+    // whites
+    ctx.fillStyle = 'white';
+    ctx.beginPath(); ctx.ellipse(-9, -52, 7, 5*eyeOpenness, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(9, -52, 7, 5*eyeOpenness, 0, 0, Math.PI*2); ctx.fill();
+    // pupils — black
+    ctx.fillStyle = '#111';
+    ctx.beginPath(); ctx.arc(-9, -52, 3.5, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(9, -52, 3.5, 0, Math.PI*2); ctx.fill();
+    // eyebrows — bold, expressive
+    ctx.strokeStyle = '#2C1A00';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-15, -61); ctx.quadraticCurveTo(-9, talking ? -67 : -64, -3, -61); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(3, -61); ctx.quadraticCurveTo(9, talking ? -67 : -64, 15, -61); ctx.stroke();
+    
+    // Smile / mouth
+    if(talking){
+      const mOpen = Math.abs(Math.sin(t * 7)) * 6;
+      ctx.beginPath();
+      ctx.arc(0, -44, 8, .1, Math.PI - .1);
+      ctx.strokeStyle = '#2C1A00'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.beginPath();
+      ctx.ellipse(0, -40, 6, mOpen + 2, 0, 0, Math.PI);
+      ctx.fillStyle = 'rgba(0,0,0,.5)'; ctx.fill();
+    } else {
+      ctx.beginPath();
+      ctx.arc(0, -43, 7, .15, Math.PI - .15);
+      ctx.strokeStyle = '#2C1A00'; ctx.lineWidth = 2; ctx.stroke();
+    }
+    
+    // Ear
+    ctx.fillStyle = '#F5A878';
+    ctx.beginPath(); ctx.ellipse(-21, -50, 5, 8, 0, 0, Math.PI*2); ctx.fill();
+    
+    // HAIR — iconic Goku spiky black
+    ctx.fillStyle = '#1A1200';
+    // Base hair
+    ctx.beginPath(); ctx.ellipse(0, -68, 20, 12, 0, 0, Math.PI*2); ctx.fill();
+    // Spikes — 5 large signature spikes
+    const spikes = [
+      {x:-18, y:-68, rx:6, ry:18, a:-0.5},
+      {x:-9,  y:-76, rx:5, ry:22, a:-0.2},
+      {x:0,   y:-80, rx:5, ry:24, a:0},
+      {x:9,   y:-76, rx:5, ry:22, a:0.2},
+      {x:18,  y:-68, rx:6, ry:18, a:0.5},
+    ];
+    spikes.forEach(s => {
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      ctx.rotate(s.a);
+      ctx.fillStyle = '#1A1200';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, s.rx, s.ry, 0, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    });
+    
+    ctx.restore(); // head tilt
+    ctx.restore(); // main translate/scale
+    
+    // Shadow under Goku
+    const shadow = ctx.createRadialGradient(gx, gy + 82*scale, 2, gx, gy + 82*scale, 40*scale);
+    shadow.addColorStop(0, 'rgba(0,0,0,.4)');
+    shadow.addColorStop(1, 'transparent');
+    ctx.fillStyle = shadow;
+    ctx.beginPath();
+    ctx.ellipse(gx, gy + 82*scale, 40*scale, 8*scale, 0, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // ── Main render loop ───────────────────────
+  function frame(){
+    if(!W() || !H() || W() < 10 || H() < 10) {
+      // Canvas not ready or hidden - try resize and skip draw
+      resize();
+      duoRaf = requestAnimationFrame(frame);
+      return;
+    }
+    duoT += 0.016;
+    try {
+      ctx.clearRect(0, 0, W(), H());
+      drawSky();
+      drawShenron(duoT);
+      drawGoku(duoT);
+    } catch(e) {
+      // Canvas error - skip frame silently
+    }
+    duoRaf = requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+// ════════════════════════════════════════════
+// CONVERSATION ENGINE
+// Natural, real talk — not a hype machine
+// ════════════════════════════════════════════
+function renderAIComp(){
+  const stage = document.getElementById('aiDuoStage');
+  if(!stage) return;
+  stage.style.display = 'block';
+  const isOwner = duoCheckLock();
+  const lw = document.getElementById('aiLockWarn');
+  if(lw) lw.style.display = isOwner ? 'none' : 'block';
+  const xp = (D.workouts||[]).length * 10;
+  const gl = document.getElementById('gokuLvl'); if(gl) gl.textContent='LVL '+(Math.floor(xp/100)+1);
+  const cl = document.getElementById('chariLvl'); if(cl) cl.textContent='LVL '+(Math.max(1,Math.floor(xp/120)+1));
+  const xpBar = document.getElementById('duoXPBar');
+  if(xpBar) setTimeout(()=>xpBar.style.width=(xp%100)+'%',500);
+  if(!duoActive){ duoActive=true; setTimeout(initDuoScene,150); setTimeout(()=>duoSpeak('goku','first_time'),1000); }
+}
+
+function duoShowBubble(who, text){
+  const isGoku = who === 'goku';
+  const bub   = document.getElementById(isGoku ? 'gokuBubble' : 'chariBubble');
+  const txtEl = document.getElementById(isGoku ? 'gokuBubbleTxt' : 'chariBubbleTxt');
+  if(!bub || !txtEl) return;
+  
+  duoTalkState[isGoku ? 'goku' : 'shenron'] = true;
+  bub.style.display = 'block';
+  bub.style.opacity = '0';
+  bub.style.transition = 'opacity .3s';
+  setTimeout(()=>bub.style.opacity='1', 50);
+  
+  // Typewriter
+  txtEl.textContent = '';
+  let i = 0;
+  const iv = setInterval(()=>{ txtEl.textContent+=text[i]||''; i++; if(i>=text.length) clearInterval(iv); }, 18);
+  
+  speakDuo(who, text);
+  
+  const badge = document.getElementById('duoStateBadge');
+  if(badge){ badge.textContent=isGoku?'GOKU TALKING':'SHENRON SPEAKS'; badge.style.color=isGoku?'#F5C400':'#00E676'; }
+  
+  const readMs = Math.max(4000, text.length * 45);
+  setTimeout(()=>{
+    bub.style.opacity = '0';
+    duoTalkState[isGoku ? 'goku' : 'shenron'] = false;
+    if(badge){ badge.textContent='READY'; badge.style.color='#00E676'; }
+    setTimeout(()=>bub.style.display='none', 400);
+  }, readMs);
+}
+
+function duoSetThinking(on){
+  const dots = document.getElementById('duoThinkDots');
+  if(dots) dots.style.display = on ? 'flex' : 'none';
+  const badge = document.getElementById('duoStateBadge');
+  if(badge && on){ badge.textContent='...'; badge.style.color='#888'; }
+}
+
+function speakDuo(who, text){
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  const voices = window.speechSynthesis.getVoices();
+  if(who === 'goku'){
+    const v = voices.find(v=>/Google UK English Male|Daniel|Alex|Matthew/i.test(v.name)) || voices.find(v=>v.lang==='en-US'&&v.name&&!v.name.toLowerCase().includes('female'));
+    if(v) utt.voice = v;
+    utt.pitch = 1.05; utt.rate = 0.88; utt.volume = 1.0;
+  } else {
+    // Shenron: ancient, deep, resonant
+    const v = voices.find(v=>/Google UK English|David|Mark|Fred|Daniel/i.test(v.name)) || voices[0];
+    if(v) utt.voice = v;
+    utt.pitch = 0.55; utt.rate = 0.72; utt.volume = 1.0;
+  }
+  window.speechSynthesis.speak(utt);
+}
+
+// ── System prompts — REAL CONVERSATION, not hype ──
+function duoSystemPrompt(who){
+  const plan  = getDayPlan(td());
+  const wos   = (D.workouts||[]).slice(-5).map(w=>w.date+': '+w.name+' '+w.dist+'mi').join(', ')||'none logged yet';
+  const wt    = (D.weights||[]).slice(-1)[0];
+  const xp    = (D.workouts||[]).length*10;
+  const lvl   = Math.floor(xp/100)+1;
+  const today = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  
+  const sharedCtx = `You are talking to Elias Gedyon, elite runner training for the 2028 US Olympic Trials. Today is ${today}. Training plan: ${plan?plan.name+' '+plan.mi+'mi, '+plan.zone:'rest day'}. Recent workouts: ${wos}. ${wt?'Current weight: '+wt.wt+' lbs.':''} His level: ${lvl}. `;
+
+  if(who === 'goku'){
+    return `You are Goku from Dragon Ball Z — but you're NOT performing, you're just hanging out with Elias. You're his genuine companion. You talk like a real person he's known forever. You can talk about ANYTHING — training, life, random stuff, food, what's on his mind, philosophy, whatever. You're curious, warm, sometimes goofy, real. You DO know about running and training because you train constantly yourself, but you're not a coach. You react like a real person would — surprised, interested, funny when appropriate, serious when it matters. Short natural responses — like texting a friend, 1-3 sentences usually. No "I understand" or "Great question" or AI-speak. Just talk. ${sharedCtx}`;
+  }
+  return `You are Shenron from Dragon Ball Z — the eternal dragon. Ancient and powerful but not distant. You've watched over Elias for a long time. You speak with a kind of quiet knowing — you don't hype, you don't perform. You just... see things clearly. When Elias talks about anything — his runs, his problems, his random thoughts — you respond like someone who's seen a million lifetimes worth of stories and finds this one genuinely interesting. You're calm, occasionally dry/witty, never preachy. 1-3 sentences. Speak naturally, not like an ancient oracle reciting prophecy. Like a wise old friend who happens to be a dragon. ${sharedCtx}`;
+}
+
+async function duoSpeak(who, type){
+  duoSetThinking(true);
+  const contextMsgs = {
+    first_time: "Elias just opened the app and saw you for the first time today. Say something real — a genuine greeting, nothing dramatic. Keep it short.",
+    hype:       "Elias wants some energy. Give him something real, not a speech.",
+    analyze:    "Look at his recent training and say something honest about what you notice. Be specific. Don't be a coach.",
+    chat:       "Respond naturally to what Elias just said.",
+    tap:        "Elias just tapped you. React naturally.",
+  };
+  try{
+    const reply = await callAIWithSystem(
+      [...duoChatHistory.slice(-8), {role:'user', content: contextMsgs[type]||contextMsgs.chat}],
+      duoSystemPrompt(who)
+    );
+    duoSetThinking(false);
+    duoShowBubble(who, reply);
+    duoChatHistory.push({role:'assistant', content:'['+who+']: '+reply});
+  } catch(e){ duoSetThinking(false); }
+}
+
+async function duoBoth(){
+  duoSetThinking(true);
+  const lastMsg = duoChatHistory.slice(-2).map(m=>m.content).join(' / ') || "Elias opened the app";
+  try{
+    const [g,s] = await Promise.all([
+      callAIWithSystem([...duoChatHistory.slice(-6), {role:'user',content:"React to what's going on. Keep it short and natural."}], duoSystemPrompt('goku')),
+      callAIWithSystem([...duoChatHistory.slice(-6), {role:'user',content:"Add your perspective briefly. Natural, calm."}], duoSystemPrompt('shenron')),
+    ]);
+    duoSetThinking(false);
+    duoShowBubble('goku', g);
+    setTimeout(()=>duoShowBubble('shenron', s), 3500);
+    duoChatHistory.push({role:'assistant',content:'[goku]: '+g+' [shenron]: '+s});
+  } catch(e){ duoSetThinking(false); }
+}
+
+async function duoChat(){
+  const inp = document.getElementById('duoChatInput');
+  if(!inp||!inp.value.trim()) return;
+  const msg = inp.value.trim(); inp.value='';
+  duoChatHistory.push({role:'user', content: msg});
+  if(duoWho==='both'){ await duoBoth(); return; }
+  await duoSpeak(duoWho,'chat');
+}
+
+function setDuoWho(w){
+  duoWho = w;
+  const cfg = {
+    goku:   {id:'duoWhoGoku',   bc:'rgba(245,196,0,.3)',  tc:'#F5C400'},
+    shenron:{id:'duoWhoChari',  bc:'rgba(0,180,80,.3)',   tc:'#00C853'},
+    both:   {id:'duoWhoBoth',   bc:'rgba(179,136,255,.3)',tc:'var(--purple)'},
+  };
+  Object.entries(cfg).forEach(([key,c])=>{
+    const btn = document.getElementById(c.id);
+    if(!btn) return;
+    const active = key===w;
+    btn.style.borderColor = active ? c.bc : 'rgba(255,255,255,.08)';
+    btn.style.color = active ? c.tc : 'rgba(255,255,255,.3)';
+    btn.style.background = active ? c.bc.replace('.3','.12') : 'rgba(255,255,255,.02)';
+  });
+}
+
+async function duoTap(who){
+  if(duoTalkState.goku||duoTalkState.shenron) return;
+  await duoSpeak(who,'tap');
+}
+
+function showAICreate(){
+  const f = document.getElementById('aiCreateForm');
+  if(f){ f.style.display='block'; f.scrollIntoView({behavior:'smooth',block:'start'}); }
+}
+function previewAIAvatar(e){}
+function saveAICompanion(){ renderAIComp(); const f=document.getElementById('aiCreateForm'); if(f) f.style.display='none'; }
+
+if(window.speechSynthesis) window.speechSynthesis.onvoiceschanged=()=>{};
+setTimeout(()=>setDuoWho('goku'),300);
 
 // ══════════════════════════════════════════════
 // WHOOP + PELOTON LIVE CONNECTIONS
@@ -14340,8 +15125,6 @@ async function autoSyncOnLaunch(){
       console.log('[AUTO-SYNC] Skipped — last sync was', Math.round((now-lastSync)/1000), 'sec ago');
       renderTrainingSummary();
       renderWhoopDash();
-      // Placement check still runs on every open (cheap, local math)
-      if(typeof autoFitnessCheck === 'function') autoFitnessCheck();
       return;
     }
     // Default userIds based on how OAuth assigned them
@@ -14355,8 +15138,6 @@ async function autoSyncOnLaunch(){
     if(suid) promises.push(loadServerWorkouts(suid).then(()=>{ renderTrainingSummary(); renderRaceReadyCard(); renderRaceProgressCard(); renderOvertrainingCard(); }));
     if(wuid) promises.push(loadServerWhoopData(wuid).then(()=>{ renderWhoopDash(); renderRaceReadyCard(); renderOvertrainingCard(); }));
     if(puid) promises.push(loadPelotonWorkouts().then(()=>{ renderTrainingSummary(); }));
-    // Silent HealthKit → Supabase sync: opening the app IS the sync
-    if(typeof syncHealthData === 'function') promises.push(syncHealthData().then(()=>{ renderTrainingSummary(); }));
     const ouraToken = localStorage.getItem('gedyon_oura_token');
     if(ouraToken) promises.push(syncOuraData().then(()=>{ renderRaceReadyCard(); }));
     await Promise.allSettled(promises);
@@ -14364,8 +15145,6 @@ async function autoSyncOnLaunch(){
     deduplicateWorkouts();
     save();
     console.log('[AUTO-SYNC] Complete —', (D.workouts||[]).length, 'unique workouts after dedup');
-    // Full fitness check on fresh data: gap protocol + plan placement
-    if(typeof autoFitnessCheck === 'function') autoFitnessCheck();
   } catch(e){
     console.warn('[AUTO-SYNC] Error:', e);
   }
@@ -17665,6 +18444,8 @@ function atlasReact(event, data){
   }
 }
 
+// Unused but kept for compatibility
+function atlasExplode(){}
 
 // ═══ END NAHCUM ORB ═══
 
@@ -18309,7 +19090,7 @@ function checkIntegrationStatuses(){
     peloton:     pelotonOk,
   };
 }
-var HEALTH_READ_TYPES=['HKQuantityTypeIdentifierHeartRateVariabilitySDNN','HKCategoryTypeIdentifierSleepAnalysis','HKQuantityTypeIdentifierStepCount','HKQuantityTypeIdentifierActiveEnergyBurned','HKQuantityTypeIdentifierBodyMass','HKQuantityTypeIdentifierRestingHeartRate','HKQuantityTypeIdentifierVO2Max','HKWorkoutTypeIdentifier'];
+var HEALTH_READ_TYPES=['HKQuantityTypeIdentifierHeartRateVariabilitySDNN','HKCategoryTypeIdentifierSleepAnalysis','HKQuantityTypeIdentifierStepCount','HKQuantityTypeIdentifierActiveEnergyBurned','HKQuantityTypeIdentifierBodyMass','HKQuantityTypeIdentifierRestingHeartRate'];
 async function connectAppleHealth(){
   var isIOS=!!(window.Capacitor&&typeof window.Capacitor.isNativePlatform==='function'&&window.Capacitor.isNativePlatform()&&window.Capacitor.getPlatform()==='ios');
   if(!isIOS){showToast('Apple Health is only available on iPhone. Open GEDYON on your iPhone to connect.','info');return;}
@@ -18343,342 +19124,6 @@ async function syncAppleHealth(){
     if($('integrationsHub'))initIntegrationsHub();
   }catch(err){console.error('[AppleHealth] sync',err);}
 }
-
-// ═══════════════════════════════════════════════════════════════════
-// HEALTH SYNC SERVICE — silent HealthKit → Supabase sync on app open
-// (equivalent of src/services/healthSync.ts — this app is a single file)
-// Tables required (run supabase/gap_protocol_schema.sql once):
-//   health_metrics, workouts, plan_position, sync_state, gap_responses
-// All writes degrade silently to the local D blob if tables don't exist.
-// ═══════════════════════════════════════════════════════════════════
-var HK_LAST_SUCCESS_KEY = 'gedyon_hk_last_success';
-
-async function syncHealthData(){
-  var HK = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.HealthKit;
-  if(!HK || !localStorage.getItem('gedyon_apple_health_connected')) return {skipped:true, reason:'no_healthkit'};
-  try{
-    // Window: since last SUCCESSFUL sync (fallback 7 days, hard cap 30 days)
-    var lastOk = parseInt(localStorage.getItem(HK_LAST_SUCCESS_KEY)||'0');
-    var end = new Date();
-    var start = lastOk ? new Date(Math.max(lastOk, end.getTime()-30*864e5)) : new Date(end.getTime()-7*864e5);
-    var s = start.toISOString(), e = end.toISOString();
-    var q = function(name, limit){ return HK.queryHKitSampleType({sampleName:name, startDate:s, endDate:e, limit:limit||100, ascending:'false'}).catch(function(){ return {resultData:[]}; }); };
-
-    var rs = await Promise.all([
-      q('HKQuantityTypeIdentifierHeartRateVariabilitySDNN'),
-      q('HKQuantityTypeIdentifierRestingHeartRate', 30),
-      q('HKCategoryTypeIdentifierSleepAnalysis', 200),
-      q('HKQuantityTypeIdentifierVO2Max', 30),
-      q('workoutType', 100)   // @capacitor-community/health-kit workout query name
-    ]);
-
-    var items = function(raw){ return (raw && (raw.resultData || raw.data)) || []; };
-    var byDay = function(raw, unit){
-      var out = {};
-      items(raw).forEach(function(it){
-        var d = (it.startDate||'').slice(0,10); if(!d) return;
-        var v = parseFloat(it.quantity != null ? it.quantity : it.value); if(isNaN(v)) return;
-        if(!out[d]) out[d] = [];
-        out[d].push(v);
-      });
-      return Object.entries(out).map(function(kv){
-        return {date: kv[0], value: Math.round((kv[1].reduce(function(a,b){return a+b;},0)/kv[1].length)*100)/100, unit: unit};
-      });
-    };
-    var sleepByDay = function(raw){
-      var by = {};
-      items(raw).forEach(function(it){
-        var v = parseInt(it.value != null ? it.value : it.quantity, 10);
-        if(isNaN(v) || v > 3) return; // asleep categories only
-        var hrs = (new Date(it.endDate) - new Date(it.startDate))/36e5;
-        var k = (it.endDate||'').slice(0,10);
-        if(k) by[k] = (by[k]||0) + hrs;
-      });
-      return Object.entries(by).map(function(kv){ return {date: kv[0], value: Math.round(kv[1]*10)/10, unit: 'hours'}; });
-    };
-
-    var metrics = []
-      .concat(byDay(rs[0],'ms').map(function(m){ m.metric='hrv'; return m; }))
-      .concat(byDay(rs[1],'bpm').map(function(m){ m.metric='resting_hr'; return m; }))
-      .concat(sleepByDay(rs[2]).map(function(m){ m.metric='sleep_hours'; return m; }))
-      .concat(byDay(rs[3],'mL/kg/min').map(function(m){ m.metric='vo2max'; return m; }));
-
-    var hkWorkouts = items(rs[4]).map(function(w){
-      var mins = Math.round((new Date(w.endDate) - new Date(w.startDate))/6e4);
-      return {
-        date: (w.startDate||'').slice(0,10),
-        minutes: mins > 0 ? mins : 0,
-        dist: w.totalDistance ? Math.round(parseFloat(w.totalDistance)/1609.34*100)/100 : 0,
-        type: w.workoutActivityName || w.workoutActivityId || 'workout',
-        source: 'apple_health'
-      };
-    }).filter(function(w){ return w.date && w.minutes >= 5; });
-
-    // 1) Local: merge into D (dedup engine handles Strava/Watch overlap)
-    if(!D.appleHealth) D.appleHealth = {};
-    D.appleHealth.lastSync = new Date().toISOString();
-    hkWorkouts.forEach(function(hw){
-      var dup = (D.workouts||[]).some(function(ex){ return typeof _isSameWorkout==='function' ? _isSameWorkout(ex, {date:hw.date, dur:hw.minutes, dist:hw.dist, type:hw.type, source:'apple_health'}) : (ex.date===hw.date && Math.abs((ex.dur||0)-hw.minutes)<15); });
-      if(!dup){ if(!D.workouts) D.workouts=[]; D.workouts.push({date:hw.date, name:hw.type, dur:hw.minutes, dist:hw.dist, source:'apple_health'}); }
-    });
-    if(typeof deduplicateWorkouts==='function') deduplicateWorkouts();
-    saveData();
-
-    // 2) Cloud: row-level upserts (silent no-op if tables missing / signed out)
-    if(typeof sbClient!=='undefined' && sbClient && currentUser){
-      if(metrics.length){
-        await sbClient.from('health_metrics').upsert(metrics.map(function(m){
-          return {user_id: currentUser.id, date: m.date, metric: m.metric, value: m.value, unit: m.unit, source: 'apple_health'};
-        }), {onConflict: 'user_id,date,metric'}).then(function(r){ if(r.error) console.warn('[HealthSync] health_metrics:', r.error.message); });
-      }
-      if(hkWorkouts.length){
-        await sbClient.from('workouts').upsert(hkWorkouts.map(function(w){
-          return {user_id: currentUser.id, date: w.date, minutes: w.minutes, distance_mi: w.dist, workout_type: w.type, source: 'apple_health', verified: true};
-        }), {onConflict: 'user_id,date,source,minutes'}).then(function(r){ if(r.error) console.warn('[HealthSync] workouts:', r.error.message); });
-      }
-      await sbClient.from('sync_state').upsert({
-        user_id: currentUser.id, last_healthkit_sync: new Date().toISOString()
-      }, {onConflict: 'user_id'}).then(function(r){ if(r.error) console.warn('[HealthSync] sync_state:', r.error.message); });
-    }
-
-    localStorage.setItem(HK_LAST_SUCCESS_KEY, String(Date.now()));
-    console.log('[HealthSync] OK —', metrics.length, 'metrics,', hkWorkouts.length, 'workouts since', s.slice(0,10));
-    return {skipped:false, metrics: metrics.length, workouts: hkWorkouts.length};
-  }catch(err){
-    console.warn('[HealthSync] failed (will retry next open):', err && err.message);
-    return {skipped:true, reason: err && err.message};
-  }
-}
-
-window.syncHealthData = syncHealthData;
-
-/* ==================== GAP PROTOCOL ==================== */
-// Training-absence detection + plan re-placement.
-// Tier table: 1-3d RESUME · 4-7d REDUCE_INTENSITY (2 days) ·
-// 8-14d ROLL_BACK_WEEKS (1-2) · 15-28d DROP_PHASE · 29+d ASSESSMENT_WEEK.
-// DATA_MISSING when dataGapDays > 3 while gapDays is unknown
-// ("didn't sync" is not "didn't train").
-// Tables: workouts + sync_state (phase1_health_sync.sql),
-// plan_position + gap_responses (gap_protocol.sql). All RLS owner-only.
-// Plan position source of truth in-app: D.settings.start → getWk().
-
-var _gapAssessment = null; // cached so buildKodaContext (sync) can read it
-
-async function assessTrainingGap(userId){
-  var now = new Date();
-  var uid = userId || (typeof currentUser !== 'undefined' && currentUser && currentUser.id);
-
-  // -- days since last synced workout (Supabase first, local D fallback) --
-  var lastWorkoutDate = null;
-  if(uid && typeof sbClient !== 'undefined' && sbClient){
-    try{
-      var r = await sbClient.from('workouts').select('date').eq('user_id', uid).order('date',{ascending:false}).limit(1);
-      if(!r.error && r.data && r.data.length) lastWorkoutDate = r.data[0].date;
-    }catch(e){}
-  }
-  if(!lastWorkoutDate && D.workouts && D.workouts.length){
-    lastWorkoutDate = D.workouts.map(function(w){return w.date;}).filter(Boolean).sort().pop();
-  }
-  var gapDays = lastWorkoutDate ? Math.floor((now - new Date(lastWorkoutDate + 'T12:00:00'))/864e5) : null;
-
-  // -- days since last successful data sync (distinct signal) --
-  var lastSyncMs = parseInt(localStorage.getItem('gedyon_hk_last_success')||'0') ||
-                   parseInt(localStorage.getItem('gedyon_apple_health_connected_last_sync')||'0') ||
-                   parseInt(localStorage.getItem('gedyon_last_auto_sync')||'0');
-  if(uid && typeof sbClient !== 'undefined' && sbClient){
-    try{
-      var sr = await sbClient.from('sync_state').select('last_healthkit_sync').eq('user_id', uid).maybeSingle();
-      if(sr && !sr.error && sr.data && sr.data.last_healthkit_sync){
-        lastSyncMs = Math.max(lastSyncMs, new Date(sr.data.last_healthkit_sync).getTime());
-      }
-    }catch(e){}
-  }
-  var dataGapDays = lastSyncMs ? Math.floor((now.getTime() - lastSyncMs)/864e5) : 999;
-
-  // -- planned vs completed workouts, last 14 days --
-  var daysPerWeek = (D.settings && parseInt(D.settings.daysPerWeek)) || 6;
-  var planned14 = Math.round(daysPerWeek * 2);
-  var cutoff = new Date(now.getTime() - 14*864e5).toISOString().slice(0,10);
-  var completed14 = (D.workouts||[]).filter(function(w){ return w.date && w.date >= cutoff; }).length;
-
-  // -- tier --
-  var tier, planAdjustment;
-  if(dataGapDays > 3 && gapDays === null){
-    tier = 'DATA_MISSING';
-    planAdjustment = {action:'none', note:'Cannot assess — no workout data and sync is ' + dataGapDays + ' days stale. Fix sync or log manually first.'};
-  } else if(gapDays === null || gapDays <= 3){
-    tier = 'RESUME';
-    planAdjustment = {action:'none', note:'On track — resume/reshuffle within the current week.'};
-  } else if(gapDays <= 7){
-    tier = 'REDUCE_INTENSITY';
-    planAdjustment = {action:'reduce_intensity', days:2, note:'Reduce intensity for 2 days, then resume plan as written.'};
-  } else if(gapDays <= 14){
-    var wksBack = gapDays <= 10 ? 1 : 2;
-    tier = 'ROLL_BACK_WEEKS';
-    planAdjustment = {action:'roll_back_weeks', weeks:wksBack, note:'Roll plan position back ' + wksBack + ' week(s).'};
-  } else if(gapDays <= 28){
-    tier = 'DROP_PHASE';
-    planAdjustment = {action:'drop_phase', note:'Drop back one training phase — re-enter 2 weeks before the current phase began.'};
-  } else {
-    tier = 'ASSESSMENT_WEEK';
-    planAdjustment = {action:'assessment_week', note:'Re-test protocol: 2 easy runs + one 20-min steady effort this week, then re-place from results.'};
-  }
-
-  _gapAssessment = {
-    gapDays: gapDays, dataGapDays: dataGapDays, tier: tier, planAdjustment: planAdjustment,
-    planned14: planned14, completed14: completed14,
-    lastWorkoutDate: lastWorkoutDate,
-    currentWeek: typeof getWk === 'function' ? getWk(now) : null,
-    reason: (D.gapReason && D.gapReason.text) || null
-  };
-
-  // Auto-apply plan re-placement ONCE per distinct gap (guarded by
-  // signature so re-opening KODA doesn't roll the plan back repeatedly).
-  try{
-    var sig = tier + '|' + (lastWorkoutDate||'none');
-    var applied = D.gapProtocol && D.gapProtocol.appliedSig;
-    if((tier === 'ROLL_BACK_WEEKS' || tier === 'DROP_PHASE' || tier === 'ASSESSMENT_WEEK') && applied !== sig){
-      await applyGapAdjustment(_gapAssessment);
-      if(!D.gapProtocol) D.gapProtocol = {};
-      D.gapProtocol.appliedSig = sig;
-      D.gapProtocol.appliedAt = new Date().toISOString();
-      saveData();
-    }
-  }catch(e){ console.warn('[GapProtocol] apply:', e && e.message); }
-
-  return _gapAssessment;
-}
-
-// Writes the rolled-back position so the WHOLE app reflects it, not just chat.
-// Week N is derived from D.settings.start via getWk(), so rolling back K weeks
-// moves the start date K*7 days later. Durable copy goes to plan_position.
-async function applyGapAdjustment(assessment){
-  var a = assessment || _gapAssessment;
-  if(!a || !a.planAdjustment) return false;
-  var adj = a.planAdjustment;
-  var weeksBack = 0;
-
-  if(adj.action === 'roll_back_weeks') weeksBack = adj.weeks || 1;
-
-  if(adj.action === 'drop_phase' && a.currentWeek){
-    var targetWeek;
-    if(typeof PHASE_TARGETS !== 'undefined'){
-      var cur = PHASE_TARGETS.find(function(p){ return a.currentWeek >= p.wks[0] && a.currentWeek <= p.wks[1]; });
-      targetWeek = cur ? Math.max(1, cur.wks[0] - 2) : Math.max(1, a.currentWeek - 4);
-    } else {
-      targetWeek = Math.max(1, a.currentWeek - 4);
-    }
-    weeksBack = Math.max(0, a.currentWeek - targetWeek);
-  }
-
-  if(adj.action === 'assessment_week'){
-    // Plan position is decided AFTER the re-test; only mark the week as started.
-    if(!D.gapProtocol) D.gapProtocol = {};
-    D.gapProtocol.assessmentWeekStarted = new Date().toISOString().slice(0,10);
-    saveData();
-  }
-
-  if(weeksBack > 0){
-    var start = new Date(D.settings.start + 'T12:00:00');
-    start.setDate(start.getDate() + weeksBack*7);
-    D.settings.start = start.toISOString().slice(0,10);
-    saveData();
-    if(typeof renderPlan === 'function') try{ renderPlan(); }catch(e){}
-    if(typeof renderTrainingSummary === 'function') try{ renderTrainingSummary(); }catch(e){}
-  }
-
-  // Durable position → Supabase plan_position (silent no-op if table missing)
-  if(typeof currentUser !== 'undefined' && currentUser && typeof sbClient !== 'undefined' && sbClient){
-    var wk = typeof getWk === 'function' ? getWk(new Date()) : null;
-    var ph = null;
-    if(typeof PHASE_TARGETS !== 'undefined' && wk){
-      var pt = PHASE_TARGETS.find(function(p){ return wk >= p.wks[0] && wk <= p.wks[1]; });
-      if(pt) ph = pt.name;
-    }
-    try{
-      var pr = await sbClient.from('plan_position').upsert({
-        user_id: currentUser.id, plan_start: D.settings.start, week_num: wk, phase: ph,
-        last_adjustment: adj.action, updated_at: new Date().toISOString()
-      }, {onConflict:'user_id'});
-      if(pr.error) console.warn('[GapProtocol] plan_position:', pr.error.message);
-    }catch(e){}
-  }
-  return true;
-}
-
-// Appended to buildKodaContext() output — reaches every KODA path
-// (edge-function greeting, direct Anthropic, streaming).
-function buildGapContext(){
-  var a = _gapAssessment;
-  if(!a) return '';
-  var L = [];
-  L.push('\nGAP PROTOCOL ASSESSMENT:');
-  L.push('  Days since last workout: ' + (a.gapDays === null ? 'UNKNOWN' : a.gapDays));
-  L.push('  Days since last data sync: ' + (a.dataGapDays >= 999 ? 'NEVER' : a.dataGapDays));
-  L.push('  Last 14 days: ' + a.completed14 + ' completed of ~' + a.planned14 + ' planned sessions');
-  L.push('  TIER: ' + a.tier + ' — ' + a.planAdjustment.note);
-  if(a.reason) L.push('  Athlete-stated reason for the gap: "' + a.reason + '" — adjust TONE to this, never the math.');
-  L.push('  KODA GAP RULES:');
-  if(a.tier !== 'RESUME'){
-    L.push('  - You MUST address this gap in your FIRST message, before any workout prescription.');
-    if(!a.reason){
-      L.push('  - Ask WHY the gap happened (injury? life? motivation?). When the athlete answers, append the tag [GAP_REASON: their answer] to the END of your reply so the app stores it. The reason changes your tone, never the math.');
-    }
-  }
-  if(a.tier === 'DATA_MISSING'){
-    L.push('  - Data is missing — that is NOT proof training stopped. REFUSE to prescribe quality workouts. First step: fix sync (Connect tab) or log recent sessions manually. Easy aerobic running only until data exists.');
-  }
-  if(a.tier === 'ASSESSMENT_WEEK'){
-    L.push('  - Prescribe the re-test week: 2 easy runs + one 20-minute steady effort. After the results are in, the athlete will be re-placed in the plan from actual fitness, not the calendar.');
-  }
-  L.push('  - NEVER guilt-trip. Direct, warm, forward-looking. The gap is data, not failure.');
-  L.push('  - Workouts with source "manual" are athlete-reported: valid but unverified — trust the athlete, note the flag.');
-  return L.join('\n');
-}
-
-// Parses [GAP_REASON: ...] from KODA replies (same pattern as CHIZAL memories)
-function extractGapReason(text){
-  try{
-    if(!text) return;
-    var m = String(text).match(/\[GAP_REASON:\s*([^\]]+)\]/i);
-    if(!m) return;
-    D.gapReason = {text: m[1].trim(), date: new Date().toISOString().slice(0,10)};
-    saveData();
-    if(typeof currentUser !== 'undefined' && currentUser && typeof sbClient !== 'undefined' && sbClient){
-      sbClient.from('gap_responses').insert({user_id: currentUser.id, reason: m[1].trim()})
-        .then(function(r){ if(r.error) console.warn('[GapProtocol] gap_responses:', r.error.message); });
-    }
-  }catch(e){}
-}
-
-// Manual workout log fallback — athlete-reported, valid but unverified.
-async function logManualWorkout(date, minutes, effort){
-  if(!date || !minutes){ if(typeof showToast==='function') showToast('Need a date and duration','error'); return false; }
-  effort = Math.max(1, Math.min(10, parseInt(effort)||5));
-  if(!D.workouts) D.workouts = [];
-  D.workouts.push({date: date, name: 'Manual log', dur: parseInt(minutes), dist: 0, effort: effort, source: 'manual', verified: false});
-  if(typeof deduplicateWorkouts === 'function') deduplicateWorkouts();
-  saveData();
-  if(typeof currentUser !== 'undefined' && currentUser && typeof sbClient !== 'undefined' && sbClient){
-    try{
-      var r = await sbClient.from('workouts').insert({
-        user_id: currentUser.id, date: date, minutes: parseInt(minutes), distance_mi: 0,
-        workout_type: 'manual', effort: effort, source: 'manual', verified: false
-      });
-      if(r.error) console.warn('[GapProtocol] manual workout:', r.error.message);
-    }catch(e){}
-  }
-  if(typeof showToast === 'function') showToast('Workout logged (manual — unverified)','ok');
-  // Re-assess: the gap may have just closed
-  assessTrainingGap().catch(function(){});
-  return true;
-}
-
-window.assessTrainingGap = assessTrainingGap;
-window.applyGapAdjustment = applyGapAdjustment;
-window.logManualWorkout = logManualWorkout;
-/* ================== END GAP PROTOCOL ================== */
-
 function connectGarmin(){
   var ahConnected=!!localStorage.getItem('gedyon_apple_health_connected');
   var modal=document.createElement('div');
@@ -18840,7 +19285,7 @@ async function logFoodNLP(query,dateStr){
 }
 var INTEGRATION_ICONS={appleHealth:'<svg viewBox="0 0 20 20" fill="none"><path d="M10 17s-7-4.5-7-9a4 4 0 0 1 7-2.65A4 4 0 0 1 17 8c0 4.5-7 9-7 9z" fill="#FF3B5C" opacity="0.18"/><path d="M10 17s-7-4.5-7-9a4 4 0 0 1 7-2.65A4 4 0 0 1 17 8c0 4.5-7 9-7 9z" stroke="#FF3B5C" stroke-width="1.4" fill="none"/><polyline points="4,10 7,8 9,12 11,7 13,9.5 16,9.5" stroke="#FF3B5C" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>',garmin:'<svg viewBox="0 0 20 20" fill="none"><rect x="6" y="3" width="8" height="14" rx="3" stroke="#00B4E6" stroke-width="1.4"/><circle cx="10" cy="10" r="3.2" stroke="#00B4E6" stroke-width="1.2"/><line x1="10" y1="6.8" x2="10" y2="7.8" stroke="#00B4E6" stroke-width="1.2" stroke-linecap="round"/><line x1="10" y1="12.2" x2="10" y2="13.2" stroke="#00B4E6" stroke-width="1.2" stroke-linecap="round"/><line x1="6.8" y1="10" x2="7.8" y2="10" stroke="#00B4E6" stroke-width="1.2" stroke-linecap="round"/><line x1="12.2" y1="10" x2="13.2" y2="10" stroke="#00B4E6" stroke-width="1.2" stroke-linecap="round"/><circle cx="10" cy="10" r="1.1" fill="#00B4E6"/></svg>',strava:'<svg viewBox="0 0 20 20" fill="none"><polyline points="6,18 10,8 12.5,13" stroke="#FC4C02" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><polyline points="9.5,13 12.5,13 16,5" stroke="#FC4C02" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>',whoop:'<svg viewBox="0 0 20 20" fill="none"><rect x="5" y="5" width="10" height="10" rx="2.5" stroke="#00F19F" stroke-width="1.4"/><line x1="5" y1="3.5" x2="7" y2="3.5" stroke="#00F19F" stroke-width="1.3" stroke-linecap="round"/><line x1="13" y1="3.5" x2="15" y2="3.5" stroke="#00F19F" stroke-width="1.3" stroke-linecap="round"/><line x1="5" y1="16.5" x2="7" y2="16.5" stroke="#00F19F" stroke-width="1.3" stroke-linecap="round"/><line x1="13" y1="16.5" x2="15" y2="16.5" stroke="#00F19F" stroke-width="1.3" stroke-linecap="round"/><polyline points="7,10.5 9,8.5 11,12 13,9" stroke="#00F19F" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>',oura:'<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="6.5" stroke="#A78BFA" stroke-width="1.4"/><circle cx="10" cy="10" r="3.5" stroke="#A78BFA" stroke-width="1.2" opacity="0.5"/><circle cx="10" cy="4.5" r="1.2" fill="#A78BFA"/><path d="M10 5.7 A4.3 4.3 0 0 1 14.3 10" stroke="#A78BFA" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>',mfp:'<svg viewBox="0 0 20 20" fill="none"><circle cx="7" cy="5" r="2" stroke="#0077CC" stroke-width="1.3" fill="none"/><path d="M5 5 C5 11 7 13 7 17" stroke="#0077CC" stroke-width="1.3" stroke-linecap="round" fill="none"/><path d="M7 8 C9 6 12 7 12 10 C12 13 9 14 9 17" stroke="#0077CC" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>'};
 function _integrationCard(o){var pill=o.connected?'<span class="integ-pill integ-connected"><span class="integ-dot"></span>CONNECTED</span>':'<button class="integ-btn" onclick="event.stopPropagation();'+o.connectFn+'();">CONNECT</button>';var syncLine=o.connected&&o.lastSync?'<div class="integ-sync">Synced '+o.lastSync+'</div>':o.connected?'<div class="integ-sync">Synced recently</div>':'';var sa=o.connected?' style="--_ac:'+o.accentColor+'"':'';return'<div class="integ-card'+(o.connected?' integ-card--on':'')+'" data-key="'+o.key+'"'+sa+(o.connected?'':' onclick="'+o.connectFn+'()"')+'><div class="integ-icon-wrap" style="--ic:'+o.accentColor+'">'+o.icon+'</div><div class="integ-info"><div class="integ-name">'+o.name+'</div><div class="integ-desc">'+o.desc+'</div>'+syncLine+'</div><div class="integ-action">'+pill+'</div></div>';}
-function renderIntegrationsHub(){var st=checkIntegrationStatuses();function ls(k){var ts=localStorage.getItem(k+'_last_sync');if(!ts)return null;var d=new Date(parseInt(ts,10));var diff=Math.round((Date.now()-d)/60000);if(diff<2)return'just now';if(diff<60)return diff+'m ago';if(diff<1440)return Math.round(diff/60)+'h ago';return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});}var integs=[{key:'appleHealth',icon:INTEGRATION_ICONS.appleHealth,name:'Apple Health',desc:'Sleep \u00b7 HRV \u00b7 Steps \u00b7 Workouts',accentColor:'#FF3B5C',connectFn:'connectAppleHealth',connected:st.appleHealth,lastSync:ls('gedyon_apple_health_connected')},{key:'garmin',icon:INTEGRATION_ICONS.garmin,name:'Garmin Connect',desc:'GPS \u00b7 Body Battery \u00b7 Training Load',accentColor:'#00B4E6',connectFn:'connectGarmin',connected:st.garmin,lastSync:ls('gedyon_garmin_token')},{key:'strava',icon:INTEGRATION_ICONS.strava,name:'Strava',desc:'Runs \u00b7 Rides \u00b7 Activities',accentColor:'#FC4C02',connectFn:'connectStrava',connected:st.strava,lastSync:ls('gedyon_strava_token')},{key:'whoop',icon:INTEGRATION_ICONS.whoop,name:'WHOOP',desc:'Recovery \u00b7 Strain \u00b7 Sleep',accentColor:'#00F19F',connectFn:'connectWhoop',connected:st.whoop,lastSync:ls('gedyon_whoop_token')},{key:'oura',icon:INTEGRATION_ICONS.oura,name:'Oura Ring',desc:'Readiness \u00b7 Sleep Stages \u00b7 HRV',accentColor:'#A78BFA',connectFn:'connectOura',connected:st.oura,lastSync:ls('gedyon_oura_token')},{key:'mfp',icon:INTEGRATION_ICONS.mfp,name:'Nutritionix',desc:'Calories \u00b7 Macros \u00b7 Nutrition',accentColor:'#0077CC',connectFn:'connectMyFitnessPal',connected:st.mfp,lastSync:ls('gedyon_mfp_token')}];var cnt=integs.filter(function(i){return i.connected;}).length;return'<style>.integ-hub{display:flex;flex-direction:column;gap:0;border-radius:16px;overflow:hidden;border:1px solid var(--border);background:var(--card)}.integ-hub-header{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 11px;border-bottom:1px solid var(--border);background:var(--card2)}.integ-hub-title{font-family:\'SF Mono\',monospace;font-size:11px;letter-spacing:.12em;color:var(--grey);text-transform:uppercase}.integ-hub-count{font-family:\'SF Mono\',monospace;font-size:11px;color:var(--accent);letter-spacing:.06em}.integ-card{display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .18s ease;-webkit-tap-highlight-color:transparent;position:relative}.integ-card:last-child{border-bottom:none}.integ-card:active{background:rgba(255,255,255,.04)}.integ-card--on{cursor:default}.integ-card--on::before{content:\'\';position:absolute;left:0;top:8px;bottom:8px;width:2.5px;background:var(--_ac,#30D158);border-radius:0 2px 2px 0;opacity:.65}.integ-icon-wrap{flex-shrink:0;width:42px;height:42px;border-radius:12px;background:color-mix(in srgb,var(--ic) 13%,transparent);border:1px solid color-mix(in srgb,var(--ic) 26%,transparent);display:flex;align-items:center;justify-content:center;padding:10px;box-sizing:border-box}.integ-icon-wrap svg{width:100%;height:100%;display:block}.integ-info{flex:1;min-width:0}.integ-name{font-family:Impact,\'Arial Narrow\',sans-serif;font-size:15px;letter-spacing:.04em;color:var(--white);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.integ-desc{font-family:\'SF Mono\',monospace;font-size:10px;letter-spacing:.05em;color:var(--grey);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.integ-sync{font-family:\'SF Mono\',monospace;font-size:9.5px;color:#30D158;margin-top:3px;letter-spacing:.04em;opacity:.8}.integ-action{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end}.integ-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:20px;font-family:\'SF Mono\',monospace;font-size:10px;letter-spacing:.1em;font-weight:600;white-space:nowrap}.integ-connected{background:rgba(48,209,88,.11);border:1px solid rgba(48,209,88,.3);color:#30D158}.integ-dot{width:5px;height:5px;border-radius:50%;background:#30D158;flex-shrink:0;box-shadow:0 0 5px #30D158;animation:integ-pulse 2.6s ease-in-out infinite}@keyframes integ-pulse{0%,100%{opacity:1}50%{opacity:.35}}.integ-btn{padding:5px 13px;border-radius:20px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-family:\'SF Mono\',monospace;font-size:10px;letter-spacing:.12em;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .18s,color .18s,box-shadow .18s,transform .1s;-webkit-tap-highlight-color:transparent}.integ-btn:hover{background:var(--accent);color:#000;box-shadow:0 0 14px rgba(201,168,76,.38)}.integ-btn:active{transform:scale(.95)}.integ-footer{font-family:\'SF Mono\',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--grey);opacity:.5;text-align:center;padding:10px 16px 12px;border-top:1px solid var(--border);background:var(--card2);line-height:1.7}</style><div class="integ-hub"><div class="integ-hub-header"><span class="integ-hub-title">Connected Apps</span><span class="integ-hub-count">'+cnt+' / '+integs.length+' ACTIVE</span></div>'+integs.map(function(i){return _integrationCard(i);}).join('')+'<div class="integ-footer">All data syncs automatically &middot; Stored locally on your device</div></div>';}
+function renderIntegrationsHub(){var st=checkIntegrationStatuses();function ls(k){var ts=localStorage.getItem(k+'_last_sync');if(!ts)return null;var d=new Date(parseInt(ts,10));var diff=Math.round((Date.now()-d)/60000);if(diff<2)return'just now';if(diff<60)return diff+'m ago';if(diff<1440)return Math.round(diff/60)+'h ago';return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});}var integs=[{key:'appleHealth',icon:INTEGRATION_ICONS.appleHealth,name:'Apple Health',desc:'Sleep \u00b7 HRV \u00b7 Steps \u00b7 Workouts',accentColor:'#FF3B5C',connectFn:'connectAppleHealth',connected:st.appleHealth,lastSync:ls('gedyon_apple_health_connected')},{key:'garmin',icon:INTEGRATION_ICONS.garmin,name:'Garmin Connect',desc:'GPS \u00b7 Body Battery \u00b7 Training Load',accentColor:'#00B4E6',connectFn:'connectGarmin',connected:st.garmin,lastSync:ls('gedyon_garmin_token')},{key:'strava',icon:INTEGRATION_ICONS.strava,name:'Strava',desc:'Runs \u00b7 Rides \u00b7 Activities',accentColor:'#FC4C02',connectFn:'connectStrava',connected:st.strava,lastSync:ls('gedyon_strava_token')},{key:'whoop',icon:INTEGRATION_ICONS.whoop,name:'WHOOP',desc:'Recovery \u00b7 Strain \u00b7 Sleep',accentColor:'#00F19F',connectFn:'connectWhoop',connected:st.whoop,lastSync:ls('gedyon_whoop_token')},{key:'oura',icon:INTEGRATION_ICONS.oura,name:'Oura Ring',desc:'Readiness \u00b7 Sleep Stages \u00b7 HRV',accentColor:'#A78BFA',connectFn:'connectOura',connected:st.oura,lastSync:ls('gedyon_oura_token')},{key:'mfp',icon:INTEGRATION_ICONS.mfp,name:'MyFitnessPal',desc:'Calories \u00b7 Macros \u00b7 Nutrition',accentColor:'#0077CC',connectFn:'connectMyFitnessPal',connected:st.mfp,lastSync:ls('gedyon_mfp_token')}];var cnt=integs.filter(function(i){return i.connected;}).length;return'<style>.integ-hub{display:flex;flex-direction:column;gap:0;border-radius:16px;overflow:hidden;border:1px solid var(--border);background:var(--card)}.integ-hub-header{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 11px;border-bottom:1px solid var(--border);background:var(--card2)}.integ-hub-title{font-family:\'SF Mono\',monospace;font-size:11px;letter-spacing:.12em;color:var(--grey);text-transform:uppercase}.integ-hub-count{font-family:\'SF Mono\',monospace;font-size:11px;color:var(--accent);letter-spacing:.06em}.integ-card{display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .18s ease;-webkit-tap-highlight-color:transparent;position:relative}.integ-card:last-child{border-bottom:none}.integ-card:active{background:rgba(255,255,255,.04)}.integ-card--on{cursor:default}.integ-card--on::before{content:\'\';position:absolute;left:0;top:8px;bottom:8px;width:2.5px;background:var(--_ac,#30D158);border-radius:0 2px 2px 0;opacity:.65}.integ-icon-wrap{flex-shrink:0;width:42px;height:42px;border-radius:12px;background:color-mix(in srgb,var(--ic) 13%,transparent);border:1px solid color-mix(in srgb,var(--ic) 26%,transparent);display:flex;align-items:center;justify-content:center;padding:10px;box-sizing:border-box}.integ-icon-wrap svg{width:100%;height:100%;display:block}.integ-info{flex:1;min-width:0}.integ-name{font-family:Impact,\'Arial Narrow\',sans-serif;font-size:15px;letter-spacing:.04em;color:var(--white);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.integ-desc{font-family:\'SF Mono\',monospace;font-size:10px;letter-spacing:.05em;color:var(--grey);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.integ-sync{font-family:\'SF Mono\',monospace;font-size:9.5px;color:#30D158;margin-top:3px;letter-spacing:.04em;opacity:.8}.integ-action{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end}.integ-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:20px;font-family:\'SF Mono\',monospace;font-size:10px;letter-spacing:.1em;font-weight:600;white-space:nowrap}.integ-connected{background:rgba(48,209,88,.11);border:1px solid rgba(48,209,88,.3);color:#30D158}.integ-dot{width:5px;height:5px;border-radius:50%;background:#30D158;flex-shrink:0;box-shadow:0 0 5px #30D158;animation:integ-pulse 2.6s ease-in-out infinite}@keyframes integ-pulse{0%,100%{opacity:1}50%{opacity:.35}}.integ-btn{padding:5px 13px;border-radius:20px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-family:\'SF Mono\',monospace;font-size:10px;letter-spacing:.12em;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .18s,color .18s,box-shadow .18s,transform .1s;-webkit-tap-highlight-color:transparent}.integ-btn:hover{background:var(--accent);color:#000;box-shadow:0 0 14px rgba(201,168,76,.38)}.integ-btn:active{transform:scale(.95)}.integ-footer{font-family:\'SF Mono\',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--grey);opacity:.5;text-align:center;padding:10px 16px 12px;border-top:1px solid var(--border);background:var(--card2);line-height:1.7}</style><div class="integ-hub"><div class="integ-hub-header"><span class="integ-hub-title">Connected Apps</span><span class="integ-hub-count">'+cnt+' / '+integs.length+' ACTIVE</span></div>'+integs.map(function(i){return _integrationCard(i);}).join('')+'<div class="integ-footer">All data syncs automatically &middot; Stored locally on your device</div></div>';}
 function initIntegrationsHub(){var el=$('integrationsHub');if(el)el.innerHTML=renderIntegrationsHub();}
 // Integration button aliases — hub cards call these names
 window.connectStrava=function(){stravaConnectServer();};
@@ -19829,30 +20274,24 @@ ${whoopDesc}
 Grade this workout execution and give me exactly 2 sentences of coaching feedback. Reference the actual numbers. End with a concrete recommendation for tomorrow.`;
 
   try {
-    // Primary: KODA edge function (always available). Fallback: Railway proxy.
-    let analysis = '';
-    try {
-      const resp = await fetch(KODA_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': KODA_TOKEN },
-        body: JSON.stringify({ messages: [{ role: 'user', content: systemPrompt + '\n\n' + userMessage }], athleteContext: '' })
-      });
-      if(resp.ok){ const d = await resp.json(); analysis = d.reply || ''; }
-    } catch(e) {}
-    if(!analysis){
-      const serverUrl = (typeof D !== 'undefined' && D.settings?.serverUrl)
-        ? D.settings.serverUrl
-        : (localStorage.getItem('gedyon_server_url') || 'https://gedyon-server-production.up.railway.app');
-      const endpoint = serverUrl.replace(/\/+$/, '') + '/api/chat';
-      const resp2 = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system: systemPrompt, messages: [{ role: 'user', content: userMessage }], max_tokens: 180 })
-      });
-      if(!resp2.ok) throw new Error('Server responded ' + resp2.status);
-      const data = await resp2.json();
-      analysis = data.reply || data.content?.[0]?.text || '';
-    }
+    const serverUrl = (typeof D !== 'undefined' && D.settings?.serverUrl)
+      ? D.settings.serverUrl
+      : (localStorage.getItem('gedyon_server_url') || 'https://gedyon-server-production.up.railway.app');
+    const cleanUrl = serverUrl.replace(/\/+$/, '');
+    const endpoint = cleanUrl + '/api/chat';
+
+    const resp = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMessage }],
+        max_tokens: 180
+      })
+    });
+    if(!resp.ok) throw new Error('Server responded ' + resp.status);
+    const data = await resp.json();
+    const analysis = data.reply || data.content?.[0]?.text || '';
     if(!analysis) throw new Error('Empty analysis');
 
     localStorage.setItem(cacheKey, '1');
@@ -20437,8 +20876,6 @@ function buildKodaContext() {
     lines.push('  KODA VOICE: reads data first, asks how race felt, gives one clear verdict. Never says "level up" without checking ALL metrics first.');
 
   } catch(e) {}
-  // GAP PROTOCOL: assessment + behavior rules ride along in every context build
-  try { var _gapBlock = typeof buildGapContext === 'function' ? buildGapContext() : ''; if(_gapBlock) lines.push(_gapBlock); } catch(e) {}
   return lines.join('\n');
 }
 
@@ -20750,25 +21187,13 @@ Athlete context:\n${ctx}`;
   }
 
   async function trySupabase() {
-    const headers = { 'Content-Type': 'application/json', 'Authorization': KODA_TOKEN };
-    // Prefer the signed-in user's JWT so the server can meter per-user
-    try {
-      if (typeof sbClient !== 'undefined' && sbClient) {
-        const { data: s } = await sbClient.auth.getSession();
-        if (s && s.session) headers['Authorization'] = 'Bearer ' + s.session.access_token;
-      }
-    } catch(e) {}
     const res = await fetch(KODA_ENDPOINT, {
       method: 'POST',
-      headers,
+      headers: { 'Content-Type': 'application/json', 'Authorization': KODA_TOKEN },
       body: JSON.stringify({ messages: history, athleteContext: ctx })
     });
-    const data = await res.json().catch(() => ({}));
-    if (data.code === 'LIMIT_REACHED') { const err = new Error('limit'); err.kodaCode = data.code; err.used = data.used; err.limit = data.limit; throw err; }
-    if (data.code === 'CAPACITY')      { const err = new Error('capacity'); err.kodaCode = data.code; throw err; }
-    if (data.code === 'AUTH_REQUIRED') { const err = new Error('auth'); err.kodaCode = data.code; throw err; }
     if (!res.ok) throw new Error('supabase_' + res.status);
-    if (typeof kodaUpdateFreeCounter === 'function') kodaUpdateFreeCounter(data.used, data.limit);
+    const data = await res.json();
     return data.reply || data.error || 'No response';
   }
 
@@ -20776,11 +21201,17 @@ Athlete context:\n${ctx}`;
     let reply;
     const storedKey = localStorage.getItem('gedyon_anthropic_key');
     if (storedKey) {
-      // Owner path: a previously-stored key still streams direct (keeps log_pr tool use).
-      // There is no UI to add a new key — the edge function is the standard path.
+      // Key available — streaming direct (text already on screen)
       reply = await tryDirectAnthropic();
     } else {
-      reply = await trySupabase();
+      // No key — try Supabase, fall back to setup
+      try { reply = await trySupabase(); }
+      catch(supaErr) {
+        kodaMirrorSpeak(false); kodaSetState('idle');
+        kodaAppendMsg('assistant', 'KODA NEURAL LINK REQUIRES ACTIVATION — tap the ⚡ icon below to enter your Anthropic API key. One-time setup. Stored locally, never sent anywhere except Anthropic.');
+        showKodaKeySetup();
+        return;
+      }
     }
     kodaMirrorSpeak(false);
     // Streamed path: text already rendered → only update history log
@@ -20804,62 +21235,61 @@ Athlete context:\n${ctx}`;
       if (typeof kodaFocusPanel === 'function') kodaFocusPanel(kodaDetectFocus(reply));
     }
     kodaHistory.push({ role: 'assistant', content: reply });
-    if (typeof extractGapReason === 'function') extractGapReason(reply); // GAP PROTOCOL
     setTimeout(() => kodaSetState('idle'), Math.min(reply.length * 8, 4000));
   } catch(e) {
     window._kodaStreaming = false;
     kodaMirrorSpeak(false);
     kodaSetState('idle');
-    if (e.kodaCode === 'LIMIT_REACHED') {
-      kodaAppendMsg('assistant', "You've used your " + (e.limit || 25) + " free KODA sessions this month. Unlimited coaching — $9.99/mo.");
-      showKodaPaywall(e.used, e.limit);
-    } else if (e.kodaCode === 'CAPACITY') {
-      kodaAppendMsg('assistant', 'KODA is at capacity today — back tomorrow.');
-    } else if (e.kodaCode === 'AUTH_REQUIRED') {
-      kodaAppendMsg('assistant', 'Sign in to talk to KODA — your free coaching sessions are tied to your account. Settings → Sign In.');
+    const errMsg = e.message || '';
+    if (errMsg.includes('no_key')) {
+      kodaAppendMsg('assistant', 'KODA ENGINE OFFLINE — Tap the ◈ key icon to connect your Anthropic API key and bring KODA online.');
+      showKodaKeySetup();
     } else {
-      kodaAppendMsg('assistant', 'TRANSMISSION FAILED · ' + (e.message || '').toUpperCase().slice(0,60) + ' · RETRY OR CHECK CONNECTION');
+      kodaAppendMsg('assistant', 'TRANSMISSION FAILED · ' + errMsg.toUpperCase().slice(0,60) + ' · RETRY OR CHECK CONNECTION');
     }
   }
 }
 
-// ── KODA MONETIZATION UI ─────────────────────────────────────────
-// Server (koda-chat edge function) is the sole enforcer; this is display only.
-function kodaUpdateFreeCounter(used, limit) {
-  if (typeof used !== 'number' || typeof limit !== 'number') return;
-  localStorage.setItem('gedyon_koda_used', JSON.stringify({used: used, limit: limit, month: new Date().toISOString().slice(0,7)}));
-  const el = document.getElementById('koda-free-left');
-  if (!el) return;
-  const left = Math.max(0, limit - used);
-  if (left < 10) { el.textContent = left + ' FREE LEFT'; el.style.display = 'inline'; }
-  else el.style.display = 'none';
-}
-
-function showKodaPaywall(used, limit) {
-  if (document.getElementById('koda-paywall-modal')) return;
+function showKodaKeySetup() {
+  if (document.getElementById('koda-key-modal')) return;
+  var existing = localStorage.getItem('gedyon_anthropic_key') || '';
   var overlay = document.createElement('div');
-  overlay.id = 'koda-paywall-modal';
+  overlay.id = 'koda-key-modal';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.85);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);';
-  overlay.innerHTML = '<div style="background:#0d0d1a;border:1.5px solid rgba(74,158,255,0.4);border-radius:20px 20px 0 0;padding:28px 24px 40px;width:100%;max-width:480px;box-sizing:border-box;">'
-    + '<div style="font-family:Impact,sans-serif;font-size:22px;letter-spacing:2px;color:#e8f4ff;margin-bottom:8px;">KODA UNLIMITED</div>'
-    + '<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:rgba(255,255,255,.55);line-height:1.9;margin-bottom:18px;">You\'ve used your ' + (limit||25) + ' free KODA sessions this month.<br>Unlimited coaching — <strong style="color:#FFB84D;">$9.99/mo</strong>.</div>'
-    + '<div style="background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.18);border-radius:12px;padding:14px;margin-bottom:18px;font-family:\'SF Mono\',monospace;font-size:11px;color:rgba(255,255,255,.5);line-height:2;">'
-    + '✓ Unlimited KODA conversations<br>✓ Morning check-ins &amp; race analysis<br>✓ Gap Protocol re-placement<br>✓ Food–performance intelligence</div>'
-    + '<button onclick="kodaStartSubscribe()" style="width:100%;padding:15px;background:linear-gradient(135deg,#4A9EFF,#7C4DFF);color:#fff;font-family:Impact,sans-serif;font-size:17px;letter-spacing:2px;border:none;border-radius:12px;cursor:pointer;margin-bottom:8px;">GO UNLIMITED — $9.99/MO</button>'
-    + '<button onclick="document.getElementById(\'koda-paywall-modal\').remove()" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,.1);color:#555;font-family:\'SF Mono\',monospace;font-size:11px;border-radius:10px;cursor:pointer;">Not now</button>'
-    + '</div>';
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#0d0d1a;border:1.5px solid rgba(74,158,255,0.4);border-radius:20px 20px 0 0;padding:28px 24px 36px;width:100%;max-width:480px;box-sizing:border-box;';
+  box.innerHTML = [
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">',
+    '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4A9EFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+    '<div style="font-family:Impact,sans-serif;font-size:20px;letter-spacing:2px;color:#e8f4ff;">CONNECT KODA</div>',
+    '</div>',
+    '<div style="font-size:10px;color:#555;margin-bottom:20px;line-height:1.8;font-family:monospace;">KODA needs an Anthropic API key to operate. Stored locally only — never sent anywhere except Anthropic.</div>',
+    '<div style="background:rgba(74,158,255,0.06);border:1px solid rgba(74,158,255,0.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:10px;color:#4A9EFF;line-height:1.9;font-family:monospace;">',
+    '1. Go to <strong>console.anthropic.com/keys</strong><br>2. Create a new API key<br>3. Paste it below</div>',
+    '<div style="font-size:10px;color:#444;margin-bottom:6px;letter-spacing:.1em;text-transform:uppercase;font-family:monospace;">Anthropic API Key</div>',
+    '<input id="koda-key-input" type="password" placeholder="sk-ant-api03-..." autocomplete="off" style="width:100%;padding:12px 14px;background:#050508;border:1px solid rgba(74,158,255,0.3);border-radius:10px;color:#e8f4ff;font-family:monospace;font-size:12px;margin-bottom:16px;box-sizing:border-box;outline:none;-webkit-appearance:none;">',
+    '<button onclick="saveKodaKey()" style="width:100%;padding:14px;background:#4A9EFF;color:#000;font-family:Impact,sans-serif;font-size:16px;letter-spacing:2px;border:none;border-radius:10px;cursor:pointer;margin-bottom:8px;">CONNECT KODA</button>',
+    '<button onclick="document.getElementById(\'koda-key-modal\').remove()" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,.1);color:#555;font-family:monospace;font-size:11px;border-radius:10px;cursor:pointer;">Cancel</button>'
+  ].join('');
+  // Restore saved key if exists
+  if (existing) { var inp = box.querySelector('#koda-key-input'); if(inp) inp.value = existing; }
+  overlay.appendChild(box);
   document.body.appendChild(overlay);
-  overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
+  overlay.addEventListener('click', function(e) { if(e.target===overlay) overlay.remove(); });
+  setTimeout(function() { var inp=document.getElementById('koda-key-input'); if(inp){inp.focus();inp.select();} }, 150);
 }
-
-function kodaStartSubscribe() {
-  // On iOS this hands off to RevenueCat/StoreKit via the Capacitor purchases
-  // plugin when present; on web there is no purchase flow yet.
-  try {
-    var P = window.Capacitor && window.Capacitor.Plugins && (window.Capacitor.Plugins.Purchases || window.Capacitor.Plugins.RevenueCat);
-    if (P && P.purchasePackage) { showToast('Opening subscription...', 'ok'); return; }
-  } catch(e) {}
-  showToast('Subscriptions are coming to the iOS app — for now KODA resets on the 1st of each month', 'info');
+function saveKodaKey() {
+  var inp = document.getElementById('koda-key-input');
+  if (!inp || !inp.value.trim()) { showToast('Paste your API key first', 'error'); return; }
+  var key = inp.value.trim();
+  if (!key.startsWith('sk-ant')) { showToast('Should start with sk-ant-api03-...', 'error'); return; }
+  localStorage.setItem('gedyon_anthropic_key', key);
+  // Update connection status dot
+  var dot = document.getElementById('koda-key-status');
+  if (dot) { dot.classList.add('connected'); }
+  document.getElementById('koda-key-modal').remove();
+  showToast('KODA connected — sending your message...', 'ok');
+  setTimeout(kodaSend, 500);
 }
 
 function kodaAppendMsg(role, text) {
@@ -21636,14 +22066,9 @@ function kodaPopulatePanels() {
   var dot = document.getElementById('koda-key-status');
   if (dot) {
     var hasKey = !!localStorage.getItem('gedyon_anthropic_key');
-    dot.classList.toggle('connected', true); // edge function is always the online path
-    dot.title = hasKey ? 'KODA CONNECTED — direct Anthropic API' : 'KODA CONNECTED — GEDYON cloud';
+    dot.classList.toggle('connected', hasKey);
+    dot.title = hasKey ? 'KODA CONNECTED — direct Anthropic API' : 'KODA OFFLINE — tap ⚡ to connect';
   }
-  // Restore free-messages counter from the last server-reported value (same month only)
-  try {
-    var uc = JSON.parse(localStorage.getItem('gedyon_koda_used') || 'null');
-    if (uc && uc.month === new Date().toISOString().slice(0,7)) kodaUpdateFreeCounter(uc.used, uc.limit);
-  } catch(e) {}
   // Populate trials counter in header
   const trialsMs = new Date('2028-04-04') - new Date();
   const trialsDays = Math.max(0, Math.floor(trialsMs / 86400000));
@@ -22399,8 +22824,6 @@ async function kodaInit() {
   }
 
   const name = (typeof D !== 'undefined' && D.settings && D.settings.name) ? D.settings.name.split(' ')[0] : 'Elias';
-  // GAP PROTOCOL: assess (and auto-apply re-placement, once per gap) before building context
-  try { await assessTrainingGap(); } catch(e) { console.warn('[GapProtocol] assess:', e && e.message); }
   const ctx = buildKodaContext();
 
   // Detect recent race — if athlete just raced, open with that
@@ -22453,58 +22876,23 @@ ${ctx}`;
 
   const greeting = { role: 'user', content: greetingPrompt };
 
-  // KODA MORNING: if today's server-generated check-in exists and is unread,
-  // it IS the first bubble — no extra AI call, and it never costs a free message.
-  try {
-    const morning = await kodaFetchMorningMessage();
-    if (morning) {
-      kodaTypewriter(morning);
-      kodaHistory.push({ role: 'assistant', content: morning });
-      return;
-    }
-  } catch(e) {}
-
   kodaTypewriter('Initializing neural link...');
   kodaMirrorSpeak(true);
 
   try {
-    const headers = { 'Content-Type': 'application/json', 'Authorization': KODA_TOKEN };
-    try {
-      if (typeof sbClient !== 'undefined' && sbClient) {
-        const { data: s } = await sbClient.auth.getSession();
-        if (s && s.session) headers['Authorization'] = 'Bearer ' + s.session.access_token;
-      }
-    } catch(e) {}
     const res = await fetch(KODA_ENDPOINT, {
       method: 'POST',
-      headers,
+      headers: { 'Content-Type': 'application/json', 'Authorization': KODA_TOKEN },
       body: JSON.stringify({ messages: [greeting], athleteContext: ctx })
     });
     const data = await res.json();
-    if (data.code === 'CAPACITY') { kodaTypewriter('KODA is at capacity today — back tomorrow.'); kodaMirrorSpeak(false); return; }
-    if (data.code === 'LIMIT_REACHED') { kodaTypewriter(name + ' — you\'ve used your ' + (data.limit||25) + ' free sessions this month. Tap the counter below to go unlimited.'); kodaUpdateFreeCounter(data.used, data.limit); kodaMirrorSpeak(false); return; }
-    if (typeof kodaUpdateFreeCounter === 'function') kodaUpdateFreeCounter(data.used, data.limit);
     const reply = data.reply || ('Systems online. ' + name + ', what are we working on today?');
     kodaTypewriter(reply);
     kodaHistory.push({ role: 'assistant', content: reply });
-    if (typeof extractGapReason === 'function') extractGapReason(reply); // GAP PROTOCOL
   } catch(e) {
     kodaTypewriter('Systems online. ' + name + ', what are we working on today?');
   }
   kodaMirrorSpeak(false);
-}
-
-// ── KODA MORNING MESSAGE (server-initiated, koda-morning edge function) ──
-// Returns today's unread message text (and marks it read), else null.
-async function kodaFetchMorningMessage() {
-  if (typeof sbClient === 'undefined' || !sbClient || typeof currentUser === 'undefined' || !currentUser) return null;
-  const today = new Date().toISOString().slice(0, 10);
-  const { data, error } = await sbClient.from('koda_messages')
-    .select('id, message, read_at').eq('user_id', currentUser.id).eq('date', today).maybeSingle();
-  if (error || !data || !data.message || data.read_at) return null;
-  sbClient.from('koda_messages').update({ read_at: new Date().toISOString() }).eq('id', data.id)
-    .then(function(r){ if (r.error) console.warn('[KodaMorning] mark read:', r.error.message); });
-  return data.message;
 }
 
 function kodaQuick(prompt) {
