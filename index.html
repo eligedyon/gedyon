@@ -18554,6 +18554,31 @@ async function syncHealthData(){
       await sbClient.from('sync_state').upsert({
         user_id: currentUser.id, last_healthkit_sync: new Date().toISOString()
       }, {onConflict: 'user_id'}).then(function(r){ if(r.error) console.warn('[HealthSync] sync_state:', r.error.message); });
+
+      // ADAPTIVE LEARNING: land daily readiness rows (HRV/RHR/sleep by day)
+      // for the weekly reflection agent's rolling-baseline math.
+      try{
+        var byDate = {};
+        metrics.forEach(function(m){
+          if(!byDate[m.date]) byDate[m.date] = {};
+          byDate[m.date][m.metric] = m.value;
+        });
+        var readinessRows = Object.keys(byDate).map(function(d){
+          var v = byDate[d];
+          return {
+            user_id: currentUser.id, reading_date: d, source: 'HealthKit',
+            rmssd_ms: v.hrv != null ? v.hrv : null,
+            ln_rmssd: v.hrv != null && v.hrv > 0 ? Math.round(Math.log(v.hrv)*1000)/1000 : null,
+            resting_hr: v.resting_hr != null ? Math.round(v.resting_hr) : null,
+            sleep_hours: v.sleep_hours != null ? v.sleep_hours : null,
+            vo2max: v.vo2max != null ? v.vo2max : null
+          };
+        }).filter(function(r){ return r.rmssd_ms != null || r.resting_hr != null || r.sleep_hours != null; });
+        if(readinessRows.length){
+          await sbClient.from('readiness_daily').upsert(readinessRows, {onConflict: 'user_id,reading_date,source'})
+            .then(function(r){ if(r.error) console.warn('[HealthSync] readiness_daily:', r.error.message); });
+        }
+      }catch(e){ console.warn('[HealthSync] readiness:', e && e.message); }
     }
 
     localStorage.setItem(HK_LAST_SUCCESS_KEY, String(Date.now()));
@@ -19598,7 +19623,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.17-19'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.18-20'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
@@ -20109,6 +20134,25 @@ Grade this workout execution and give me exactly 2 sentences of coaching feedbac
 
     localStorage.setItem(cacheKey, '1');
     showPostWorkoutInsight(workout, grade, analysis);
+    // ADAPTIVE LEARNING: log prescribed-vs-actual once per analyzed workout
+    // (constrained RPC — the live coach's only write path; silent no-op if
+    // the learning schema isn't deployed yet)
+    try{
+      if (typeof sbClient !== 'undefined' && sbClient && typeof currentUser !== 'undefined' && currentUser) {
+        var _phName = null;
+        try{ if (typeof PHASE_TARGETS !== 'undefined' && typeof getWk === 'function'){ var _w = getWk(new Date()); var _p = PHASE_TARGETS.find(function(pt){ return _w >= pt.wks[0] && _w <= pt.wks[1]; }); if(_p) _phName = _p.name; } }catch(e){}
+        sbClient.rpc('koda_log_session', {
+          p_session_date: workout.date,
+          p_phase: _phName,
+          p_session_type: (plan && (plan.type || plan.name)) || workout.type || 'run',
+          p_prescribed: plan ? { name: plan.name || plan.type, mi: plan.mi || null, hr: plan.hr || null } : null,
+          p_actual: { dist_mi: workout.dist || 0, minutes: workout.dur || workout.duration || 0, avg_hr: workout.hr || null, completed_pct: grade ? grade.score : null },
+          p_feel_rpe: workout.effort || null,
+          p_feel_notes: null,
+          p_debrief_lesson: null
+        }).then(function(r){ if(r.error) console.warn('[KodaLearn] log_session:', r.error.message); });
+      }
+    }catch(e){}
   } catch(err) {
     console.warn('[NAHCUM analyzeWorkout]', err);
     // Show card with fallback message if grade exists
@@ -20691,6 +20735,30 @@ function buildKodaContext() {
   } catch(e) {}
   // GAP PROTOCOL: assessment + behavior rules ride along in every context build
   try { var _gapBlock = typeof buildGapContext === 'function' ? buildGapContext() : ''; if(_gapBlock) lines.push(_gapBlock); } catch(e) {}
+  // ADAPTIVE LEARNING: athlete-model package (retrieved, not doctrine)
+  try {
+    var _lc = window._kodaLearnCtx;
+    if (_lc) {
+      lines.push('\n=== KODA ATHLETE MODEL (retrieved; do not treat as doctrine) ===');
+      if (_lc.current_anchor) lines.push('FITNESS ANCHOR: VDOT ' + _lc.current_anchor.value + ' (source: ' + _lc.current_anchor.source + ', confidence: ' + _lc.current_anchor.confidence + ', as of ' + _lc.current_anchor.effective_date + ') — derive E/M/T/I/R paces from this.');
+      if (_lc.phase) lines.push('PHASE STATE: ' + _lc.phase.current_phase + ', week ' + _lc.phase.phase_week + '. Next trigger: ' + (_lc.phase.next_trigger || '—'));
+      var _r0 = _lc.readiness_7d && _lc.readiness_7d[0];
+      if (_r0 && _r0.rolling7_ln_rmssd != null) {
+        lines.push('PERSONALIZED READINESS: 7d lnRMSSD baseline ' + _r0.rolling7_ln_rmssd + ', SWC band [' + _r0.swc_lower + ' .. ' + _r0.swc_upper + '] — inside the band is noise, act only outside it.');
+      }
+      if (_lc.active_lessons && _lc.active_lessons.length) {
+        lines.push('ACTIVE LESSONS (highest confidence first — apply to today\'s prescription):');
+        _lc.active_lessons.forEach(function(l){ lines.push('  [' + l.confidence + '/' + l.source + ' x' + (l.evidence_count||1) + '] ' + l.lesson); });
+      }
+      if (_lc.recent_sessions && _lc.recent_sessions.length) {
+        lines.push('LOGGED SESSIONS (prescribed vs actual):');
+        _lc.recent_sessions.slice(0,10).forEach(function(s){
+          var pct = s.actual && s.actual.completed_pct != null ? s.actual.completed_pct + '%' : '?';
+          lines.push('  ' + s.session_date + ' ' + (s.session_type||'') + ': ' + pct + (s.feel_rpe ? ', RPE ' + s.feel_rpe : '') + (s.debrief_lesson ? ' — ' + s.debrief_lesson : ''));
+        });
+      }
+    }
+  } catch(e) {}
   return lines.join('\n');
 }
 
@@ -22653,6 +22721,14 @@ async function kodaInit() {
   const name = (typeof D !== 'undefined' && D.settings && D.settings.name) ? D.settings.name.split(' ')[0] : 'Elias';
   // GAP PROTOCOL: assess (and auto-apply re-placement, once per gap) before building context
   try { await assessTrainingGap(); } catch(e) { console.warn('[GapProtocol] assess:', e && e.message); }
+  // ADAPTIVE LEARNING: fetch the athlete-model package (one RPC) so
+  // buildKodaContext can inject anchors, lessons, and readiness bands
+  try {
+    if (typeof sbClient !== 'undefined' && sbClient && typeof currentUser !== 'undefined' && currentUser) {
+      const lc = await sbClient.rpc('koda_session_context');
+      if (!lc.error && lc.data) window._kodaLearnCtx = lc.data;
+    }
+  } catch(e) { console.warn('[KodaLearn] context:', e && e.message); }
   const ctx = buildKodaContext();
 
   // Detect recent race — if athlete just raced, open with that
