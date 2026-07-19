@@ -5144,7 +5144,10 @@ if(!D.settings.start) D.settings.start = '2026-02-23';
 // One-time repositioning (July 2026): athlete confirmed most of the original
 // plan was missed; the data-driven recommendation from his logged mileage
 // was week 13. Reposition once; RECALIBRATE adjusts freely from here.
-if(D.settings.start === '2026-02-23' && !localStorage.getItem('gedyon_recal_2026_07')){
+if(D.settings.start === '2026-02-23'){
+  // Self-healing (no flag check): any state still carrying the original
+  // start — including stale sandboxes where an earlier build set the
+  // flag but failed to persist the date — gets repositioned to week 13.
   D.settings.start = '2026-04-20'; // → getWk(mid-July 2026) = week 13
   localStorage.setItem('gedyon_recal_2026_07','1');
   // Persist immediately — mutating D in memory alone is lost on reload
@@ -6627,10 +6630,24 @@ function applyWorkoutPreferences(date, plan){
   return p;
 }
 
-function getDayPlan(date){
-  // First check exact date in PLAN_DB (specific hardcoded workouts take priority)
+// PLAN_DB entries are keyed to the ORIGINAL Feb 23 timeline. When the
+// start date moves (recalibration/gap protocol), look up the entry for
+// the same PLAN-relative day, not the raw calendar date — otherwise the
+// schedule ignores every repositioning.
+function _planRelativeDate(date){
+  try{
+    var offsetDays = Math.round((parseLocalDate(date) - parseLocalDate(D.settings.start))/86400000);
+    var orig = parseLocalDate('2026-02-23');
+    orig.setDate(orig.getDate() + offsetDays);
+    return orig.toISOString().split('T')[0];
+  }catch(e){ return date; }
+}
+
+function _getDayPlanRaw(date){
+  // First check the plan-relative date in PLAN_DB (hardcoded workouts take priority)
   // Then apply athlete preference overrides (hills Wed, fartlek Fri)
-  if(PLAN_DB[date]) return applyWorkoutPreferences(date, PLAN_DB[date]);
+  var prd = _planRelativeDate(date);
+  if(PLAN_DB[prd]) return applyWorkoutPreferences(date, PLAN_DB[prd]);
 
   // Generate intelligently from phase + week + day of week
   const wk = getWk(date);
@@ -6739,6 +6756,46 @@ function getDayPlan(date){
   }
   // Fallback
   return {mi:3.0, amMi:3.0, pmMi:0, name:'EASY RUN', zone:'Z1', hr:[0,125], lac:[0,1.5], type:'rest', cal:2200, wake:'7:00am', bed:'10:30pm', steps:'Easy 3mi · No effort', sets:'Easy pace', coreNote:''};
+}
+
+// COMEBACK RAMP SCALING: while the ramp target is below the plan's full
+// weekly volume, every day's mileage scales down proportionally so the
+// week sums to the ramp — the athlete merges onto the full plan instead
+// of being asked for 42-mile weeks off a 15-mile base. Structure, zones
+// and workout types stay; only volume shrinks.
+var _rawWkSumCache = {};
+function getDayPlan(date){
+  var raw = _getDayPlanRaw(date);
+  try{
+    if(typeof _rampTargetForWeek !== 'function' || typeof RAMP_ANCHOR === 'undefined') return raw;
+    var dMs = parseLocalDate(date).getTime();
+    var aMs = parseLocalDate(RAMP_ANCHOR).getTime();
+    if(dMs < aMs - 6*86400000) return raw;
+    var rampWk = Math.max(0, Math.floor((dMs - aMs)/(7*86400000)));
+    var ramp = _rampTargetForWeek(rampWk);
+    var dow = (parseLocalDate(date).getDay()+6)%7;
+    var mondayMs = dMs - dow*86400000;
+    var key = mondayMs + '_' + (D.settings&&D.settings.start);
+    if(!(key in _rawWkSumCache)){
+      var s = 0;
+      for(var i=0;i<7;i++){
+        var dd = new Date(mondayMs + i*86400000).toISOString().split('T')[0];
+        var p = _getDayPlanRaw(dd);
+        s += (p && p.mi) || 0;
+      }
+      _rawWkSumCache[key] = Math.round(s*10)/10;
+    }
+    var rawSum = _rawWkSumCache[key];
+    if(!(rawSum > 0) || ramp >= rawSum) return raw; // merged — full plan applies
+    var f = ramp / rawSum;
+    var sc = Object.assign({}, raw);
+    sc.mi   = +((raw.mi||0)*f).toFixed(1);
+    sc.amMi = +((raw.amMi||0)*f).toFixed(1);
+    sc.pmMi = +((raw.pmMi||0)*f).toFixed(1);
+    sc.rampAdjusted = true; sc.rampTarget = ramp; sc.fullMi = raw.mi;
+    sc.steps = '⚡ RAMP-ADJUSTED: ' + sc.mi + 'mi today (full plan: ' + raw.mi + 'mi — you merge up as the base builds; this week\'s target is ' + ramp + 'mi total). ' + (raw.steps||'');
+    return sc;
+  }catch(e){ return raw; }
 }
 
 // ═══ WEIGHT ═══
@@ -19863,7 +19920,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.18-27'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.18-28'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
