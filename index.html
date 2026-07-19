@@ -19982,7 +19982,32 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.18-35'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.18-36'; // bump on every deploy — shown in RUN CHECK
+
+// One-tap diagnostics dump — statuses and errors only, never secrets.
+function copyDiagReport(){
+  try{
+    var has = function(k){ return !!localStorage.getItem(k); };
+    var lines = ['GEDYON DEBUG ' + GEDYON_BUILD + ' · ' + new Date().toISOString()];
+    lines.push('host: ' + location.hostname + location.pathname);
+    lines.push('week: ' + (typeof getWk==='function' ? getWk(td()) : '?') + ' · start: ' + (D.settings&&D.settings.start));
+    (window._lastDiagResults||[]).forEach(function(r){
+      lines.push((r.ok===true?'[OK] ':r.ok===false?'[FAIL] ':'[--] ') + r.label + ' — ' + r.detail);
+    });
+    lines.push('keys: strava_id=' + has('gedyon_strava_client_id') + ' strava_secret=' + has('gedyon_strava_client_secret')
+      + ' strava_token=' + has('gedyon_strava_access_token') + ' strava_refresh=' + has('gedyon_strava_refresh_token'));
+    lines.push('      whoop_id=' + has('gedyon_whoop_client_id') + ' whoop_secret=' + has('gedyon_whoop_client_secret')
+      + ' whoop_token=' + has('gedyon_whoop_direct_token'));
+    lines.push('errors: strava=[' + (localStorage.getItem('gedyon_strava_last_error')||'none') + '] whoop=[' + (localStorage.getItem('gedyon_whoop_last_error')||'none') + ']');
+    lines.push('workouts: ' + ((D.workouts||[]).length) + ' · signed_in: ' + (typeof currentUser!=='undefined' && !!currentUser));
+    var txt = lines.join('\n');
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){ showSyncToast('Report copied — paste it to Claude','green'); });
+    } else {
+      prompt('Copy this report:', txt);
+    }
+  }catch(e){ showSyncToast('Copy failed: ' + e.message, 'red'); }
+}
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
@@ -20113,7 +20138,9 @@ async function runDiagnostic() {
   }
 
   // Render results (build stamp first so we always know which version is running)
-  el.innerHTML = '<span style="color:rgba(255,255,255,.3);font-size:.75rem;">BUILD ' + GEDYON_BUILD + '</span><br>' + results.map(r => {
+  window._lastDiagResults = results; // for the copy-report button
+  el.innerHTML = '<span style="color:rgba(255,255,255,.3);font-size:.75rem;">BUILD ' + GEDYON_BUILD
+    + ' · <span onclick="copyDiagReport()" style="color:#4A9EFF;cursor:pointer;text-decoration:underline;">COPY REPORT</span></span><br>' + results.map(r => {
     const icon = r.ok === true  ? '<span style="color:#00e676;">●</span>'
                : r.ok === false ? '<span style="color:#ff5252;">●</span>'
                :                  '<span style="color:rgba(255,255,255,.3);">○</span>';
