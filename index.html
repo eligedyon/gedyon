@@ -12433,7 +12433,7 @@ function renderPlanMileage(){
         const rPct = Math.min(100, m.target > 0 ? Math.round(100*m.actualMi/m.target) : 0);
         const vc = m.weekVerdict==='ON TRACK' ? 'var(--green)' : m.weekVerdict==='BEHIND' ? 'var(--red)' : 'var(--gold)';
         return `<div style="padding:14px 16px;">
-        <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);letter-spacing:1.5px;margin-bottom:8px;">RAMP · WEEK ${m.rampWk+1}</div>
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);letter-spacing:1.5px;margin-bottom:8px;">WEEK ${wkNum} TARGET</div>
         <div style="display:flex;align-items:baseline;gap:4px;margin-bottom:2px;">
           <div style="font-family:Impact,'Arial Narrow',Arial,sans-serif;font-size:52px;line-height:1;color:${vc};">${m.actualMi.toFixed(1)}</div>
           <div style="font-family:'SF Mono',monospace;font-size:13px;color:var(--grey);">of ${m.target} mi</div>
@@ -12522,7 +12522,7 @@ function renderTrainingSummary(){
       var rPct = Math.min(100, m.target>0 ? Math.round(100*m.actualMi/m.target) : 0);
       var vc = m.weekVerdict==='ON TRACK' ? 'var(--green)' : m.weekVerdict==='BEHIND' ? 'var(--red)' : 'var(--gold)';
       return '<div style="padding:14px 16px;">'
-        +'<div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--grey);letter-spacing:1.5px;margin-bottom:6px;">RAMP · WEEK '+(m.rampWk+1)+'</div>'
+        +'<div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--grey);letter-spacing:1.5px;margin-bottom:6px;">WEEK '+(typeof getWk==='function'?getWk(td()):'')+' TARGET</div>'
         +'<div style="display:flex;align-items:baseline;gap:4px;"><div style="font-family:Impact,sans-serif;font-size:42px;line-height:1;color:'+vc+';">'+m.actualMi.toFixed(1)+'</div><div style="font-family:Share Tech Mono,monospace;font-size:13px;color:var(--grey);">of '+m.target+' mi</div></div>'
         +'<div style="font-family:Share Tech Mono,monospace;font-size:11px;color:'+vc+';margin-bottom:6px;">'+m.weekVerdict+'</div>'
         +'<div style="height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-bottom:4px;"><div style="height:100%;width:'+rPct+'%;border-radius:3px;background:'+vc+';transition:width .8s;"></div></div>'
@@ -19953,7 +19953,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.18-30'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.18-31'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
