@@ -6793,7 +6793,7 @@ function getDayPlan(date){
     sc.amMi = +((raw.amMi||0)*f).toFixed(1);
     sc.pmMi = +((raw.pmMi||0)*f).toFixed(1);
     sc.rampAdjusted = true; sc.rampTarget = ramp; sc.fullMi = raw.mi;
-    sc.steps = '⚡ RAMP-ADJUSTED: ' + sc.mi + 'mi today (full plan: ' + raw.mi + 'mi — you merge up as the base builds; this week\'s target is ' + ramp + 'mi total). ' + (raw.steps||'');
+    sc.steps = '⚡ RAMP-ADJUSTED: run ' + sc.mi + 'mi today — the full-plan version below (' + raw.mi + 'mi) is what this day becomes once your base is built. Scale its paces/structure down to today\'s distance and ignore fueling advice meant for the long version. ' + (raw.steps||'');
     return sc;
   }catch(e){ return raw; }
 }
@@ -19982,7 +19982,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.18-34'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.18-35'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
