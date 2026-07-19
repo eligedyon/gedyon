@@ -12384,7 +12384,16 @@ function renderPlanMileage(){
     return mi;
   }
 
-  const wkPlan=milesInRange(wkStart,wkEnd);
+  let wkPlan=milesInRange(wkStart,wkEnd);
+  // During the comeback merge the ramp target IS the week's plan — both
+  // tracker cards must quote the same number (mixed scaled/unscaled edge
+  // days made the summed plan disagree with the ramp).
+  try{
+    if(typeof missionAssess === 'function'){
+      const _m = missionAssess();
+      if(_m && _m.target > 0 && _m.target < wkPlan) wkPlan = _m.target;
+    }
+  }catch(e){}
   const wkActual=actualInRange(wkStart,wkEnd);
   const mPlan=milesInRange(mStart,mEnd);
   const mActual=actualInRange(mStart,mEnd);
@@ -19944,7 +19953,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.18-29'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.18-30'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
