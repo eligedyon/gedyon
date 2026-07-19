@@ -12498,9 +12498,22 @@ function renderTrainingSummary(){
   function actMi(from,to){var mi=0;(D.workouts||[]).forEach(function(w){if(w.date>=fmt(from)&&w.date<=fmt(to)){var p;try{p=getDayPlan(w.date);}catch(e){p={type:'easy'};}mi+=getWoMiles(w,p.type);}});return mi;}
   var totalMi=(D.workouts||[]).reduce(function(a,w){var p;try{p=getDayPlan(w.date);}catch(e){p={type:'easy'};}return a+getWoMiles(w,p.type);},0);
   var wkRuns=(D.workouts||[]).filter(function(w){return w.date>=fmt(wkS)&&w.date<=fmt(wkE);});
-  var recentPace=(D.workouts||[]).filter(function(w){return w.pace&&w.dist>0;}).slice(0,7);
-  var avgPace='—';
-  if(recentPace.length){var pv=recentPace.map(function(w){if(typeof w.pace==='string'&&w.pace.includes(':')){var p=w.pace.split(':');return parseInt(p[0])+parseInt(p[1])/60;}return parseFloat(w.pace)||0;}).filter(function(v){return v>0;});if(pv.length){var avg=pv.reduce(function(a,v){return a+v;},0)/pv.length;avgPace=Math.floor(avg)+':'+String(Math.round((avg%1)*60)).padStart(2,'0')+'/mi';}}
+  // Pace + HR ranges from REAL recent runs only: needs distance and
+  // duration, and a sane pace (4-18 min/mi) so walks and junk entries
+  // can't poison the stats (the old average famously read 29:43/mi).
+  var realRuns=(D.workouts||[]).filter(function(w){
+    var dist=w.dist||0, dur=w.dur||w.duration||0;
+    if(!(dist>=0.5) || !(dur>0)) return false;
+    var pc=dur/dist; return pc>=4 && pc<=18;
+  }).sort(function(a,b){return a.date<b.date?1:-1;}).slice(0,14);
+  function _fp(v){ return Math.floor(v)+':'+String(Math.round((v%1)*60)).padStart(2,'0'); }
+  var paceRange='—', hrRange='—';
+  if(realRuns.length){
+    var paces=realRuns.map(function(w){return (w.dur||w.duration)/w.dist;});
+    paceRange=_fp(Math.min.apply(null,paces))+'–'+_fp(Math.max.apply(null,paces));
+    var hrs=realRuns.map(function(w){return w.hr||w.avgHR||0;}).filter(function(h){return h>60&&h<220;});
+    if(hrs.length) hrRange=Math.min.apply(null,hrs)+'–'+Math.max.apply(null,hrs);
+  }
   var wP=planMi(wkS,wkE),wA=actMi(wkS,wkE),mP=planMi(mS,mE),mA=actMi(mS,mE);
   var wPct=wP>0?Math.min(100,Math.round(wA/wP*100)):0;
   var mPct=mP>0?Math.min(100,Math.round(mA/mP*100)):0;
@@ -12540,10 +12553,11 @@ function renderTrainingSummary(){
   +'<div style="display:flex;gap:4px;">'
   +(function(){var dayLabels=['M','T','W','T','F','S','S'];var dg='';for(var di=0;di<7;di++){var dd=new Date(wkS);dd.setDate(wkS.getDate()+di);var ds=fmt(dd);var plan=getDayPlan(ds);var hasWo=(D.workouts||[]).some(function(w){return w.date===ds;});var isToday=ds===fmt(today);var isPast=dd<today;var bg=isPast&&!hasWo?'rgba(255,61,87,.15)':hasWo?'rgba(0,230,118,.2)':'rgba(255,255,255,.05)';var border=isToday?'border:2px solid var(--gold);':'border:1px solid transparent;';var actMiles=(D.workouts||[]).filter(function(w){return w.date===ds;}).reduce(function(s,w){return s+getWoMiles(w,plan?plan.type:'easy');},0);var miLabel=hasWo?(actMiles>0?actMiles.toFixed(1)+'mi':(plan&&plan.mi?plan.mi+'mi':'—')):plan&&plan.mi?plan.mi+'mi':'—';var miCol=hasWo?'var(--green)':isPast?'var(--grey)':'var(--grey)';dg+='<div style="flex:1;padding:6px 2px;border-radius:7px;text-align:center;background:'+bg+';'+border+'cursor:pointer;transition:filter .15s;" onclick="openDayDetail(\''+ds+'\')">'+'<div style="font-family:Share Tech Mono,monospace;font-size:12px;color:var(--grey);">'+dayLabels[di]+'</div>'+'<div style="font-size:12px;margin:3px 0;">'+(hasWo?'':isPast?'–':plan&&plan.type==='rest'?'':'·')+'</div>'+'<div style="font-family:Share Tech Mono,monospace;font-size:11px;color:'+miCol+';margin-top:1px;">'+miLabel+'</div></div>';}return dg;})()
   +'</div></div>'
-  +'<div style="border-top:1px solid var(--border);padding:12px 14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">'
-  +'<div style="text-align:center;"><div style="font-family:Impact,sans-serif;font-size:22px;color:var(--blue);">'+wkRuns.length+'</div><div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--grey);">RUNS THIS WK</div></div>'
-  +'<div style="text-align:center;"><div style="font-family:Impact,sans-serif;font-size:22px;color:var(--teal);">'+avgPace+'</div><div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--grey);">AVG PACE</div></div>'
-  +'<div style="text-align:center;"><div style="font-family:Impact,sans-serif;font-size:22px;color:var(--gold);">'+totalMi.toFixed(0)+'</div><div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--grey);">ALL-TIME MI</div></div>'
+  +'<div style="border-top:1px solid var(--border);padding:12px 14px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px 8px;">'
+  +'<div style="text-align:center;"><div style="font-family:Impact,sans-serif;font-size:20px;color:var(--teal);">'+paceRange+'</div><div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--grey);">PACE FAST–SLOW /MI</div></div>'
+  +'<div style="text-align:center;"><div style="font-family:Impact,sans-serif;font-size:20px;color:var(--red);">'+hrRange+'</div><div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--grey);">HR LOW–HIGH BPM</div></div>'
+  +'<div style="text-align:center;"><div style="font-family:Impact,sans-serif;font-size:20px;color:var(--blue);">'+wkRuns.length+'</div><div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--grey);">RUNS THIS WK</div></div>'
+  +'<div style="text-align:center;"><div style="font-family:Impact,sans-serif;font-size:20px;color:var(--gold);">'+totalMi.toFixed(0)+'</div><div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--grey);">ALL-TIME MI</div></div>'
   +'</div></div>';
 }
 
@@ -19968,7 +19982,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.18-33'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.18-34'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
