@@ -6455,12 +6455,16 @@ const PLAN_DB = {
   '2028-04-04':{type:'threshold',mi:6.3,name:'THRESHOLD INTERVALS',zone:'Z4',hr:[155, 172],lac:[3.5, 5.0],cal:4132,wake:'6:00am',bed:'9:30pm',steps:'2mi warm-up. 8x1mi at threshold pace 6:20-6:40/mi. 90s recovery jog. 1mi cool-down.',sets:'Threshold: 8x1mi at 6:20-6:40/mi. 90s jog recovery.',coreNote:'Hip flexor stretch. IT band roll. Calf raises 3x20.'}
 };
 
+// KERR–MACKEY SYSTEM ARC (rebuilt July 2026, athlete-approved):
+// base first, then Norwegian-style threshold construction, then full
+// Kerr–Mackey race-specific work — moderate mileage, heavy lifting,
+// weaponized kick, recovery-data steering throughout.
 const PHASES=[
   {n:1,name:'Foundation',wks:[1,12],color:'var(--blue)'},
-  {n:2,name:'Aerobic Construction',wks:[13,28],color:'var(--green)'},
-  {n:3,name:'Threshold Peak',wks:[29,48],color:'var(--orange)'},
-  {n:4,name:'Race Specific',wks:[49,68],color:'var(--red)'},
-  {n:5,name:'Championship',wks:[69,100],color:'var(--purple)'},
+  {n:2,name:'Base Build · Lydiard',wks:[13,32],color:'var(--green)'},
+  {n:3,name:'Threshold Construction · Norwegian',wks:[33,60],color:'var(--orange)'},
+  {n:4,name:'Kerr–Mackey Specific',wks:[61,84],color:'var(--red)'},
+  {n:5,name:'Championship Sharpening',wks:[85,100],color:'var(--purple)'},
   {n:6,name:'Trials Taper',wks:[101,110],color:'var(--gold)'},
 ];
 function getPhase(wk){return PHASES.find(p=>wk>=p.wks[0]&&wk<=p.wks[1])||PHASES[0];}
@@ -9666,13 +9670,16 @@ function renderPlanTodayBox(){
 
 // Weekly mileage targets per phase (non-deload week, all 7 sessions)
 // Derived from phaseConfig: baseMi*2.55 + reps*0.62 + threshMi*0.80 + longMi + 8.4
+// Mileage arc matches the Kerr–Mackey philosophy: earn volume in the
+// base, construct with threshold, then QUALITY over raw miles — the
+// specific phases hold ~55, not 70+; the weight room carries the rest.
 var PHASE_TARGETS = [
-  {phase:1, wks:[1,12],   weeklyMi:38.8, longRun:10.5, name:'Foundation'},
-  {phase:2, wks:[13,28],  weeklyMi:47.8, longRun:14.0, name:'Aerobic Construction'},
-  {phase:3, wks:[29,48],  weeklyMi:52.6, longRun:16.0, name:'Threshold Peak'},
-  {phase:4, wks:[49,68],  weeklyMi:50.0, longRun:15.0, name:'Race Specific'},
-  {phase:5, wks:[69,100], weeklyMi:54.9, longRun:17.0, name:'Championship'},
-  {phase:6, wks:[101,110],weeklyMi:35.9, longRun:10.0, name:'Trials Taper'},
+  {phase:1, wks:[1,12],   weeklyMi:18.0, longRun:7.0,  name:'Foundation'},
+  {phase:2, wks:[13,32],  weeklyMi:26.0, longRun:9.0,  name:'Base Build · Lydiard'},
+  {phase:3, wks:[33,60],  weeklyMi:44.0, longRun:13.0, name:'Threshold Construction · Norwegian'},
+  {phase:4, wks:[61,84],  weeklyMi:55.0, longRun:15.0, name:'Kerr–Mackey Specific'},
+  {phase:5, wks:[85,100], weeklyMi:58.0, longRun:16.0, name:'Championship Sharpening'},
+  {phase:6, wks:[101,110],weeklyMi:38.0, longRun:10.0, name:'Trials Taper'},
 ];
 
 function recalibrateTrainingPlan(){
@@ -19755,7 +19762,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.18-25'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.18-26'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
@@ -20806,9 +20813,13 @@ function buildKodaContext() {
       lines.push('  SPEED WORK PREFERENCE: Fartlek/speed play — unstructured surges feel natural, respond well to it');
       lines.push('  BODY TYPE GOAL: Stay lean and aerodynamic — cut through wind, explosive push-off, quick gear changes');
       lines.push('  KEY ADAPTATION NEEDED: Mid-race surge capacity — must be able to ACCELERATE when already at threshold');
-      lines.push('  KODA COACHING NOTE: Speed/strength framing: hills for power, fartlek for gear changes, closing kick development, AND structured gym strength 2x/week per the athlete\'s request — heavy-low-rep lifts for stiffness and economy, not hypertrophy. Schedule lifts after quality run days or on easy days, never before track sessions.');
-      lines.push('  CURRENT REBUILD DIRECTIVE (athlete-stated, July 2026): load mileage gradually (~10%/wk from current base), reintroduce track work starting with controlled 400s and 1k repeats at comfortable-hard (not all-out) effort, and add the 2x/wk lifting. Indoor treadmill Watch paces UNDERREPORT his true speed — trust athlete-reported effort for indoor sessions (he runs sub-6:00 pickups the Watch logs as ~9:00).');
-      lines.push('  ACTIVE: COMEBACK PROTOCOL (approved by athlete July 2026). Phase A — BASELINE TEST WEEK (in progress): Day1 weigh-in + easy 30min; Day2 SPEED 1x400m @90%; Day3 STRENGTH baseline (max pushups, plank hold, 5-rep goblet squat, 10/side SL calf raises); Day4 off/jog; Day5 ENGINE 20-min steady-hard (distance + avg HR = threshold anchor); Day6 easy 30; Day7 weigh-in. NOTHING ALL-OUT this week. Phase B — 6-WEEK REBUILD after tests: mileage +~2mi/wk holding every 3rd week flat, one workout/wk starting 6-8x400 comfortable-hard building to 1k repeats by wk3-4, one hill session or strides, lifting 2x/wk (squat/DL/lunge patterns, heavy-low-rep, core; after quality days never before), long run growing toward 8-10mi. When the athlete reports a test result, interpret it against his 4:01 mile history and 5,400ft altitude, log it, and adjust paces from evidence not the calendar.');
+      lines.push('\nKERR–MACKEY SYSTEM (KODA\'s training doctrine — rebuilt July 2026, athlete-approved):');
+      lines.push('  MODEL: Josh Kerr / Danny Mackey (Brooks Beasts) philosophy adapted to this athlete — QUALITY over raw volume, the weight room as a pillar (not accessory), race-specific sharpening, a weaponized kick, and recovery data steering every week. Moderate peak mileage (~55-60) done consistently beats 80 done sporadically.');
+      lines.push('  THE ARC: Phase 2 BASE BUILD (Lydiard, wks 13-32): 80/20 polarized, ramp ~15→35 mi/wk (+2/wk, every 3rd week flat), strides 2x/wk, one controlled workout, one hill day, lifting 2x. Phase 3 THRESHOLD CONSTRUCTION (Norwegian, wks 33-60): threshold volume becomes the spine, doubles introduced when volume supports them. Phase 4 KERR-MACKEY SPECIFIC (wks 61-84): race-pace segments, kick development, altitude blocks. Phase 5 CHAMPIONSHIP SHARPENING. Phase 6 TAPER.');
+      lines.push('  CURRENT ARC POSITION: early Phase 2 BASE BUILD. Prescriptions must respect the comeback ramp, NOT the phase\'s printed average — he merges onto full base mileage over ~6-8 weeks from ~15 mi/wk.');
+      lines.push('  PILLARS (always on): (1) Lifting 2x/wk — heavy-low-rep squat/DL/lunge patterns + core, plyos in later phases; stiffness and economy, never hypertrophy; after quality days, never before track. (2) Recovery discipline — Kerr-style sleep priority (9h target); HRV/readiness decides hard days, moving them is coaching not failure. (3) Speed touch year-round — strides and fartlek keep the 4:01 legs awake for free. (4) Hills for power (Canova) alongside the gym.');
+      lines.push('  ACTIVE: BASELINE TEST WEEK: Day1 weigh-in + easy 30min; Day2 SPEED 1x400m @90%; Day3 STRENGTH baseline (max pushups, plank hold, 5-rep goblet squat, 10/side SL calf raises); Day4 off/jog; Day5 ENGINE 20-min steady-hard at ~7:30/mi self-estimate (distance + avg HR = threshold anchor); Day6 easy 30; Day7 weigh-in. NOTHING ALL-OUT. Interpret every result against his 4:01 history and 5,400ft altitude; anchor paces from evidence, not the calendar.');
+      lines.push('  SENSOR TRUTH: Indoor treadmill Watch paces UNDERREPORT his true speed (sub-6:00 pickups logged as ~9:00) — trust athlete-reported effort indoors.');
 
       // ── RACE READINESS STATUS ─────────────────────────────────────
       // This is what the RACE READY? and OVERTRAINING MONITOR cards display.
