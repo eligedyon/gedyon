@@ -12497,7 +12497,8 @@ function renderTrainingSummary(){
   function planMi(from,to){var mi=0,cur=new Date(from);while(cur<=to){var ds=fmt(cur);var p=getDayPlan(ds);if(p&&p.mi)mi+=p.mi;cur.setDate(cur.getDate()+1);}return mi;}
   function actMi(from,to){var mi=0;(D.workouts||[]).forEach(function(w){if(w.date>=fmt(from)&&w.date<=fmt(to)){var p;try{p=getDayPlan(w.date);}catch(e){p={type:'easy'};}mi+=getWoMiles(w,p.type);}});return mi;}
   var totalMi=(D.workouts||[]).reduce(function(a,w){var p;try{p=getDayPlan(w.date);}catch(e){p={type:'easy'};}return a+getWoMiles(w,p.type);},0);
-  var wkRuns=(D.workouts||[]).filter(function(w){return w.date>=fmt(wkS)&&w.date<=fmt(wkE);});
+  // Count real runs only (>=0.5mi) — junk 0.02mi entries inflated this
+  var wkRuns=(D.workouts||[]).filter(function(w){return w.date>=fmt(wkS)&&w.date<=fmt(wkE)&&(w.dist||0)>=0.5;});
   // Pace + HR ranges from REAL recent runs only: needs distance and
   // duration, and a sane pace (4-18 min/mi) so walks and junk entries
   // can't poison the stats (the old average famously read 29:43/mi).
@@ -19982,7 +19983,24 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.18-36'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.18-37'; // bump on every deploy — shown in RUN CHECK
+
+// PREVIEW BANNER: outside the real app hosts this page runs in a sandbox
+// with its own empty storage — none of the athlete's real data. Numbers
+// there caused repeated false alarms; the sandbox now labels itself.
+(function(){
+  try{
+    var h = location.hostname;
+    var isApp = h === 'eligedyon.github.io' || h.endsWith('.netlify.app') || h === 'localhost' || h === '127.0.0.1';
+    if(isApp) return;
+    document.addEventListener('DOMContentLoaded', function(){
+      var b = document.createElement('div');
+      b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;background:#B8860B;color:#000;font-family:monospace;font-size:11px;font-weight:700;text-align:center;padding:4px 8px;letter-spacing:.5px;';
+      b.textContent = '👁 PREVIEW — sample data only. Your real training lives at eligedyon.github.io/gedyon';
+      document.body.appendChild(b);
+    });
+  }catch(e){}
+})();
 
 // One-tap diagnostics dump — statuses and errors only, never secrets.
 function copyDiagReport(){
