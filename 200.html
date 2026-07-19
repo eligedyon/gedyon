@@ -19183,6 +19183,57 @@ function runVerdict(w){
   return {tag:'PASS', detail:'fast day'};
 }
 
+// ── SLEEP PILLAR (Kerr-style, automated) ────────────────────────────
+// Sleep is training: 9h in bed is the target, and the night before a
+// quality day is protected. No journaling — reads WHOOP/Apple data.
+var SLEEP_TARGET_H = 9;
+
+function _parseWake(t){ // '5:45am' → minutes after midnight
+  var m = /(\d{1,2}):(\d{2})\s*(am|pm)/i.exec(t||'');
+  if(!m) return 6*60; // default 6:00am
+  var h = parseInt(m[1]) % 12; if(/pm/i.test(m[3])) h += 12;
+  return h*60 + parseInt(m[2]);
+}
+
+function sleepAssess(){
+  // Last night + 7-day average from whatever source exists
+  var nights = [];
+  try{
+    if(D.appleHealth && D.appleHealth.sleep && D.appleHealth.sleep.length){
+      D.appleHealth.sleep.forEach(function(s){ nights.push({date:s.date, hours:s.hours||s.value||0, src:'apple'}); });
+    }
+    if(D.whoopData && Array.isArray(D.whoopData)){
+      D.whoopData.forEach(function(w){ if(w.date && (w.sleep_hours||w.sleepHours)) nights.push({date:w.date, hours:w.sleep_hours||w.sleepHours, src:'whoop'}); });
+    }
+  }catch(e){}
+  nights.sort(function(a,b){ return a.date<b.date?1:-1; });
+  var lastNight = nights.length ? nights[0] : null;
+  var recent = nights.slice(0,7);
+  var avg7 = recent.length ? Math.round(10*recent.reduce(function(s,n){return s+n.hours;},0)/recent.length)/10 : null;
+
+  // Is tomorrow a quality day? → tonight is a PROTECTED night
+  var tomorrow = new Date(Date.now()+864e5).toISOString().slice(0,10);
+  var tPlan = null; try{ tPlan = getDayPlan(tomorrow); }catch(e){}
+  var qualityTypes = {threshold:1, hill:1, long:1, interval:1};
+  var protectedNight = !!(tPlan && qualityTypes[tPlan.type]);
+
+  // Lights-out time: tomorrow's wake minus 9h in bed
+  var wakeMin = _parseWake(tPlan && tPlan.wake);
+  var bedMin = ((wakeMin - SLEEP_TARGET_H*60) + 1440) % 1440;
+  var bh = Math.floor(bedMin/60), bm = bedMin%60;
+  var ampm = bh >= 12 ? 'pm' : 'am';
+  var bh12 = bh % 12 || 12;
+  var lightsOut = bh12 + ':' + String(bm).padStart(2,'0') + ampm;
+
+  var verdict = null;
+  if(lastNight){
+    verdict = lastNight.hours >= SLEEP_TARGET_H - 0.5 ? 'BANKED' : lastNight.hours >= 7 ? 'OK — bank more' : 'SHORT';
+  }
+  return { lastNight: lastNight, avg7: avg7, target: SLEEP_TARGET_H, verdict: verdict,
+           protectedNight: protectedNight, tomorrowType: tPlan ? (tPlan.name||tPlan.type) : null,
+           tomorrowWake: tPlan && tPlan.wake, lightsOut: lightsOut, nightsTracked: nights.length };
+}
+
 // ── FITNESS SUMMARY — one screen: where you stand, extracted from
 // your real data (Apple Health import + Strava + manual logs) ───────
 function _fmtPace(sec){ if(!sec||!isFinite(sec)) return '—'; var m=Math.floor(sec/60), s=Math.round(sec%60); return m+':'+(s<10?'0':'')+s+'/mi'; }
@@ -19266,6 +19317,21 @@ function showFitnessSummary(){
     html += row('VO2max intervals', _fmtPace(paces.vo2max));
     html += row('Race pace', _fmtPace(paces.race));
   }
+
+  // SLEEP PILLAR
+  try{
+    var sl = sleepAssess();
+    html += sect('SLEEP — THE SECOND WORKOUT');
+    if(sl.lastNight){
+      var slCol = sl.verdict==='BANKED' ? '#00E676' : sl.verdict==='SHORT' ? '#FF5252' : '#FFB84D';
+      html += row('Last night', sl.lastNight.hours + 'h of ' + sl.target + 'h target — ' + sl.verdict, slCol);
+      if(sl.avg7 != null) html += row('7-night average', sl.avg7 + 'h', sl.avg7 >= 8.5 ? '#00E676' : sl.avg7 >= 7.5 ? '#FFB84D' : '#FF5252');
+    } else {
+      html += row('Sleep data', 'none yet — WHOOP or Apple import feeds this', 'var(--grey)');
+    }
+    html += row('Tonight' + (sl.protectedNight ? ' 🛡 PROTECTED' : ''), 'Lights out ' + sl.lightsOut + (sl.tomorrowWake ? ' (wake ' + sl.tomorrowWake + ')' : ''), sl.protectedNight ? '#FFB84D' : undefined);
+    if(sl.protectedNight) html += '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:rgba(255,184,77,.8);padding:4px 0;">Tomorrow is a quality day (' + sl.tomorrowType + ') — this is the night that decides how it goes.</div>';
+  }catch(e){}
 
   // APPLE HEALTH
   html += sect('BODY — FROM APPLE HEALTH');
@@ -19983,7 +20049,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.19-38'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.19-39'; // bump on every deploy — shown in RUN CHECK
 
 // PREVIEW BANNER: outside the real app hosts this page runs in a sandbox
 // with its own empty storage — none of the athlete's real data. Numbers
@@ -21147,6 +21213,17 @@ function buildKodaContext() {
   } catch(e) {}
   // GAP PROTOCOL: assessment + behavior rules ride along in every context build
   try { var _gapBlock = typeof buildGapContext === 'function' ? buildGapContext() : ''; if(_gapBlock) lines.push(_gapBlock); } catch(e) {}
+  // SLEEP PILLAR: status + protected-night awareness for coaching
+  try {
+    if (typeof sleepAssess === 'function') {
+      var _sl = sleepAssess();
+      var _slLine = '\nSLEEP PILLAR (target ' + _sl.target + 'h in bed, Kerr-style): ';
+      _slLine += _sl.lastNight ? ('last night ' + _sl.lastNight.hours + 'h (' + _sl.verdict + ')' + (_sl.avg7!=null ? ', 7-night avg ' + _sl.avg7 + 'h' : '')) : 'no sleep data flowing yet';
+      _slLine += '. Tonight: lights out ' + _sl.lightsOut + (_sl.protectedNight ? ' — PROTECTED NIGHT (quality day tomorrow: ' + _sl.tomorrowType + '); if he mentions staying up, push back warmly but firmly.' : '.');
+      _slLine += ' Remember: he builds no routines — the WHOOP bedtime buzz and this number are the whole system; never assign sleep homework.';
+      lines.push(_slLine);
+    }
+  } catch(e) {}
   // MISSION TRACK: hard numbers on ramp adherence — KODA coaches from these
   try {
     if (typeof missionAssess === 'function') {
