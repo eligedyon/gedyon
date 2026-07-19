@@ -9699,18 +9699,26 @@ function recalibrateTrainingPlan(){
   // Where you MUST be on the plan to finish on time
   var timelineWeek = Math.max(1, Math.min(110, 111 - weeksUntilTrials));
 
-  // 3. Fitness-based phase matching
-  var bestPT = PHASE_TARGETS[0], bestScore = Infinity;
+  // 3. Fitness-based placement — walk the BUILD phases in order and place
+  // the athlete proportionally inside the first phase whose mileage target
+  // they haven't reached yet. The taper phase is excluded: its low mileage
+  // reflects peak fitness, not low fitness (nearest-target matching used to
+  // let a low-mileage athlete "match" the taper and get pulled FORWARD).
+  var bestPT = PHASE_TARGETS[0];
+  var fitnessWeek = 1;
   if(avgWeeklyMiles > 0){
-    PHASE_TARGETS.forEach(function(pt){
-      var miScore   = Math.abs(pt.weeklyMi - avgWeeklyMiles);
-      var longScore = recentLongRun > 0 ? Math.abs(pt.longRun - recentLongRun) * 0.6 : 0;
-      var score = miScore + longScore;
-      if(score < bestScore){ bestScore = score; bestPT = pt; }
-    });
+    var buildPhases = PHASE_TARGETS.filter(function(pt){ return pt.phase !== 6; });
+    for(var bi = 0; bi < buildPhases.length; bi++){
+      var pt = buildPhases[bi];
+      if(avgWeeklyMiles < pt.weeklyMi || bi === buildPhases.length - 1){
+        var prevMi = bi === 0 ? 0 : buildPhases[bi-1].weeklyMi;
+        var frac = Math.max(0, Math.min(1, (avgWeeklyMiles - prevMi) / Math.max(1, pt.weeklyMi - prevMi)));
+        fitnessWeek = Math.round(pt.wks[0] + frac * (pt.wks[1] - pt.wks[0]));
+        bestPT = pt;
+        break;
+      }
+    }
   }
-  // Mid-point of the fitness-appropriate phase
-  var fitnessWeek = Math.round((bestPT.wks[0] + bestPT.wks[1]) / 2);
 
   // 4. Blend fitness + timeline (55% timeline, 45% fitness)
   //    Never exceed timelineWeek by more than 3 (we can't skip ahead of schedule)
@@ -19735,7 +19743,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.18-22'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.18-23'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
