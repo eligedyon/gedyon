@@ -5137,8 +5137,20 @@ let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
 }));
 if(!D.actualMeals) D.actualMeals={};
 if(!D.dayScores) D.dayScores={};
-// Guard: start date must never be later than 2026-03-01 (training began Feb 23)
-if(!D.settings.start || D.settings.start > '2026-03-01') D.settings.start = '2026-02-23';
+/// Start date is athlete-adjustable (recalibration + Gap Protocol move it).
+// The old guard here reset anything after Mar 1 back to Feb 23 on every
+// load — silently undoing every recalibration ever applied.
+if(!D.settings.start) D.settings.start = '2026-02-23';
+// One-time repositioning (July 2026): athlete confirmed most of the original
+// plan was missed; the data-driven recommendation from his logged mileage
+// was week 13. Reposition once; RECALIBRATE adjusts freely from here.
+if(D.settings.start === '2026-02-23' && !localStorage.getItem('gedyon_recal_2026_07')){
+  D.settings.start = '2026-04-20'; // → getWk(mid-July 2026) = week 13
+  localStorage.setItem('gedyon_recal_2026_07','1');
+  // Persist immediately — mutating D in memory alone is lost on reload
+  try{ localStorage.setItem('gedyon_v5', JSON.stringify(D)); }catch(e){}
+  setTimeout(function(){ try{ saveData(); }catch(e){} }, 800);
+}
 // Ensure PR races always exist in race history
 (function(){
   var prRaces=[
@@ -19743,7 +19755,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.18-24'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.18-25'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
@@ -21192,6 +21204,10 @@ Athlete context:\n${ctx}`;
   }
 
   async function trySupabase() {
+    const host = window.location.hostname;
+    if (!(host === 'eligedyon.github.io' || host.endsWith('.netlify.app') || host === 'localhost' || host === '127.0.0.1')) {
+      const err = new Error('preview'); err.kodaCode = 'PREVIEW'; throw err;
+    }
     const headers = { 'Content-Type': 'application/json', 'Authorization': KODA_TOKEN };
     // Prefer the signed-in user's JWT so the server can meter per-user
     try {
@@ -21252,7 +21268,9 @@ Athlete context:\n${ctx}`;
     window._kodaStreaming = false;
     kodaMirrorSpeak(false);
     kodaSetState('idle');
-    if (e.kodaCode === 'LIMIT_REACHED') {
+    if (e.kodaCode === 'PREVIEW') {
+      kodaAppendMsg('assistant', 'This preview window can\'t reach my brain — it blocks all outside connections. Open the real app in Safari: eligedyon.github.io/gedyon — I\'ll be there.');
+    } else if (e.kodaCode === 'LIMIT_REACHED') {
       kodaAppendMsg('assistant', "You've used your " + (e.limit || 25) + " free KODA sessions this month. Unlimited coaching — $9.99/mo.");
       showKodaPaywall(e.used, e.limit);
     } else if (e.kodaCode === 'CAPACITY') {
