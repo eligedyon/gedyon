@@ -18988,6 +18988,81 @@ async function shareTrainingWeek(){
     showSyncToast('Share failed: ' + (e.message||'unknown').slice(0,50), 'red');
   }
 }
+// ── MISSION TRACKER — serious, data-backed verdicts ─────────────────
+// Every run judged against its target; every week against the ramp;
+// the whole arc against April 4, 2028. No vibes — evidence.
+var RAMP_ANCHOR = '2026-07-20'; // Monday of Baseline Test Week; ramp = 15mi +2/wk, flat every 3rd
+function _rampTargetForWeek(offsetWeeks){
+  // +2/wk with every 3rd week flat, capped at 35 (end of Base Build merge)
+  var add = 0;
+  for(var i=1;i<=offsetWeeks;i++){ if(i%3!==0) add += 2; }
+  return Math.min(35, 15 + add);
+}
+
+function missionAssess(){
+  var today = td();
+  var todayMs = parseLocalDate(today).getTime();
+  var anchorMs = parseLocalDate(RAMP_ANCHOR).getTime();
+  var rampWk = Math.max(0, Math.floor((todayMs - anchorMs)/(7*86400000)));
+  var target = _rampTargetForWeek(rampWk);
+
+  // This calendar week (Mon-Sun) actual mileage
+  var d = parseLocalDate(today); var dow = d.getDay(); var mondayMs = todayMs - ((dow+6)%7)*86400000;
+  var weekRuns = (D.workouts||[]).filter(function(w){
+    if(!w.date || !(w.dist>0)) return false;
+    var ms = parseLocalDate(w.date).getTime();
+    return ms >= mondayMs && ms <= todayMs;
+  });
+  var actualMi = Math.round(10*weekRuns.reduce(function(s,w){return s+(w.dist||0);},0))/10;
+  var pct = target>0 ? Math.round(100*actualMi/target) : 0;
+  // Day-adjusted expectation: by Wednesday you shouldn't be judged against the full week
+  var daysIn = ((dow+6)%7)+1;
+  var expectedByNow = Math.round(10*target*Math.min(1,daysIn/7))/10;
+  var pctOfExpected = expectedByNow>0 ? Math.round(100*actualMi/expectedByNow) : 0;
+  var weekVerdict = pctOfExpected>=90 ? 'ON TRACK' : pctOfExpected>=65 ? 'CLOSE — finish the week' : 'BEHIND';
+
+  // 4-week ramp adherence
+  var adherence = [];
+  for(var k=1;k<=4;k++){
+    var wStart = mondayMs - k*7*86400000, wEnd = wStart + 6*86400000;
+    var mi = (D.workouts||[]).filter(function(w){
+      if(!w.date||!(w.dist>0)) return false;
+      var ms = parseLocalDate(w.date).getTime();
+      return ms>=wStart && ms<=wEnd;
+    }).reduce(function(s,w){return s+(w.dist||0);},0);
+    var offW = Math.max(0, Math.floor((wStart-anchorMs)/(7*86400000)));
+    var t = _rampTargetForWeek(offW);
+    adherence.push({mi: Math.round(mi*10)/10, target: t, pct: t>0?Math.round(100*mi/t):0});
+  }
+  var hitWeeks = adherence.filter(function(a){return a.pct>=85;}).length;
+
+  // Mission trajectory: VDOT now vs the 79 the Trials standard demands
+  var vdotNow = null; try{ var p = getTrainingPaces(getPRs()); if(p && p.vdot) vdotNow = p.vdot; }catch(e){}
+  var weeksLeft = Math.max(1, Math.ceil((parseLocalDate('2028-04-04').getTime()-todayMs)/(7*86400000)));
+
+  return { rampWk: rampWk, target: target, actualMi: actualMi, pct: pct,
+           expectedByNow: expectedByNow, pctOfExpected: pctOfExpected, weekVerdict: weekVerdict,
+           adherence: adherence, hitWeeks: hitWeeks, vdotNow: vdotNow, vdotGoal: 79, weeksLeft: weeksLeft,
+           runsThisWeek: weekRuns.length };
+}
+
+// Per-run verdict: judge a run against its planned day (grade engine) or,
+// with no plan, against Base-Build easy-zone expectations.
+function runVerdict(w){
+  try{
+    if(typeof gradeWorkout === 'function'){
+      var g = gradeWorkout(w);
+      if(g && g.grade) return {tag: g.grade === 'A' ? 'PASS' : g.grade === 'B' ? 'PASS' : 'MISS', detail: g.grade + ' ' + g.score + '%'};
+    }
+  }catch(e){}
+  if(!(w.dist>0) || !(w.dur>0)) return {tag:'DATA?', detail:'no distance/time'};
+  var pace = w.dur/w.dist;
+  if(w.effort && w.effort >= 7) return {tag:'PASS', detail:'quality day, RPE '+w.effort};
+  if(pace >= 9.5) return {tag:'PASS', detail:'easy zone ✓ ('+Math.floor(pace)+':'+String(Math.round((pace%1)*60)).padStart(2,'0')+'/mi)'};
+  if(pace >= 8.0) return {tag:'WARN', detail:'grey zone — too fast for easy, too slow to count as quality'};
+  return {tag:'PASS', detail:'fast day'};
+}
+
 // ── FITNESS SUMMARY — one screen: where you stand, extracted from
 // your real data (Apple Health import + Strava + manual logs) ───────
 function _fmtPace(sec){ if(!sec||!isFinite(sec)) return '—'; var m=Math.floor(sec/60), s=Math.round(sec%60); return m+':'+(s<10?'0':'')+s+'/mi'; }
@@ -19021,6 +19096,32 @@ function showFitnessSummary(){
   var html = '<div style="width:100%;max-width:480px;max-height:86vh;overflow-y:auto;background:#12100A;border-radius:24px 24px 0 0;border-top:1px solid rgba(255,184,77,.35);padding:24px 20px calc(28px + env(safe-area-inset-bottom,0px));">'
     +'<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:24px;letter-spacing:2px;color:#FFB84D;">📊 FITNESS SUMMARY</div>'
     +'<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);margin-bottom:4px;">Extracted from your data · ' + new Date().toLocaleDateString() + '</div>';
+
+  // MISSION TRACK — the serious section, first
+  try{
+    var m = missionAssess();
+    var vCol = m.weekVerdict==='ON TRACK' ? '#00E676' : m.weekVerdict==='BEHIND' ? '#FF5252' : '#FFB84D';
+    html += sect('MISSION TRACK — WEEK ' + (m.rampWk+1) + ' OF THE RAMP');
+    html += '<div style="text-align:center;padding:10px 0 6px;">'
+      + '<span style="font-family:Impact,Arial Narrow,sans-serif;font-size:30px;letter-spacing:2px;color:'+vCol+';">'+m.weekVerdict+'</span></div>';
+    html += row('This week (so far)', m.actualMi + ' of ' + m.target + ' mi target', vCol);
+    html += row('Expected by today', m.expectedByNow + ' mi → you\'re at ' + m.pctOfExpected + '%', vCol);
+    html += row('Last 4 weeks hit', m.hitWeeks + ' of 4 (≥85% of ramp)', m.hitWeeks>=3?'#00E676':m.hitWeeks>=2?'#FFB84D':'#FF5252');
+    if(m.vdotNow) html += row('Engine vs mission', 'VDOT ' + m.vdotNow + ' now → 79 needed · ' + m.weeksLeft + ' wks left');
+    // Per-run verdicts, last 7 runs with data
+    var recent = (D.workouts||[]).filter(function(w){return w.date && w.dist>0;})
+      .sort(function(a,b){return a.date<b.date?1:-1;}).slice(0,7);
+    if(recent.length){
+      html += '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:.08em;margin:10px 0 2px;">RUN-BY-RUN (data verdicts)</div>';
+      recent.forEach(function(w){
+        var v = runVerdict(w);
+        var c = v.tag==='PASS' ? '#00E676' : v.tag==='WARN' ? '#FFB84D' : v.tag==='MISS' ? '#FF5252' : 'var(--grey)';
+        html += '<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);">'
+          + '<span style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--off);">'+w.date.slice(5)+' · '+(w.dist||0)+'mi/'+(w.dur||'?')+'min</span>'
+          + '<span style="font-family:\'SF Mono\',monospace;font-size:10px;color:'+c+';text-align:right;">'+v.tag+' — '+v.detail+'</span></div>';
+      });
+    }
+  }catch(e){}
 
   // PLACEMENT
   html += sect('PLAN PLACEMENT');
@@ -19762,7 +19863,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.18-26'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.18-27'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
@@ -20880,6 +20981,18 @@ function buildKodaContext() {
   } catch(e) {}
   // GAP PROTOCOL: assessment + behavior rules ride along in every context build
   try { var _gapBlock = typeof buildGapContext === 'function' ? buildGapContext() : ''; if(_gapBlock) lines.push(_gapBlock); } catch(e) {}
+  // MISSION TRACK: hard numbers on ramp adherence — KODA coaches from these
+  try {
+    if (typeof missionAssess === 'function') {
+      var _m = missionAssess();
+      lines.push('\nMISSION TRACK (ramp week ' + (_m.rampWk+1) + '): ' + _m.weekVerdict
+        + ' — ' + _m.actualMi + ' of ' + _m.target + ' mi this week ('
+        + _m.pctOfExpected + '% of where he should be by today). Last 4 weeks: '
+        + _m.hitWeeks + '/4 hit >=85% of ramp target.'
+        + (_m.vdotNow ? ' Engine: VDOT ' + _m.vdotNow + ' vs 79 mission requirement, ' + _m.weeksLeft + ' weeks to Trials.' : '')
+        + ' KODA RULE: reference these exact numbers when assessing whether he is on plan; praise only what the data supports; name the gap when behind, plainly and without guilt, then prescribe the fix.');
+    }
+  } catch(e) {}
   // ADAPTIVE LEARNING: athlete-model package (retrieved, not doctrine)
   try {
     var _lc = window._kodaLearnCtx;
