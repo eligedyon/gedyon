@@ -3371,8 +3371,8 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
           <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--gold);opacity:.6;">›</div>
         </button>
       </div>
-      <!-- LOG RUN + SHARE WEEK -->
-      <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <!-- LOG RUN + SHARE WEEK + FITNESS SUMMARY -->
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
         <button onclick="showLogRunModal()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:rgba(0,230,118,0.07);border:1px solid rgba(0,230,118,0.25);border-radius:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
           <div style="font-size:16px;">✏️</div>
           <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:14px;letter-spacing:2px;color:#00E676;">LOG A RUN</div>
@@ -3380,6 +3380,12 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
         <button onclick="shareTrainingWeek()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:rgba(74,158,255,0.07);border:1px solid rgba(74,158,255,0.25);border-radius:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
           <div style="font-size:16px;">📤</div>
           <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:14px;letter-spacing:2px;color:#4A9EFF;">SHARE WEEK</div>
+        </button>
+      </div>
+      <div style="margin-bottom:10px;">
+        <button onclick="showFitnessSummary()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:rgba(255,184,77,0.07);border:1px solid rgba(255,184,77,0.3);border-radius:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+          <div style="font-size:16px;">📊</div>
+          <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:14px;letter-spacing:2px;color:#FFB84D;">FITNESS SUMMARY — WHERE I STAND</div>
         </button>
       </div>
       <!-- FILTER BY PHASE + WEEKS -->
@@ -18936,8 +18942,95 @@ async function shareTrainingWeek(){
     showSyncToast('Share failed: ' + (e.message||'unknown').slice(0,50), 'red');
   }
 }
+// ── FITNESS SUMMARY — one screen: where you stand, extracted from
+// your real data (Apple Health import + Strava + manual logs) ───────
+function _fmtPace(sec){ if(!sec||!isFinite(sec)) return '—'; var m=Math.floor(sec/60), s=Math.round(sec%60); return m+':'+(s<10?'0':'')+s+'/mi'; }
+
+function showFitnessSummary(){
+  var ex = document.getElementById('fitSummaryModal'); if(ex) ex.remove();
+  var r = null, paces = null;
+  try{ r = recalibrateTrainingPlan(); }catch(e){}
+  try{ paces = getTrainingPaces(getPRs()); }catch(e){}
+  var trialsDays = Math.max(0, Math.floor((new Date('2028-04-04') - new Date())/864e5));
+
+  // Apple Health vitals (from the imported export / native sync)
+  var ah = D.appleHealth || {};
+  var lastOf = function(arr){ return (arr && arr.length) ? arr.slice().sort(function(a,b){ return a.date<b.date?1:-1; })[0] : null; };
+  var hrv = lastOf(ah.hrv), rhr = lastOf(ah.restingHR), wt = lastOf(ah.weight);
+  var sleepAvg = null;
+  if(ah.sleep && ah.sleep.length){
+    var s7 = ah.sleep.slice().sort(function(a,b){ return a.date<b.date?1:-1; }).slice(0,7);
+    sleepAvg = Math.round(10 * s7.reduce(function(t,x){ return t + (x.hours || x.value || 0); }, 0) / s7.length) / 10;
+  }
+  var appleWorkouts = (D.workouts||[]).filter(function(w){ return (w.source||'').indexOf('apple') === 0; }).length;
+  var hasApple = !!(hrv || rhr || sleepAvg || appleWorkouts);
+
+  function row(label, val, col){
+    return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);">'
+      +'<span style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);letter-spacing:.05em;">'+label+'</span>'
+      +'<span style="font-family:\'SF Mono\',monospace;font-size:12px;font-weight:700;color:'+(col||'#fff')+';">'+val+'</span></div>';
+  }
+  function sect(title){ return '<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:14px;letter-spacing:2px;color:#FFB84D;margin:16px 0 4px;">'+title+'</div>'; }
+
+  var html = '<div style="width:100%;max-width:480px;max-height:86vh;overflow-y:auto;background:#12100A;border-radius:24px 24px 0 0;border-top:1px solid rgba(255,184,77,.35);padding:24px 20px calc(28px + env(safe-area-inset-bottom,0px));">'
+    +'<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:24px;letter-spacing:2px;color:#FFB84D;">📊 FITNESS SUMMARY</div>'
+    +'<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);margin-bottom:4px;">Extracted from your data · ' + new Date().toLocaleDateString() + '</div>';
+
+  // PLACEMENT
+  html += sect('PLAN PLACEMENT');
+  if(r){
+    html += row('Current week', 'W' + r.currentWeek + ' of 110 · ' + (r.currentPhase && r.currentPhase.name ? r.currentPhase.name : ''));
+    if(r.dataWeeks > 0){
+      html += row('Fitness says', 'W' + r.recommendedWeek + ' — ' + r.gapText, Math.abs(r.weekDelta) >= 2 ? '#FF5252' : '#00E676');
+      html += row('Avg mileage (8wk)', r.avgWeeklyMiles + ' mi/wk over ' + r.dataWeeks + ' wks');
+      html += row('Longest recent run', r.recentLongRun + ' mi');
+    } else {
+      html += row('Fitness read', 'NO RUN DATA YET', '#FF5252');
+    }
+  }
+  html += row('Days to Trials', trialsDays + ' days', '#FFB84D');
+
+  // ENGINE
+  if(paces && paces.vdot){
+    html += sect('ENGINE — FROM YOUR RACE PRs');
+    html += row('VDOT', paces.vdot + ' (from ' + (paces._sourceEv||'race') + ' PR)', '#00E676');
+    html += row('Easy pace', _fmtPace(paces.easy));
+    html += row('Threshold', _fmtPace(paces.threshold));
+    html += row('VO2max intervals', _fmtPace(paces.vo2max));
+    html += row('Race pace', _fmtPace(paces.race));
+  }
+
+  // APPLE HEALTH
+  html += sect('BODY — FROM APPLE HEALTH');
+  if(hasApple){
+    if(hrv) html += row('HRV (latest)', Math.round(hrv.value) + ' ms · ' + hrv.date);
+    if(rhr) html += row('Resting HR', Math.round(rhr.value) + ' bpm · ' + rhr.date);
+    if(sleepAvg != null) html += row('Sleep (7-day avg)', sleepAvg + ' h');
+    if(wt) html += row('Weight', Math.round(wt.value*2.20462*10)/10 + ' lb · ' + wt.date);
+    if(appleWorkouts) html += row('Apple workouts in system', appleWorkouts + '');
+  } else {
+    html += '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:rgba(255,82,82,.9);line-height:1.8;padding:8px 0;">'
+      +'No Apple Health data imported yet — this section extracts from your export.<br>'
+      +'<span style="color:var(--grey);">Health app → your photo → Export All Health Data → import in Connect tab.</span></div>'
+      +'<button onclick="document.getElementById(\'fitSummaryModal\').remove();showMore(\'connect\');" style="width:100%;padding:12px;background:rgba(255,45,85,.12);border:1px solid rgba(255,45,85,.35);border-radius:12px;color:#ff2d55;font-family:Impact,Arial Narrow,sans-serif;font-size:14px;letter-spacing:2px;cursor:pointer;margin-top:4px;">GO TO APPLE IMPORT →</button>';
+  }
+
+  html += '<div style="display:flex;gap:8px;margin-top:18px;">'
+    +'<button onclick="document.getElementById(\'fitSummaryModal\').remove();showRecalibrationModal();" style="flex:1;padding:13px;background:rgba(201,168,76,.14);border:1px solid rgba(201,168,76,.4);border-radius:12px;color:var(--gold);font-family:Impact,Arial Narrow,sans-serif;font-size:14px;letter-spacing:2px;cursor:pointer;">RECALIBRATE</button>'
+    +'<button onclick="document.getElementById(\'fitSummaryModal\').remove();" style="flex:1;padding:13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:var(--grey);font-family:\'SF Mono\',monospace;font-size:12px;cursor:pointer;">CLOSE</button>'
+    +'</div></div>';
+
+  var modal = document.createElement('div');
+  modal.id = 'fitSummaryModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:99997;background:rgba(0,0,0,0.9);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);';
+  modal.innerHTML = html;
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+
 window.showLogRunModal = showLogRunModal;
 window.shareTrainingWeek = shareTrainingWeek;
+window.showFitnessSummary = showFitnessSummary;
 
 window.assessTrainingGap = assessTrainingGap;
 window.applyGapAdjustment = applyGapAdjustment;
@@ -19623,7 +19716,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.18-20'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.18-21'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
