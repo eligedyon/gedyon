@@ -12418,22 +12418,33 @@ function renderPlanMileage(){
           <span style="color:var(--grey);">${fmt(wkStart).slice(5)} – ${fmt(wkEnd).slice(5)}</span>
         </div>
       </div>
-      <!-- MONTHLY -->
-      <div style="padding:14px 16px;">
-        <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);letter-spacing:1.5px;margin-bottom:8px;">THIS MONTH</div>
+      <!-- RAMP WEEK (mission view) · month as footnote -->
+      ${(() => { try {
+        const m = missionAssess();
+        const rPct = Math.min(100, m.target > 0 ? Math.round(100*m.actualMi/m.target) : 0);
+        const vc = m.weekVerdict==='ON TRACK' ? 'var(--green)' : m.weekVerdict==='BEHIND' ? 'var(--red)' : 'var(--gold)';
+        return `<div style="padding:14px 16px;">
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);letter-spacing:1.5px;margin-bottom:8px;">RAMP · WEEK ${m.rampWk+1}</div>
         <div style="display:flex;align-items:baseline;gap:4px;margin-bottom:2px;">
-          <div style="font-family:Impact,'Arial Narrow',Arial,sans-serif;font-size:52px;line-height:1;color:${mPct>=90?'var(--green)':mPct>=60?'var(--gold)':'var(--off)'};">${mActual.toFixed(1)}</div>
-          <div style="font-family:'SF Mono',monospace;font-size:13px;color:var(--grey);">mi</div>
+          <div style="font-family:Impact,'Arial Narrow',Arial,sans-serif;font-size:52px;line-height:1;color:${vc};">${m.actualMi.toFixed(1)}</div>
+          <div style="font-family:'SF Mono',monospace;font-size:13px;color:var(--grey);">of ${m.target} mi</div>
         </div>
-        <div style="font-family:'SF Mono',monospace;font-size:12px;color:var(--grey);margin-bottom:8px;">of ${mPlan.toFixed(1)} planned</div>
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:${vc};margin-bottom:8px;letter-spacing:.5px;">${m.weekVerdict} · ${m.pctOfExpected}% of pace-for-today</div>
         <div style="height:5px;background:#111120;border-radius:3px;overflow:hidden;margin-bottom:5px;">
-          <div style="height:100%;width:${mPct}%;border-radius:3px;background:${mPct>=90?'var(--green)':mPct>=60?'var(--gold)':'var(--red)'};transition:width .8s ease;"></div>
+          <div style="height:100%;width:${rPct}%;border-radius:3px;background:${vc};transition:width .8s ease;"></div>
         </div>
         <div style="display:flex;justify-content:space-between;font-family:'SF Mono',monospace;font-size:11px;">
-          <span style="color:${mPct>=90?'var(--green)':mPct>=60?'var(--gold)':'var(--red)'};">${mPct}%</span>
-          <span style="color:var(--grey);">${today.toLocaleString('default',{month:'short'})} ${today.getFullYear()}</span>
+          <span style="color:${vc};">${rPct}%</span>
+          <span style="color:var(--grey);">Month: ${mActual.toFixed(1)}mi · ${today.toLocaleString('default',{month:'short'})} ${today.getFullYear()}</span>
         </div>
-      </div>
+      </div>`;
+      } catch(e) {
+        return `<div style="padding:14px 16px;">
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);letter-spacing:1.5px;margin-bottom:8px;">THIS MONTH</div>
+        <div style="display:flex;align-items:baseline;gap:4px;"><div style="font-family:Impact,'Arial Narrow',Arial,sans-serif;font-size:52px;line-height:1;color:var(--off);">${mActual.toFixed(1)}</div>
+        <div style="font-family:'SF Mono',monospace;font-size:13px;color:var(--grey);">mi</div></div>
+        <div style="font-family:'SF Mono',monospace;font-size:12px;color:var(--grey);">of ${mPlan.toFixed(1)} planned</div>
+      </div>`; } })()}
     </div>
     <!-- Phase breakdown bar -->
     <div style="border-top:1px solid var(--border);padding:10px 14px;">
@@ -12496,12 +12507,25 @@ function renderTrainingSummary(){
   +'<div style="font-family:Share Tech Mono,monospace;font-size:12px;color:var(--grey);margin-bottom:6px;">of '+wP.toFixed(1)+' planned</div>'
   +'<div style="height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-bottom:4px;"><div style="height:100%;width:'+wPct+'%;border-radius:3px;background:'+col(wPct)+';transition:width .8s;"></div></div>'
   +'<div style="font-family:Share Tech Mono,monospace;font-size:12px;color:'+col(wPct)+';">'+wPct+'%</div></div>'
-  +'<div style="padding:14px 16px;">'
-  +'<div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--grey);letter-spacing:1.5px;margin-bottom:6px;">THIS MONTH</div>'
-  +'<div style="display:flex;align-items:baseline;gap:4px;"><div style="font-family:Impact,sans-serif;font-size:42px;line-height:1;color:'+col(mPct)+';">'+mA.toFixed(1)+'</div><div style="font-family:Share Tech Mono,monospace;font-size:13px;color:var(--grey);">mi</div></div>'
-  +'<div style="font-family:Share Tech Mono,monospace;font-size:12px;color:var(--grey);margin-bottom:6px;">of '+mP.toFixed(1)+' planned</div>'
-  +'<div style="height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-bottom:4px;"><div style="height:100%;width:'+mPct+'%;border-radius:3px;background:'+col(mPct)+';transition:width .8s;"></div></div>'
-  +'<div style="font-family:Share Tech Mono,monospace;font-size:12px;color:'+col(mPct)+';">'+mPct+'%</div></div></div>'
+  +(function(){
+    try{
+      var m = missionAssess();
+      var rPct = Math.min(100, m.target>0 ? Math.round(100*m.actualMi/m.target) : 0);
+      var vc = m.weekVerdict==='ON TRACK' ? 'var(--green)' : m.weekVerdict==='BEHIND' ? 'var(--red)' : 'var(--gold)';
+      return '<div style="padding:14px 16px;">'
+        +'<div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--grey);letter-spacing:1.5px;margin-bottom:6px;">RAMP · WEEK '+(m.rampWk+1)+'</div>'
+        +'<div style="display:flex;align-items:baseline;gap:4px;"><div style="font-family:Impact,sans-serif;font-size:42px;line-height:1;color:'+vc+';">'+m.actualMi.toFixed(1)+'</div><div style="font-family:Share Tech Mono,monospace;font-size:13px;color:var(--grey);">of '+m.target+' mi</div></div>'
+        +'<div style="font-family:Share Tech Mono,monospace;font-size:11px;color:'+vc+';margin-bottom:6px;">'+m.weekVerdict+'</div>'
+        +'<div style="height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-bottom:4px;"><div style="height:100%;width:'+rPct+'%;border-radius:3px;background:'+vc+';transition:width .8s;"></div></div>'
+        +'<div style="display:flex;justify-content:space-between;font-family:Share Tech Mono,monospace;font-size:11px;"><span style="color:'+vc+';">'+rPct+'%</span><span style="color:var(--grey);">Month: '+mA.toFixed(1)+'mi</span></div></div></div>';
+    }catch(e){
+      return '<div style="padding:14px 16px;">'
+        +'<div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--grey);letter-spacing:1.5px;margin-bottom:6px;">THIS MONTH</div>'
+        +'<div style="display:flex;align-items:baseline;gap:4px;"><div style="font-family:Impact,sans-serif;font-size:42px;line-height:1;color:'+col(mPct)+';">'+mA.toFixed(1)+'</div><div style="font-family:Share Tech Mono,monospace;font-size:13px;color:var(--grey);">mi</div></div>'
+        +'<div style="font-family:Share Tech Mono,monospace;font-size:12px;color:var(--grey);margin-bottom:6px;">of '+mP.toFixed(1)+' planned</div>'
+        +'<div style="font-family:Share Tech Mono,monospace;font-size:12px;color:'+col(mPct)+';">'+mPct+'%</div></div></div>';
+    }
+  })()
   +'<div style="border-top:1px solid var(--border);padding:10px 14px;">'
   +'<div style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--grey);margin-bottom:6px;">DAYS LOGGED THIS WEEK</div>'
   +'<div style="display:flex;gap:4px;">'
@@ -19920,7 +19944,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.18-28'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.18-29'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
@@ -20978,6 +21002,7 @@ function buildKodaContext() {
       lines.push('  PILLARS (always on): (1) Lifting 2x/wk — heavy-low-rep squat/DL/lunge patterns + core, plyos in later phases; stiffness and economy, never hypertrophy; after quality days, never before track. (2) Recovery discipline — Kerr-style sleep priority (9h target); HRV/readiness decides hard days, moving them is coaching not failure. (3) Speed touch year-round — strides and fartlek keep the 4:01 legs awake for free. (4) Hills for power (Canova) alongside the gym.');
       lines.push('  ACTIVE: BASELINE TEST WEEK: Day1 weigh-in + easy 30min; Day2 SPEED 1x400m @90%; Day3 STRENGTH baseline (max pushups, plank hold, 5-rep goblet squat, 10/side SL calf raises); Day4 off/jog; Day5 ENGINE 20-min steady-hard at ~7:30/mi self-estimate (distance + avg HR = threshold anchor); Day6 easy 30; Day7 weigh-in. NOTHING ALL-OUT. Interpret every result against his 4:01 history and 5,400ft altitude; anchor paces from evidence, not the calendar.');
       lines.push('  SENSOR TRUTH: Indoor treadmill Watch paces UNDERREPORT his true speed (sub-6:00 pickups logged as ~9:00) — trust athlete-reported effort indoors.');
+      lines.push('  ATHLETE SELF-DIAGNOSIS (July 2026, correct per the data): "I am really weak aerobically." The aerobic engine is THE limiter — speed is intact, base is not. Coaching priority order during Base Build: (1) run FREQUENCY (5-6 days, even 20-30min counts) beats any single big day; (2) ruthless easy-pace discipline — easy means HR under ~135-140, ego stays home; (3) grow the long run by ~1mi every 2 weeks; (4) aerobic progress is measured by the HR-at-pace trend and the 20-min test, not by workout heroics. Remind him: for a 4:01 miler, every easy aerobic mile is the highest-value training dollar he can spend right now.');
 
       // ── RACE READINESS STATUS ─────────────────────────────────────
       // This is what the RACE READY? and OVERTRAINING MONITOR cards display.
