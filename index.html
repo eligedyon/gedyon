@@ -10217,7 +10217,7 @@ function filtPlan(ph,btn){
     const wkMiCol=wkMiPct>=90?'var(--green)':wkMiPct>=60?'var(--gold)':wkActMi>0?'var(--orange)':'var(--grey)';
 
     const isPast=wkEndDate<new Date()&&wk<curWk;
-    html+=`<div class="pw${isPast?' wk-done':''}" style="${isCur?'border-color:rgba(255,255,255,0.40);background:rgba(255,255,255,0.06)':''}"><div class="pwh" onclick="this.closest('.pw').classList.toggle('wk-done')"><div><div class="pwn" style="color:${cols[phase.n]}">WK ${wk}${wk%4===0?' (Deload)':''}</div><div class="pws">${phase.name} <span style="color:var(--grey);font-size:11px;font-weight:400;">· ${wkDateRange}</span></div></div><div style="display:flex;align-items:center;gap:6px;"><div style="text-align:right;"><div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:20px;color:${wkMiCol};line-height:1;">${wkActMi>0?wkActMi.toFixed(1):wkPlanMi.toFixed(1)}</div><div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);">${wkActMi>0?wkActMi.toFixed(1)+' / '+wkPlanMi.toFixed(1)+' mi':wkPlanMi.toFixed(1)+' mi plan'}</div></div><span class="pw-chev">▼</span></div></div><div class="ds">`;
+    html+=`<div class="pw${isPast?' wk-done':''}" style="${isCur?'border-color:rgba(255,255,255,0.40);background:rgba(255,255,255,0.06)':''}"><div class="pwh" onclick="this.closest('.pw').classList.toggle('wk-done')"><div><div class="pwn" style="color:${cols[phase.n]}">WK ${wk}${wk%4===0?' (Deload)':''}</div><div class="pws">${phase.name} <span style="color:var(--grey);font-size:11px;font-weight:400;">· ${wkDateRange}</span></div></div><div style="display:flex;align-items:center;gap:6px;"><div style="text-align:right;"><div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:20px;color:${wkMiCol};line-height:1;">${wkPlanMi.toFixed(1)}<span style="font-size:11px;color:var(--grey);"> mi</span></div><div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);">${wkActMi>0?wkActMi.toFixed(1)+' done ('+wkMiPct+'%)':'week target'}</div></div><span class="pw-chev">▼</span></div></div><div class="ds">`;
     // Always show MON-SUN for each week (training starts Monday)
     for(let d=0;d<7;d++){
       const wkStart=new Date(start.getFullYear(),start.getMonth(),start.getDate()+(wk-1)*7);
@@ -19098,6 +19098,21 @@ function missionAssess(){
 
   // This calendar week (Mon-Sun) actual mileage
   var d = parseLocalDate(today); var dow = d.getDay(); var mondayMs = todayMs - ((dow+6)%7)*86400000;
+
+  // SINGLE SOURCE OF TRUTH: the week's target is what's actually
+  // scheduled (sum of the ramp-scaled day cards), so every widget and
+  // verdict quotes the same number the athlete sees on his day cards.
+  try{
+    if(typeof getDayPlan === 'function'){
+      var schedSum = 0;
+      for(var si=0; si<7; si++){
+        var sd = new Date(mondayMs + si*86400000).toISOString().split('T')[0];
+        var sp = getDayPlan(sd);
+        schedSum += (sp && sp.mi) || 0;
+      }
+      if(schedSum > 0) target = Math.round(schedSum*10)/10;
+    }
+  }catch(e){}
   var weekRuns = (D.workouts||[]).filter(function(w){
     if(!w.date || !(w.dist>0)) return false;
     var ms = parseLocalDate(w.date).getTime();
@@ -19953,7 +19968,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.18-31'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.18-32'; // bump on every deploy — shown in RUN CHECK
 
 async function runDiagnostic() {
   const el = document.getElementById('diagResults');
