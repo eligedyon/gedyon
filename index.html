@@ -4854,12 +4854,54 @@ function initSupabase(){
     try {
       // CDN exposes supabase globally with createClient
       var lib = window.supabase || window.Supabase;
-      if(lib && lib.createClient){ sbClient = lib.createClient(SUPABASE_URL, SUPABASE_KEY); return true; }
+      if(lib && lib.createClient){ sbClient = lib.createClient(SUPABASE_URL, SUPABASE_KEY); _hookRecovery(); return true; }
       // Try alternate CDN pattern
-      if(typeof createClient === 'function'){ sbClient = createClient(SUPABASE_URL, SUPABASE_KEY); return true; }
+      if(typeof createClient === 'function'){ sbClient = createClient(SUPABASE_URL, SUPABASE_KEY); _hookRecovery(); return true; }
     } catch(e){ console.log('Supabase init error:', e); }
   }
   return false;
+}
+
+// PASSWORD RESET, second half: when the email link lands back here,
+// Supabase fires PASSWORD_RECOVERY — prompt for the new password.
+function _hookRecovery(){
+  try{
+    sbClient.auth.onAuthStateChange(function(event){
+      if(event === 'PASSWORD_RECOVERY') setTimeout(showSetNewPassword, 400);
+    });
+  }catch(e){}
+}
+
+function showSetNewPassword(){
+  if(document.getElementById('newPwModal')) return;
+  var m = document.createElement('div');
+  m.id = 'newPwModal';
+  m.style.cssText = 'position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:20px;';
+  m.innerHTML = '<div style="background:#0d0d1a;border:1.5px solid rgba(201,168,76,.45);border-radius:20px;padding:28px 24px;width:100%;max-width:400px;">'
+    + '<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:22px;letter-spacing:2px;color:var(--gold);margin-bottom:6px;">🔑 SET NEW PASSWORD</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);margin-bottom:18px;line-height:1.7;">Your reset link worked — you\'re signed in. Pick a new password so you can sign in anywhere.</div>'
+    + '<input id="newPwInput" type="password" placeholder="New password (6+ characters)" autocomplete="new-password" style="width:100%;box-sizing:border-box;padding:13px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.35);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:14px;margin-bottom:10px;outline:none;">'
+    + '<input id="newPwInput2" type="password" placeholder="Type it again" autocomplete="new-password" style="width:100%;box-sizing:border-box;padding:13px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.35);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:14px;margin-bottom:16px;outline:none;">'
+    + '<div id="newPwMsg" style="font-family:\'SF Mono\',monospace;font-size:11px;color:#FF3D57;margin-bottom:10px;display:none;"></div>'
+    + '<button onclick="_confirmNewPassword()" style="width:100%;padding:14px;background:var(--gold);color:#000;font-family:Impact,Arial Narrow,sans-serif;font-size:17px;letter-spacing:2px;border:none;border-radius:12px;cursor:pointer;">SAVE PASSWORD</button>'
+    + '</div>';
+  document.body.appendChild(m);
+  setTimeout(function(){ var i=document.getElementById('newPwInput'); if(i) i.focus(); }, 150);
+}
+
+async function _confirmNewPassword(){
+  var p1 = (document.getElementById('newPwInput')||{}).value||'';
+  var p2 = (document.getElementById('newPwInput2')||{}).value||'';
+  var msg = document.getElementById('newPwMsg');
+  function err(t){ if(msg){ msg.style.display='block'; msg.textContent=t; } }
+  if(p1.length < 6) return err('At least 6 characters.');
+  if(p1 !== p2) return err('The two passwords don\'t match.');
+  try{
+    var r = await sbClient.auth.updateUser({ password: p1 });
+    if(r.error) return err(r.error.message);
+    var m = document.getElementById('newPwModal'); if(m) m.remove();
+    showSyncToast('Password saved — you\'re signed in everywhere now','green');
+  }catch(e){ err('Error: ' + e.message); }
 }
 function showAuthLogin(){
   $('authLogin').style.display='block';
@@ -20049,7 +20091,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.07.19-39'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.07.19-40'; // bump on every deploy — shown in RUN CHECK
 
 // PREVIEW BANNER: outside the real app hosts this page runs in a sandbox
 // with its own empty storage — none of the athlete's real data. Numbers
