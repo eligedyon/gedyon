@@ -3133,6 +3133,9 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
         <button class="btn-ghost" style="width:auto;padding:8px 12px;margin-top:0;font-size:11px;" onclick="setToday()">Today</button>
       </div>
 
+      <!-- COACH CARD — today's job + tonight's prep -->
+      <div id="coachCard"></div>
+
       <!-- WEIGHT — PROMINENT -->
       <div class="wt-hero">
         <div class="wt-main">
@@ -5605,7 +5608,7 @@ function showMore(tab){
 function selTog(btn,grp){ document.querySelectorAll('#'+grp+' .tog').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
 function showAlert(id,msg,type){ const el=$(id);if(!el)return; el.textContent=msg; el.className='al show '+(type||'ok'); setTimeout(()=>el.classList.remove('show'),4500); }
 function setToday(){ $('docDate').value=td(); loadDay(); }
-function loadDay(){ const d=$('docDate').value||td(); renderWtHero(d); renderPlanCard(d); renderTodayFood(d); renderSuppGrid(d); restoreToggles(d); $('woAI').classList.remove('show'); $('foodAI').classList.remove('show'); $('execCard').innerHTML=''; $('foodExecCard').innerHTML=''; $('foodPhoto').style.display='none'; }
+function loadDay(){ try{renderCoachCard();}catch(e){} const d=$('docDate').value||td(); renderWtHero(d); renderPlanCard(d); renderTodayFood(d); renderSuppGrid(d); restoreToggles(d); $('woAI').classList.remove('show'); $('foodAI').classList.remove('show'); $('execCard').innerHTML=''; $('foodExecCard').innerHTML=''; $('foodPhoto').style.display='none'; }
 
 // ═══ PDF PLAYBOOK DATA — Extracted from GEDYON_TRIALS_v5_COMPLETE.pdf ═══
 var PDF_PLAYBOOK = {
@@ -8953,6 +8956,34 @@ function logWeightHome(){
   showAlert('homeWtAlert',' '+v+' lbs logged at '+timeStr+' ('+timeLabel+')','ok');
 }
 
+// COACH CARD — glanceable "today's job + tomorrow's prep" on the TODAY tab
+function _cc_prep(type){
+  var t=(type||'').toLowerCase();
+  if(t.indexOf('threshold')>=0||t==='interval'||t==='hill'||t.indexOf('fartlek')>=0)
+    return 'Quality tomorrow — carbs at dinner, charge watch, protected night: lights out 9:00';
+  if(t==='long') return 'Long run tomorrow — lay out kit, fuel a bit before, lights out 9:15';
+  return 'Easy tomorrow — clothes/shoes out, fill water bottle, lights out 9:15';
+}
+function renderCoachCard(){
+  var el=document.getElementById('coachCard'); if(!el) return;
+  var today, tmrw;
+  try{ today=getDayPlan(td()); }catch(e){}
+  try{ var d=new Date(Date.now()+864e5); tmrw=getDayPlan(d.toISOString().slice(0,10)); }catch(e){}
+  if(!today){ el.innerHTML=''; return; }
+  var wk = (typeof getWk==='function')?getWk(td()):'';
+  var steps=(today.steps||'').replace(/⚡[^:]*:\s*/,'');
+  var mi = today.mi||0;
+  el.innerHTML =
+    '<div style="background:linear-gradient(180deg,#0e0e1a,#12121f);border:1px solid rgba(0,200,230,.25);border-left:3px solid #00c8e6;border-radius:16px;padding:15px 16px;margin-bottom:12px;">'
+    +'<div style="font-family:Impact,Arial Narrow,sans-serif;letter-spacing:2px;font-size:12px;color:#7f8aa3;margin-bottom:4px;">TODAY · WEEK '+wk+'</div>'
+    +'<div style="font-family:Impact,Arial Narrow,sans-serif;letter-spacing:1px;font-size:22px;color:#e8f0ff;">'+(today.name||'RUN')+(mi?' · '+mi+'mi':'')+'</div>'
+    +'<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:#9fb0cc;line-height:1.7;margin-top:6px;">'+steps+'</div>'
+    +(tmrw?'<div style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;background:rgba(245,177,61,.07);border-radius:10px;padding:9px 11px;">'
+      +'<span style="color:#f5b13d;">☾</span>'
+      +'<div style="font-family:\'SF Mono\',monospace;font-size:11.5px;color:#c9b98a;line-height:1.6;"><b style="color:#f5d08a;">Tonight prep:</b> '+_cc_prep(tmrw.type)+'</div></div>':'')
+    +'<div style="display:flex;gap:6px;margin-top:12px;font-family:\'SF Mono\',monospace;font-size:10px;color:#565f78;letter-spacing:.05em;">✓ scale · ✓ water+protein · ✓ log run · ✓ sleep 9h</div>'
+    +'</div>';
+}
 function renderDash(){
   renderDashPlanCard();
   renderChizalBrief();
@@ -20091,7 +20122,7 @@ Be honest. Where am I leaking calories? What meals are too big? What foods are s
 
 
 // ═══ CONNECTION DIAGNOSTIC ENGINE ═══
-var GEDYON_BUILD = 'v2026.08.17-50'; // bump on every deploy — shown in RUN CHECK
+var GEDYON_BUILD = 'v2026.08.20-51'; // bump on every deploy — shown in RUN CHECK
 
 // PREVIEW BANNER: outside the real app hosts this page runs in a sandbox
 // with its own empty storage — none of the athlete's real data. Numbers
