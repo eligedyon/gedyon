@@ -3447,6 +3447,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
     <div id="pg-more" class="pg">
       <div class="snav">
         <button class="snb on" id="snb-supps" onclick="showMore('supps')">Protocol</button>
+        <button class="snb" id="snb-labs" onclick="showMore('labs')">Labs</button>
         <button class="snb" id="snb-race" onclick="showMore('race')">Racing</button>
         <button class="snb" id="snb-wt" onclick="showMore('wt')">Weight</button>
         <button class="snb" id="snb-rl" onclick="showMore('rl')">Races</button>
@@ -3466,7 +3467,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
       </div>
       <div id="ms-supps" class="msec on">
         <div class="sh" style="margin-top:0;">SUPPLEMENT PROTOCOL</div>
-        <div class="supc sg"><div class="sco">$20/3mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Creatine Monohydrate</div><div class="sdo">5g daily · no loading</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> Morning with water</div><div class="swy">Protects muscle during 29 lb weight loss. Non-negotiable.</div></div>
+        <div class="supc sg"><div class="sco">$20/3mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Creatine Monohydrate</div><div class="sdo">5g daily · no loading</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> Morning with water</div><div class="swy">Protects muscle during 29 lb weight loss. Non-negotiable. ISSN position stand: 3-5g/day reaches full muscle saturation in ~3-4 weeks — same endpoint as a 20g/day loading week, just slower. No performance benefit above 5g; don't chase bigger doses.</div></div>
         <div class="supc sbl"><div class="sco">$20/mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Vitamin D3 + K2</div><div class="sdo">5000 IU D3 + 100mcg K2</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> Morning with fat</div><div class="swy">Bone density, testosterone, immunity.</div></div>
         <div class="supc sg"><div class="sco">$15/mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Magnesium Glycinate</div><div class="sdo">400mg every night</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> 9:00pm — every night</div><div class="swy">Sleep quality, muscle recovery, cramp prevention.</div></div>
         <div class="supc sol"><div class="sco">$30/mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Omega-3 Fish Oil</div><div class="sdo">2–3g EPA+DHA daily</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> Morning with breakfast</div><div class="swy">Joint lubrication. Reduces DOMS 20–30%.</div></div>
@@ -3481,6 +3482,24 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
           <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);letter-spacing:1px;margin-bottom:10px;">NO MATCH IN PROTOCOL</div>
           <div style="font-family:'SF Mono',monospace;font-size:11px;color:#555;margin-bottom:12px;">Search the full supplement database above for a match to add.</div>
         </div>
+      </div>
+      <div id="ms-labs" class="msec">
+        <div class="sh" style="margin-top:0;">RECOMMENDED PANEL — UNEXPLAINED FATIGUE</div>
+        <div style="padding:10px 14px;font-family:'SF Mono',monospace;font-size:11px;color:var(--off);line-height:1.8;background:rgba(255,255,255,.03);border-radius:10px;margin:0 14px 12px;">
+          Four clusters cover most causes: <b>iron</b> (ferritin, hemoglobin), <b>thyroid</b> (TSH + Free T3/T4 — TSH alone misses a lot), <b>blood sugar</b> (fasting glucose, HbA1c), and <b>vitamins</b> (B12, folate, vitamin D, magnesium). Add <b>hs-CRP</b> (inflammation) and a full <b>lipid panel</b> given the family heart history. Standard panels often skip ferritin and Free T3/T4 — ask for them by name.
+        </div>
+        <div class="sh">LOG A RESULT</div>
+        <div style="padding:0 14px 14px;display:flex;flex-direction:column;gap:8px;">
+          <select id="labTestSel" style="width:100%;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-family:'SF Mono',monospace;font-size:12px;outline:none;"></select>
+          <div style="display:flex;gap:8px;">
+            <input id="labValInput" type="number" step="any" placeholder="Value" style="flex:1;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-family:'SF Mono',monospace;font-size:12px;outline:none;">
+            <input id="labDateInput" type="date" style="flex:1;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-family:'SF Mono',monospace;font-size:12px;outline:none;">
+          </div>
+          <button onclick="addLabResult()" style="width:100%;padding:12px;background:rgba(0,230,118,0.07);border:1px solid rgba(0,230,118,0.25);border-radius:12px;color:#00E676;font-family:Impact,'Arial Narrow',sans-serif;font-size:14px;letter-spacing:2px;cursor:pointer;">LOG RESULT</button>
+          <div id="labAlert" class="al"></div>
+        </div>
+        <div class="sh">RESULTS LOG</div>
+        <div id="labResultsList" style="padding:0 14px 14px;"></div>
       </div>
       <div id="ms-race" class="msec"><div id="raceTestList"></div></div>
       <div id="ms-wt" class="msec">
@@ -5636,10 +5655,87 @@ function showMore(tab){
   document.querySelectorAll('.snb').forEach(b=>b.classList.remove('on'));
   $('ms-'+tab).classList.add('on'); $('snb-'+tab).classList.add('on');
   if(tab==='wt')renderWeightMore();
+  else if(tab==='labs')renderLabs();
   else if(tab==='rl'){renderAthleteProfile();renderRaceHistory();autoSyncRaces();}
   else if(tab==='social')setTimeout(renderSocialFeed,50);
   else if(tab==='connect')setTimeout(renderConnectPage,60);
   else if(tab==='athletes')setTimeout(renderAthletesBenchmark,60);
+}
+// ═══ BLOODWORK / LABS ═══
+// Reference ranges are general adult guidance, not a diagnosis — the
+// lab's own report always wins if the two disagree. Sourced from the
+// standard fatigue-workup cluster (iron/thyroid/glucose/vitamins) plus
+// a lipid panel + hs-CRP for the family cardiac history angle.
+var LAB_REF = {
+  'Ferritin':            {lo:30,  hi:300, unit:'ng/mL', note:'iron stores — low ferritin is the single most common fatigue finding'},
+  'Hemoglobin':          {lo:13.5,hi:17.5,unit:'g/dL',  note:'part of a CBC — anemia screen'},
+  'TSH':                 {lo:0.4, hi:4.0, unit:'mIU/L', note:'>2.5 is often symptomatic even inside "normal" — pair with Free T3/T4'},
+  'Free T4':             {lo:0.8, hi:1.8, unit:'ng/dL', note:'order alongside TSH, not alone'},
+  'Free T3':             {lo:2.3, hi:4.2, unit:'pg/mL', note:'order alongside TSH, not alone'},
+  'Vitamin B12':         {lo:400, hi:900, unit:'pg/mL', note:'aim >400 — the lab "normal" floor (~200) is often too low to rule out symptoms'},
+  'Folate':              {lo:2.7, hi:17,  unit:'ng/mL', note:''},
+  'Vitamin D (25-OH)':   {lo:30,  hi:100, unit:'ng/mL', note:'optimal commonly cited as 40-60'},
+  'HbA1c':               {lo:4.0, hi:5.6, unit:'%',     note:'blood sugar regulation'},
+  'Fasting Glucose':     {lo:70,  hi:99,  unit:'mg/dL', note:''},
+  'hs-CRP':              {lo:0,   hi:1.0, unit:'mg/L',  note:'inflammation — <1 low risk, 1-3 average, >3 high'},
+  'Magnesium':           {lo:1.7, hi:2.2, unit:'mg/dL', note:''},
+  'Total Cholesterol':   {lo:0,   hi:200, unit:'mg/dL', note:'family heart history — track the trend over time'},
+  'LDL':                 {lo:0,   hi:100, unit:'mg/dL', note:'family heart history — optimal <100'},
+  'HDL':                 {lo:40,  hi:999, unit:'mg/dL', note:'higher is better — flagged low under 40'},
+  'Triglycerides':       {lo:0,   hi:150, unit:'mg/dL', note:''},
+};
+function labFlag(test, value){
+  var ref = LAB_REF[test];
+  if(!ref || value==null || isNaN(value)) return {tag:'—', col:'var(--grey)'};
+  if(value < ref.lo) return {tag:'LOW', col:'#FFB84D'};
+  if(value > ref.hi) return {tag:'HIGH', col:'#FF5252'};
+  return {tag:'NORMAL', col:'#00E676'};
+}
+function addLabResult(){
+  var sel = $('labTestSel'), valEl = $('labValInput'), dateEl = $('labDateInput');
+  var test = sel ? sel.value : '';
+  var val = valEl ? parseFloat(valEl.value) : NaN;
+  var date = (dateEl && dateEl.value) || td();
+  if(!test || isNaN(val)){ showAlert('labAlert','Pick a test and enter a value','err'); return; }
+  if(!D.labs) D.labs = [];
+  D.labs.push({id: D.labs.length ? Math.max.apply(null, D.labs.map(function(l){return l.id||0;}))+1 : 1,
+    test: test, value: val, date: date, unit: (LAB_REF[test]||{}).unit || ''});
+  save();
+  if(valEl) valEl.value = '';
+  renderLabs();
+  showAlert('labAlert', test + ' logged', 'ok');
+}
+function deleteLabResult(id){
+  D.labs = (D.labs||[]).filter(function(l){ return l.id !== id; });
+  save(); renderLabs();
+}
+function renderLabs(){
+  var sel = $('labTestSel');
+  if(sel && !sel.options.length){
+    sel.innerHTML = Object.keys(LAB_REF).map(function(t){ return '<option value="'+t+'">'+t+'</option>'; }).join('');
+  }
+  var dateInp = $('labDateInput');
+  if(dateInp && !dateInp.value) dateInp.value = td();
+
+  var listEl = $('labResultsList');
+  if(!listEl) return;
+  var labs = (D.labs||[]).slice().sort(function(a,b){ return a.date < b.date ? 1 : a.date > b.date ? -1 : (b.id-a.id); });
+  if(!labs.length){
+    listEl.innerHTML = '<div style="padding:14px;text-align:center;font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);">No results logged yet — add your first panel above.</div>';
+    return;
+  }
+  listEl.innerHTML = labs.map(function(l){
+    var f = labFlag(l.test, l.value);
+    var ref = LAB_REF[l.test];
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);">'
+      + '<div><div style="font-family:\'SF Mono\',monospace;font-size:12px;color:#fff;">'+l.test+'</div>'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);">'+l.date+(ref?' · ref '+ref.lo+'–'+ref.hi+' '+ref.unit:'')+'</div></div>'
+      + '<div style="display:flex;align-items:center;gap:10px;">'
+      + '<div style="text-align:right;"><div style="font-family:\'SF Mono\',monospace;font-size:13px;font-weight:700;color:'+f.col+';">'+l.value+' '+(l.unit||'')+'</div>'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:9px;color:'+f.col+';letter-spacing:1px;">'+f.tag+'</div></div>'
+      + '<button onclick="deleteLabResult('+l.id+')" style="background:none;border:none;color:var(--grey);font-size:16px;cursor:pointer;padding:0 4px;">×</button>'
+      + '</div></div>';
+  }).join('');
 }
 function selTog(btn,grp){ document.querySelectorAll('#'+grp+' .tog').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
 function showAlert(id,msg,type){ const el=$(id);if(!el)return; el.textContent=msg; el.className='al show '+(type||'ok'); setTimeout(()=>el.classList.remove('show'),4500); }
@@ -19222,6 +19318,33 @@ function _rampTargetForWeek(offsetWeeks){
   return Math.min(35, 15 + add);
 }
 
+// ── ACUTE:CHRONIC WORKLOAD RATIO ────────────────────────────────────
+// 7-day acute mileage vs the trailing 28-day weekly-equivalent average.
+// Literature (Gabbett; endurance-runner cohort studies) puts 0.8-1.3 as
+// the low-injury-risk band; >1.3-1.5 elevated, >1.5 high-risk spike.
+// <0.8 isn't a risk zone itself — it flags detraining, not injury.
+function computeACWR(){
+  var todayMs = parseLocalDate(td()).getTime();
+  function milesInWindow(days){
+    var startMs = todayMs - (days-1)*86400000;
+    return (D.workouts||[]).filter(function(w){
+      if(!w.date || !(w.dist>0)) return false;
+      var ms = parseLocalDate(w.date).getTime();
+      return ms>=startMs && ms<=todayMs;
+    }).reduce(function(s,w){return s+(w.dist||0);},0);
+  }
+  var acute7 = milesInWindow(7);
+  var chronic28Avg = milesInWindow(28)/4;
+  var ratio = chronic28Avg > 0 ? acute7/chronic28Avg : null;
+  var zone = ratio==null ? 'no-data' : ratio>1.5 ? 'high-risk' : ratio>1.3 ? 'elevated' : ratio>=0.8 ? 'optimal' : 'undertrained';
+  return {
+    acute7: Math.round(acute7*10)/10,
+    chronic28Avg: Math.round(chronic28Avg*10)/10,
+    ratio: ratio==null ? null : Math.round(ratio*100)/100,
+    zone: zone,
+  };
+}
+
 function missionAssess(){
   var today = td();
   var todayMs = parseLocalDate(today).getTime();
@@ -19278,10 +19401,12 @@ function missionAssess(){
   var vdotNow = null; try{ var p = getTrainingPaces(getPRs()); if(p && p.vdot) vdotNow = p.vdot; }catch(e){}
   var weeksLeft = Math.max(1, Math.ceil((parseLocalDate('2028-04-04').getTime()-todayMs)/(7*86400000)));
 
+  var acwr = null; try{ acwr = computeACWR(); }catch(e){}
+
   return { rampWk: rampWk, target: target, actualMi: actualMi, pct: pct,
            expectedByNow: expectedByNow, pctOfExpected: pctOfExpected, weekVerdict: weekVerdict,
            adherence: adherence, hitWeeks: hitWeeks, vdotNow: vdotNow, vdotGoal: 79, weeksLeft: weeksLeft,
-           runsThisWeek: weekRuns.length };
+           runsThisWeek: weekRuns.length, acwr: acwr };
 }
 
 // Per-run verdict: judge a run against its planned day (grade engine) or,
@@ -19396,6 +19521,11 @@ function showFitnessSummary(){
     html += row('This week (so far)', m.actualMi + ' of ' + m.target + ' mi target', vCol);
     html += row('Expected by today', m.expectedByNow + ' mi → you\'re at ' + m.pctOfExpected + '%', vCol);
     html += row('Last 4 weeks hit', m.hitWeeks + ' of 4 (≥85% of ramp)', m.hitWeeks>=3?'#00E676':m.hitWeeks>=2?'#FFB84D':'#FF5252');
+    if(m.acwr && m.acwr.ratio != null){
+      var acwrCol = m.acwr.zone==='high-risk' ? '#FF5252' : m.acwr.zone==='elevated' ? '#FFB84D' : m.acwr.zone==='undertrained' ? 'var(--grey)' : '#00E676';
+      var acwrLabel = m.acwr.zone==='high-risk' ? 'SPIKE — ease off' : m.acwr.zone==='elevated' ? 'watch it' : m.acwr.zone==='undertrained' ? 'room to build' : 'safe zone';
+      html += row('Load ratio (7d vs 28d avg)', m.acwr.ratio + ' — ' + acwrLabel, acwrCol);
+    }
     if(m.vdotNow) html += row('Engine vs mission', 'VDOT ' + m.vdotNow + ' now → 79 needed · ' + m.weeksLeft + ' wks left');
     // Per-run verdicts, last 7 runs with data
     var recent = (D.workouts||[]).filter(function(w){return w.date && w.dist>0;})
