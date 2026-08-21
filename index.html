@@ -6787,7 +6787,20 @@ function applyWorkoutPreferences(date, plan){
     p.lac   = [2.0, 5.0];
     p.steps = 'WU: 0.8mi easy jog to treadmill hill · HILLS: '+hillReps+'×80m at MAX effort (incline 8.0–10.0, speed 9.5–11.5 mph) · Walk back down — full recovery between every rep · CD: '+(Math.max(0,mi-0.8)).toFixed(1)+'mi easy · THIS is your strength session — Canova method, power without bulk';
     p.sets  = hillReps+'×80m max effort · Full walk-down recovery · Drive knees high, lean into hill, explosive push-off · HR ceiling: 178 · Treadmill: incline 8.0–10.0, burst to 9.5–11.5 mph each rep';
-    p.coreNote = 'Post-run: single-leg calf raises 3×20 · Hip flexor stretch 3×30s each side · Hills replace all gym/weight work';
+    p.coreNote = 'Post-run: single-leg calf raises 3×20 · Hip flexor stretch 3×30s each side · Hills are the explosive-power work — Monday\'s lift session covers the rest';
+  }
+  // MONDAY → Weight room, 1x/week (from wk 5+, easy/rest sessions only, not deload)
+  // Reintroduced per the athlete's own data: weeks combining lifting + running
+  // produced his lowest recorded weight (176 lbs) of the cut so far. Kept
+  // light/foundational — reintroduction, not a return to a full program —
+  // given current recovery status (elevated ACWR, yellow WHOOP recovery).
+  if(dow===1 && wk>=5 && !isDeload && (p.type==='easy'||p.type==='rest')){
+    var liftBlock = 'WEIGHT ROOM (30min, full-body, leave 2-3 reps in reserve): Goblet squat 3×8 · Romanian deadlift 3×8 · Single-leg RDL 2×8/side · Push-up or bench press 3×8 · Row (band/dumbbell) 3×10 · Pallof press 2×10/side.';
+    p.name = (p.name || 'EASY DOUBLE').replace(/\s*\+\s*DAILY CORE$/i,'').replace(/\s*\+\s*CORE$/i,'') + ' + LIFT';
+    p.lift = true;
+    p.steps = (p.steps ? p.steps + ' · ' : '') + liftBlock;
+    p.sets = (p.sets ? p.sets + ' · ' : '') + liftBlock;
+    p.coreNote = liftBlock;
   }
   // FRIDAY → Fartlek (odd block weeks, from wk 5+, only easy/shakeout sessions, not deload)
   if(dow===5 && wk>=5 && !isDeload && wkInBlock%2===1 && (p.type==='easy'||p.type==='rest') && p.mi>=1.5 && p.mi<=8){
