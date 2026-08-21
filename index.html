@@ -19709,6 +19709,17 @@ function _pmRefreshLabel(){
   }catch(e){ sum.textContent = ''; }
 }
 
+// Shared by Print Month + Calendar view: the numeric targets a runner
+// actually checks mid-session (HR ceiling, lactate band, rep/rest
+// scheme) — previously only in the `sets` field and never displayed.
+function _sessionTargets(plan){
+  var parts = [];
+  if(plan.hr && plan.hr.length === 2) parts.push('HR ' + plan.hr[0] + '-' + plan.hr[1] + ' bpm');
+  if(plan.lac && plan.lac.length === 2) parts.push('Lactate ' + plan.lac[0] + '-' + plan.lac[1] + ' mmol/L');
+  if(plan.sets) parts.push(plan.sets);
+  return parts.join(' · ');
+}
+
 function printSelectedMonth(){
   var y = _pmState.y, m = _pmState.m;
   var days = _pmMonthDays(y, m);
@@ -19751,9 +19762,10 @@ function printSelectedMonth(){
       + '<td style="white-space:nowrap;font-weight:700;">' + (plan.name||'') + '</td>'
       + '<td style="white-space:nowrap;">' + (plan.mi||0) + 'mi</td>'
       + '<td>' + (typeof formatSteps === 'function' ? formatSteps(plan.steps, plan.mi) : (plan.steps||'')) + '</td>'
+      + '<td>' + _sessionTargets(plan) + '</td>'
       + '</tr>';
   }).join('');
-  var listHtml = '<table class="pm-daylist"><thead><tr><th>Day</th><th>Wk</th><th>Session</th><th>Mi</th><th>Structure</th></tr></thead><tbody>' + listRows + '</tbody></table>';
+  var listHtml = '<table class="pm-daylist"><thead><tr><th>Day</th><th>Wk</th><th>Session</th><th>Mi</th><th>Structure — warm-up through cool-down</th><th>Targets</th></tr></thead><tbody>' + listRows + '</tbody></table>';
 
   var area = document.getElementById('printMonthArea');
   if(!area){ area = document.createElement('div'); area.id = 'printMonthArea'; document.body.appendChild(area); }
@@ -19858,7 +19870,10 @@ function _calSelectDay(date){
     + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:17px;letter-spacing:1px;color:#fff;">'+(plan.name||'')+'</div></div>'
     + '</div>'
     + '<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:'+col+';font-weight:700;margin-bottom:8px;">'+(plan.mi||0)+'mi · '+(plan.zone||'—')+'</div>'
-    + '<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:var(--off);line-height:1.7;">'+(typeof formatSteps === 'function' ? formatSteps(plan.steps, plan.mi) : (plan.steps||''))+'</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:1px;margin-bottom:4px;">WARM-UP → MAIN SET → COOL-DOWN</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:var(--off);line-height:1.7;margin-bottom:10px;">'+(typeof formatSteps === 'function' ? formatSteps(plan.steps, plan.mi) : (plan.steps||''))+'</div>'
+    + (_sessionTargets(plan) ? '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:1px;margin-bottom:4px;">TARGETS</div>'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:'+col+';line-height:1.6;">'+_sessionTargets(plan)+'</div>' : '')
     + '</div>';
 }
 
