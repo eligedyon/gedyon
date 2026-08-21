@@ -3384,6 +3384,19 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
       <!-- MILEAGE TRACKER + TODAY'S PLAN -->
       <div id="planMileageSummary" style="margin-bottom:10px;"></div>
       <div id="planTodayBox" style="margin-bottom:10px;"></div>
+      <!-- CALENDAR VIEW -->
+      <div style="margin-bottom:10px;">
+        <button onclick="openCalendarModal()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:rgba(90,212,141,0.08);border:1px solid rgba(90,212,141,0.25);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:20px;">📅</div>
+            <div style="text-align:left;">
+              <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:16px;letter-spacing:2px;color:var(--green);">CALENDAR</div>
+              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:1px;">Browse any month, tap a day for full detail</div>
+            </div>
+          </div>
+          <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--green);opacity:.6;">›</div>
+        </button>
+      </div>
       <!-- RECALIBRATE BANNER -->
       <div style="margin-bottom:10px;">
         <button onclick="showRecalibrationModal()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
@@ -19760,6 +19773,98 @@ function printSelectedMonth(){
 window.openPrintMonthModal = openPrintMonthModal;
 window.printSelectedMonth = printSelectedMonth;
 window._pmShiftMonth = _pmShiftMonth;
+
+// ─────────────────────────────────────────────────────────────
+//  CALENDAR VIEW — on-screen month browser (companion to Print
+//  Month's export). Tap any day to see its full session detail
+//  inline, no navigation away from the modal. Shares the
+//  _pmMonthDays()/_pmMonthLabel() helpers defined above.
+// ─────────────────────────────────────────────────────────────
+var _calState = { y: null, m: null, selected: null };
+
+function openCalendarModal(){
+  var ex = document.getElementById('calModal'); if(ex) ex.remove();
+  var now = new Date();
+  _calState.y = now.getFullYear(); _calState.m = now.getMonth(); _calState.selected = td();
+
+  var modal = document.createElement('div');
+  modal.id = 'calModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:99995;background:rgba(0,0,0,0.88);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);padding:0 0 env(safe-area-inset-bottom,0px);';
+  modal.innerHTML = '<div style="width:100%;max-width:480px;background:#0D0D18;border-radius:24px 24px 0 0;border-top:1px solid rgba(255,255,255,.12);max-height:92vh;overflow-y:auto;padding:0 0 24px;">'
+    + '<div style="display:flex;justify-content:center;padding:12px 0 4px;"><div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);"></div></div>'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px 12px;">'
+    + '<button onclick="_calShiftMonth(-1)" style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--white);font-size:16px;cursor:pointer;">‹</button>'
+    + '<div id="calMonthLabel" style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:20px;letter-spacing:2px;color:var(--green);"></div>'
+    + '<button onclick="_calShiftMonth(1)" style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--white);font-size:16px;cursor:pointer;">›</button>'
+    + '</div>'
+    + '<div id="calGrid" style="padding:0 14px;"></div>'
+    + '<div id="calDayDetail" style="padding:14px 20px 0;"></div>'
+    + '<div style="padding:16px 20px 0;">'
+    + '<button onclick="document.getElementById(\'calModal\').remove();" style="width:100%;padding:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:var(--grey);font-family:\'SF Mono\',monospace;font-size:12px;cursor:pointer;">CLOSE</button>'
+    + '</div></div>';
+  document.body.appendChild(modal);
+  _renderCalGrid();
+  _calSelectDay(_calState.selected);
+}
+
+function _calShiftMonth(delta){
+  var d = new Date(_calState.y, _calState.m + delta, 1);
+  _calState.y = d.getFullYear(); _calState.m = d.getMonth();
+  _calState.selected = null;
+  var detail = document.getElementById('calDayDetail'); if(detail) detail.innerHTML = '';
+  _renderCalGrid();
+}
+
+function _renderCalGrid(){
+  var lbl = document.getElementById('calMonthLabel');
+  if(lbl) lbl.textContent = _pmMonthLabel(_calState.y, _calState.m).toUpperCase();
+  var grid = document.getElementById('calGrid');
+  if(!grid) return;
+  var colMap = {rest:'var(--grey)',easy:'var(--green)',long:'var(--blue)',threshold:'var(--red)'};
+  var days = _pmMonthDays(_calState.y, _calState.m);
+  var today = td();
+
+  var cells = ['SUN','MON','TUE','WED','THU','FRI','SAT'].map(function(x){
+    return '<div style="text-align:center;font-family:\'SF Mono\',monospace;font-size:9px;color:var(--grey);letter-spacing:1px;padding-bottom:6px;">'+x+'</div>';
+  }).join('');
+  for(var i=0;i<days[0].dow;i++) cells += '<div></div>';
+  days.forEach(function(d){
+    var plan = getDayPlan(d.date);
+    var col = colMap[plan.type] || 'var(--gold)';
+    var isToday = d.date === today;
+    var isSel = d.date === _calState.selected;
+    cells += '<div onclick="_calSelectDay(\''+d.date+'\')" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:10px;cursor:pointer;background:'+(isSel?'rgba(90,212,141,.14)':'rgba(255,255,255,.03)')+';border:1px solid '+(isSel?'var(--green)':isToday?'rgba(255,255,255,.3)':'transparent')+';">'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;font-weight:700;color:'+(isToday?'#fff':'var(--off)')+';">'+d.num+'</div>'
+      + '<div style="width:5px;height:5px;border-radius:50%;background:'+col+';"></div>'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:8px;color:var(--grey);">'+(plan.mi||0)+'</div>'
+      + '</div>';
+  });
+  grid.innerHTML = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">'+cells+'</div>';
+}
+
+function _calSelectDay(date){
+  _calState.selected = date;
+  _renderCalGrid();
+  var plan = getDayPlan(date);
+  var wk = getWk(date), ph = getPhase(wk);
+  var colMap = {rest:'var(--grey)',easy:'var(--green)',long:'var(--blue)',threshold:'var(--red)'};
+  var col = colMap[plan.type] || 'var(--gold)';
+  var detail = document.getElementById('calDayDetail');
+  if(!detail) return;
+  detail.innerHTML = '<div style="border-top:1px solid rgba(255,255,255,.08);padding-top:14px;">'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
+    + '<div style="width:4px;height:20px;border-radius:2px;background:'+col+';flex-shrink:0;"></div>'
+    + '<div><div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:1px;">'+date+' · WEEK '+wk+' · '+ph.name.toUpperCase()+'</div>'
+    + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:17px;letter-spacing:1px;color:#fff;">'+(plan.name||'')+'</div></div>'
+    + '</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:'+col+';font-weight:700;margin-bottom:8px;">'+(plan.mi||0)+'mi · '+(plan.zone||'—')+'</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:var(--off);line-height:1.7;">'+(typeof formatSteps === 'function' ? formatSteps(plan.steps, plan.mi) : (plan.steps||''))+'</div>'
+    + '</div>';
+}
+
+window.openCalendarModal = openCalendarModal;
+window._calShiftMonth = _calShiftMonth;
+window._calSelectDay = _calSelectDay;
 
 window.showLogRunModal = showLogRunModal;
 window.shareTrainingWeek = shareTrainingWeek;
