@@ -3423,6 +3423,19 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
           <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--blue);opacity:.6;">›</div>
         </button>
       </div>
+      <!-- 24-WEEK EXECUTION BLOCK -->
+      <div style="margin-bottom:10px;">
+        <button onclick="printExecutionBlock(24)" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:rgba(163,116,255,0.08);border:1px solid rgba(163,116,255,0.25);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:20px;">📋</div>
+            <div style="text-align:left;">
+              <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:16px;letter-spacing:2px;color:var(--purple);">24-WEEK EXECUTION BLOCK</div>
+              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:1px;">Every day, today onward — zero gaps, full detail</div>
+            </div>
+          </div>
+          <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--purple);opacity:.6;">›</div>
+        </button>
+      </div>
       <!-- LOG RUN + SHARE WEEK + FITNESS SUMMARY -->
       <div style="display:flex;gap:8px;margin-bottom:8px;">
         <button onclick="showLogRunModal()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:rgba(0,230,118,0.07);border:1px solid rgba(0,230,118,0.25);border-radius:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
@@ -19745,13 +19758,12 @@ function _sessionTargets(plan){
   return parts.join(' · ');
 }
 
-function printSelectedMonth(){
-  var y = _pmState.y, m = _pmState.m;
-  var scoped = _pmScopedDays(y, m);
-  var days = scoped.days;
+// Shared by Print Month + the multi-week execution block. Chunks any
+// day list into Sun-Sat rows (works for partial ranges too — leading/
+// trailing blanks key off the actual first/last weekday, not day-1-
+// of-month) and renders the compact overview grid.
+function _buildCalGridHtml(days){
   var typeCol = { rest:'#888', easy:'#2E8B57', long:'#1565C0', threshold:'#B8862F', hill:'#B23B3B' };
-
-  // Calendar grid — chunk days into Sun-Sat week rows with blank leading/trailing cells
   var weeks = [];
   var week = new Array(days[0].dow).fill(null);
   days.forEach(function(d){
@@ -19773,17 +19785,20 @@ function printSelectedMonth(){
         + '</td>';
     }).join('') + '</tr>';
   }).join('');
-  var calHtml = '<table class="pm-cal"><thead><tr>'
+  return '<table class="pm-cal"><thead><tr>'
     + ['SUN','MON','TUE','WED','THU','FRI','SAT'].map(function(x){ return '<th>'+x+'</th>'; }).join('')
     + '</tr></thead><tbody>' + calRows + '</tbody></table>';
+}
 
-  // Detailed daily list — full structure/paces, same calc the live app uses
+// Full structure/paces + numeric targets, same calc the live app uses —
+// this is the "not missing a single detail" table.
+function _buildDailyListHtml(days){
   var listRows = days.map(function(d){
     var plan = getDayPlan(d.date);
     var wk = getWk(d.date);
     var dayName = ['SUN','MON','TUE','WED','THU','FRI','SAT'][d.dow];
     return '<tr>'
-      + '<td style="white-space:nowrap;font-weight:700;">' + dayName + ' ' + d.date.slice(5) + '</td>'
+      + '<td style="white-space:nowrap;font-weight:700;">' + dayName + ' ' + d.date + '</td>'
       + '<td style="white-space:nowrap;">WK' + wk + '</td>'
       + '<td style="white-space:nowrap;font-weight:700;">' + (plan.name||'') + '</td>'
       + '<td style="white-space:nowrap;">' + (plan.mi||0) + 'mi</td>'
@@ -19791,17 +19806,91 @@ function printSelectedMonth(){
       + '<td>' + _sessionTargets(plan) + '</td>'
       + '</tr>';
   }).join('');
-  var listHtml = '<table class="pm-daylist"><thead><tr><th>Day</th><th>Wk</th><th>Session</th><th>Mi</th><th>Structure — warm-up through cool-down</th><th>Targets</th></tr></thead><tbody>' + listRows + '</tbody></table>';
+  return '<table class="pm-daylist"><thead><tr><th>Day</th><th>Wk</th><th>Session</th><th>Mi</th><th>Structure — warm-up through cool-down</th><th>Targets</th></tr></thead><tbody>' + listRows + '</tbody></table>';
+}
+
+function printSelectedMonth(){
+  var y = _pmState.y, m = _pmState.m;
+  var scoped = _pmScopedDays(y, m);
+  var days = scoped.days;
 
   var area = document.getElementById('printMonthArea');
   if(!area){ area = document.createElement('div'); area.id = 'printMonthArea'; document.body.appendChild(area); }
   area.innerHTML = '<div style="padding:24px;">'
     + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:26px;letter-spacing:2px;">GEDYON — ' + _pmMonthLabel(y,m).toUpperCase() + (scoped.truncated ? ' (TODAY → END OF MONTH)' : '') + ' TRAINING PLAN</div>'
     + '<div style="font-size:11px;color:#666;margin-bottom:14px;">Road to the 2028 Olympic Trials · printed ' + (typeof td === 'function' ? td() : '') + '</div>'
-    + calHtml
+    + _buildCalGridHtml(days)
     + '<div class="pm-page-break"></div>'
     + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:20px;letter-spacing:2px;margin-top:10px;">DAILY SESSION DETAIL</div>'
-    + listHtml
+    + _buildDailyListHtml(days)
+    + '</div>';
+
+  var modal = document.getElementById('printMonthModal'); if(modal) modal.remove();
+  setTimeout(function(){ window.print(); }, 60);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  MULTI-WEEK EXECUTION BLOCK — the full print, no gaps: every day
+//  from today through N weeks out, month by month, each with its
+//  overview grid + the complete daily detail table (paces, HR,
+//  lactate, rep/rest — everything _buildDailyListHtml already
+//  surfaces). Built for "don't miss a single execution detail."
+// ─────────────────────────────────────────────────────────────
+function _rangeDays(startDateStr, numDays){
+  var start = parseLocalDate(startDateStr);
+  var days = [];
+  for(var i = 0; i < numDays; i++){
+    var dt = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i, 12, 0, 0);
+    days.push({ date: dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0'), dow: dt.getDay(), num: dt.getDate() });
+  }
+  return days;
+}
+
+function _groupDaysByMonth(days){
+  var order = [], groups = {};
+  days.forEach(function(d){
+    var dt = parseLocalDate(d.date);
+    var key = dt.getFullYear() + '-' + dt.getMonth();
+    if(!groups[key]){ groups[key] = { y: dt.getFullYear(), m: dt.getMonth(), days: [] }; order.push(key); }
+    groups[key].days.push(d);
+  });
+  return order.map(function(k){ return groups[k]; });
+}
+
+function printExecutionBlock(weeks){
+  var start = td();
+  var days = _rangeDays(start, weeks * 7);
+  var months = _groupDaysByMonth(days);
+
+  var totalMi = 0, liftDays = 0, hardDays = 0;
+  days.forEach(function(d){
+    var plan = getDayPlan(d.date);
+    totalMi += plan.mi || 0;
+    if(plan.lift) liftDays++;
+    if(plan.type === 'threshold' || plan.type === 'hill') hardDays++;
+  });
+  var wkFirst = getWk(days[0].date), wkLast = getWk(days[days.length-1].date);
+  var phFirst = getPhase(wkFirst), phLast = getPhase(wkLast);
+  var phaseSpan = phFirst.name === phLast.name ? phFirst.name : (phFirst.name + ' → ' + phLast.name);
+
+  var sections = months.map(function(grp, i){
+    return (i > 0 ? '<div class="pm-page-break"></div>' : '')
+      + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:20px;letter-spacing:2px;margin-top:' + (i>0?'0':'10') + 'px;">' + _pmMonthLabel(grp.y, grp.m).toUpperCase() + '</div>'
+      + _buildCalGridHtml(grp.days)
+      + '<div class="pm-page-break"></div>'
+      + _buildDailyListHtml(grp.days);
+  }).join('');
+
+  var area = document.getElementById('printMonthArea');
+  if(!area){ area = document.createElement('div'); area.id = 'printMonthArea'; document.body.appendChild(area); }
+  area.innerHTML = '<div style="padding:24px;">'
+    + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:26px;letter-spacing:2px;">GEDYON — ' + weeks + '-WEEK EXECUTION BLOCK</div>'
+    + '<div style="font-size:11px;color:#666;margin-bottom:4px;">Road to the 2028 Olympic Trials · printed ' + start + '</div>'
+    + '<div style="font-size:11px;color:#333;margin-bottom:14px;line-height:1.6;">'
+      + start + ' → ' + days[days.length-1].date + ' · Weeks ' + wkFirst + '–' + wkLast + ' · ' + phaseSpan + '<br>'
+      + '~' + Math.round(totalMi) + 'mi total · ' + hardDays + ' hard sessions · ' + liftDays + ' lift/plyo sessions'
+    + '</div>'
+    + sections
     + '</div>';
 
   var modal = document.getElementById('printMonthModal'); if(modal) modal.remove();
@@ -19811,6 +19900,7 @@ function printSelectedMonth(){
 window.openPrintMonthModal = openPrintMonthModal;
 window.printSelectedMonth = printSelectedMonth;
 window._pmShiftMonth = _pmShiftMonth;
+window.printExecutionBlock = printExecutionBlock;
 
 // ─────────────────────────────────────────────────────────────
 //  CALENDAR VIEW — on-screen month browser (companion to Print
