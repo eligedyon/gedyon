@@ -3436,6 +3436,19 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
           <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--purple);opacity:.6;">›</div>
         </button>
       </div>
+      <!-- ROADMAP TO SPEED -->
+      <div style="margin-bottom:10px;">
+        <button onclick="showRoadmapModal()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:rgba(232,88,88,0.08);border:1px solid rgba(232,88,88,0.25);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:20px;">🚀</div>
+            <div style="text-align:left;">
+              <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:16px;letter-spacing:2px;color:var(--red);">ROADMAP TO SPEED</div>
+              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:1px;">Real dates: when threshold, doubles, race-pace kick in</div>
+            </div>
+          </div>
+          <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--red);opacity:.6;">›</div>
+        </button>
+      </div>
       <!-- LOG RUN + SHARE WEEK + FITNESS SUMMARY -->
       <div style="display:flex;gap:8px;margin-bottom:8px;">
         <button onclick="showLogRunModal()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:rgba(0,230,118,0.07);border:1px solid rgba(0,230,118,0.25);border-radius:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
@@ -20001,6 +20014,81 @@ function _calSelectDay(date){
 window.openCalendarModal = openCalendarModal;
 window._calShiftMonth = _calShiftMonth;
 window._calSelectDay = _calSelectDay;
+
+// ─────────────────────────────────────────────────────────────
+//  ROADMAP TO SPEED — answers "why does base come first, when
+//  does the fast stuff start" with real calendar dates instead of
+//  abstract phase numbers. Speed is already there (VDOT 77+ from
+//  junior 800m history, per the athlete ceiling profile) — this
+//  shows exactly when it gets EXPRESSED at race distance, not
+//  whether it will. Dates are computed live off D.settings.start
+//  and RAMP_ANCHOR, so this stays correct through recalibrations.
+// ─────────────────────────────────────────────────────────────
+function _dateAtWeek(wk){
+  var start = parseLocalDate(D.settings.start);
+  var d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + (wk-1)*7, 12, 0, 0);
+  return d.toISOString().split('T')[0];
+}
+function _fmtDateLong(ds){
+  var d = parseLocalDate(ds);
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+function _lactateMeterDate(){
+  try{
+    var anchorMs = parseLocalDate(RAMP_ANCHOR).getTime();
+    for(var w = 0; w <= 60; w++){
+      if(_rampTargetForWeek(w) >= 30){
+        return new Date(anchorMs + w*7*86400000).toISOString().split('T')[0];
+      }
+    }
+  }catch(e){}
+  return null;
+}
+
+function showRoadmapModal(){
+  var ex = document.getElementById('roadmapModal'); if(ex) ex.remove();
+  var todayWk = getWk(td());
+  var lactateDate = _lactateMeterDate();
+
+  var stops = [
+    { wk:1,  name:'FOUNDATION', tag:'Speed dormant, on purpose', desc:'Build the frequency habit — 5-6 easy days/week. Speed is maintained with strides/hills, never prescribed as a priority; the aerobic engine is the actual limiter, not the legs.' },
+    { wk:13, name:'BASE BUILD · LYDIARD', tag:'Ramp climbs, first threshold touches', desc:'Weekly volume ramps toward ~26mi/wk. Hill repeats for power. Sub-threshold controlled workouts — talk-test guided, never over the edge. This is where the tank gets built.' },
+    { wk:null, dateOverride: lactateDate, name:'LACTATE-GUIDED WORK BEGINS', tag:'~30mi/wk milestone', desc:'A lactate meter turns "controlled" into measured: workouts guided at 2.0-3.0 mmol instead of feel alone. Still inside Base Build — this is instrumentation catching up to fitness, not a phase change.' },
+    { wk:33, name:'THRESHOLD CONSTRUCTION · NORWEGIAN', tag:'Threshold becomes the spine', desc:'Threshold volume takes over as the main training stimulus. Doubles introduced once volume supports them — full lactate-guided double-threshold pattern. This is the Ingebrigtsen-style engine phase.' },
+    { wk:61, name:'KERR-MACKEY SPECIFIC', tag:'Race-pace, kick, altitude', desc:'Race-pace segments and kick development move to the center. This is where the mid-race surge work (the weaponized 53s closing lap) and the bicarb race protocol come in. Speed gets EXPRESSED here — not developed, expressed.' },
+    { wk:85, name:'CHAMPIONSHIP SHARPENING', tag:'Peak specificity', desc:'Full race-simulation work, taper-adjacent sharpening. Everything built in the previous 84 weeks gets converted into race fitness.' },
+    { wk:101, name:'TRIALS TAPER', tag:'Show up fresh, show up fast', desc:'Volume drops, intensity holds. The only job left is arriving at the start line healthy with the engine and the speed both intact.' },
+  ];
+
+  var rows = stops.map(function(s){
+    var wk = s.wk || (s.dateOverride ? getWk(s.dateOverride) : null);
+    var dateStr = s.dateOverride || (s.wk ? _dateAtWeek(s.wk) : null);
+    var isCurrent = wk != null && todayWk >= wk && (stops[stops.indexOf(s)+1] ? todayWk < (stops[stops.indexOf(s)+1].wk || getWk(stops[stops.indexOf(s)+1].dateOverride)) : true);
+    var col = isCurrent ? 'var(--gold)' : 'var(--off)';
+    return '<div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);">'
+      + '<div style="width:8px;flex-shrink:0;padding-top:4px;"><div style="width:8px;height:8px;border-radius:50%;background:'+(isCurrent?'var(--gold)':'rgba(255,255,255,.2)')+';'+(isCurrent?'box-shadow:0 0 8px var(--gold);':'')+'"></div></div>'
+      + '<div style="flex:1;">'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:'+col+';letter-spacing:1px;">'+(dateStr?_fmtDateLong(dateStr):'')+(wk?' · WEEK '+wk:'')+(isCurrent?' · YOU ARE HERE':'')+'</div>'
+      + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:16px;letter-spacing:1px;color:'+(isCurrent?'#fff':'var(--off)')+';margin-top:2px;">'+s.name+'</div>'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--red);letter-spacing:.5px;margin-top:1px;">'+s.tag+'</div>'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);line-height:1.6;margin-top:5px;">'+s.desc+'</div>'
+      + '</div></div>';
+  }).join('');
+
+  var modal = document.createElement('div');
+  modal.id = 'roadmapModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:99995;background:rgba(0,0,0,0.9);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);padding:0 0 env(safe-area-inset-bottom,0px);';
+  modal.innerHTML = '<div style="width:100%;max-width:480px;max-height:88vh;overflow-y:auto;background:#150C0C;border-radius:24px 24px 0 0;border-top:1px solid rgba(232,88,88,.3);padding:24px 20px calc(28px + env(safe-area-inset-bottom,0px));">'
+    + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:24px;letter-spacing:2px;color:var(--red);">🚀 ROADMAP TO SPEED</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);margin-bottom:6px;">Real dates, not phase numbers — trials Apr 4, 2028</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--off);line-height:1.7;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:10px;margin-bottom:14px;">Speed isn\'t the question — VDOT 77+ is already banked from junior history. This is when the engine gets built to hold it for a full race, not whether it will.</div>'
+    + rows
+    + '<button onclick="document.getElementById(\'roadmapModal\').remove();" style="width:100%;padding:12px;margin-top:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:var(--grey);font-family:\'SF Mono\',monospace;font-size:12px;cursor:pointer;">CLOSE</button>'
+    + '</div>';
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+window.showRoadmapModal = showRoadmapModal;
 
 window.showLogRunModal = showLogRunModal;
 window.shareTrainingWeek = shareTrainingWeek;
