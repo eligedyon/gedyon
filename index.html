@@ -19206,10 +19206,19 @@ async function shareTrainingWeek(){
 // Every run judged against its target; every week against the ramp;
 // the whole arc against April 4, 2028. No vibes — evidence.
 var RAMP_ANCHOR = '2026-07-20'; // Monday of Baseline Test Week; ramp = 15mi +2/wk, flat every 3rd
+// Volume bump (Aug 20/26): weight is dropping and the athlete asked for more
+// volume. Rather than retroactively inflate past weeks' targets (which would
+// misrepresent adherence history in missionAssess's 4-week lookback), the
+// increment itself steps up at a fixed ramp-week boundary — everything before
+// it stays +2/wk exactly as logged, everything from ramp-week 5 (Mon Aug 24)
+// on runs +3/wk. Flat-every-3rd-week and the 35mi safety cap are unchanged.
+var RAMP_RATE_BUMP_WEEK = 4; // ramp-week index (0-based) after which +2 → +3
 function _rampTargetForWeek(offsetWeeks){
-  // +2/wk with every 3rd week flat, capped at 35 (end of Base Build merge)
   var add = 0;
-  for(var i=1;i<=offsetWeeks;i++){ if(i%3!==0) add += 2; }
+  for(var i=1;i<=offsetWeeks;i++){
+    if(i%3===0) continue; // flat/deload week — no increment
+    add += (i <= RAMP_RATE_BUMP_WEEK) ? 2 : 3;
+  }
   return Math.min(35, 15 + add);
 }
 
