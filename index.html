@@ -19704,13 +19704,24 @@ function _pmShiftMonth(delta){
   _pmRefreshLabel();
 }
 
+// For the CURRENT month, scope to today onward — past days are done,
+// no reason to print/preview them. Other months still show in full.
+function _pmScopedDays(y, m){
+  var allDays = _pmMonthDays(y, m);
+  var now = new Date();
+  var isCurrentMonth = (y === now.getFullYear() && m === now.getMonth());
+  if(!isCurrentMonth) return { days: allDays, truncated: false };
+  var today = now.getDate();
+  return { days: allDays.filter(function(d){ return d.num >= today; }), truncated: true };
+}
+
 function _pmRefreshLabel(){
   var lbl = document.getElementById('pmMonthLabel');
-  if(lbl) lbl.textContent = _pmMonthLabel(_pmState.y, _pmState.m).toUpperCase();
+  if(lbl) lbl.textContent = _pmMonthLabel(_pmState.y, _pmState.m).toUpperCase() + (_pmScopedDays(_pmState.y, _pmState.m).truncated ? ' (TODAY →)' : '');
   var sum = document.getElementById('pmSummary');
   if(!sum) return;
   try{
-    var days = _pmMonthDays(_pmState.y, _pmState.m);
+    var days = _pmScopedDays(_pmState.y, _pmState.m).days;
     var totalMi = 0, hardDays = 0;
     days.forEach(function(d){
       var plan = getDayPlan(d.date);
@@ -19736,7 +19747,8 @@ function _sessionTargets(plan){
 
 function printSelectedMonth(){
   var y = _pmState.y, m = _pmState.m;
-  var days = _pmMonthDays(y, m);
+  var scoped = _pmScopedDays(y, m);
+  var days = scoped.days;
   var typeCol = { rest:'#888', easy:'#2E8B57', long:'#1565C0', threshold:'#B8862F', hill:'#B23B3B' };
 
   // Calendar grid — chunk days into Sun-Sat week rows with blank leading/trailing cells
@@ -19784,7 +19796,7 @@ function printSelectedMonth(){
   var area = document.getElementById('printMonthArea');
   if(!area){ area = document.createElement('div'); area.id = 'printMonthArea'; document.body.appendChild(area); }
   area.innerHTML = '<div style="padding:24px;">'
-    + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:26px;letter-spacing:2px;">GEDYON — ' + _pmMonthLabel(y,m).toUpperCase() + ' TRAINING PLAN</div>'
+    + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:26px;letter-spacing:2px;">GEDYON — ' + _pmMonthLabel(y,m).toUpperCase() + (scoped.truncated ? ' (TODAY → END OF MONTH)' : '') + ' TRAINING PLAN</div>'
     + '<div style="font-size:11px;color:#666;margin-bottom:14px;">Road to the 2028 Olympic Trials · printed ' + (typeof td === 'function' ? td() : '') + '</div>'
     + calHtml
     + '<div class="pm-page-break"></div>'
