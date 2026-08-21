@@ -6830,13 +6830,18 @@ function applyWorkoutPreferences(date, plan){
     p.sets = (p.sets ? p.sets + ' · ' : '') + liftBlock;
     p.coreNote = liftBlock;
   }
-  // SUNDAY → Plyo/bodyweight, the day after the long run — this is Mackey's
-  // actual structural placement (Kerr's plyo/bodyweight day sits right after
-  // his long easy run). Completes the 2x/wk target. Light enough for a
-  // recovery day; skipped on deload weeks like the Monday session.
+  // SUNDAY → Plyo/bodyweight + hip-drop/glute-medius corrective work, the
+  // day after the long run — this is Mackey's actual structural placement
+  // (Kerr's plyo/bodyweight day sits right after his long easy run).
+  // Completes the 2x/wk target. Light enough for a recovery day; skipped
+  // on deload weeks like the Monday session. The corrective exercises
+  // (pelvic/hip drops, clamshell, side plank) are the 5 moves with the
+  // strongest research support for fixing contralateral pelvic drop —
+  // the weak-glute-medius pattern behind a "heavy hips dragging" feeling
+  // — dosed at the 2-3x/wk shown to improve it within ~6 weeks.
   if(dow===0 && wk>=5 && !isDeload && (p.type==='easy'||p.type==='rest')){
-    var plyoBlock = 'PLYO/BODYWEIGHT (20min, day-after-long-run per Kerr\'s actual routine): Pogo hops 3×10 · Skater bounds 3×6/side · Bodyweight squat 2×15 · Bird dog 2×10/side · Glute bridge 2×15. Low volume, low impact — this is durability upkeep, not a workout.';
-    p.name = (p.name || 'ACTIVE RECOVERY') + ' + PLYO';
+    var plyoBlock = 'PLYO + HIP-DROP FIX (25min, day-after-long-run): STANDING HIP DROPS 2×15/side — stand on a step edge, let the free-side hip sag down, then squeeze the STANDING leg\'s glute to snap it level again; the hip leads, not the knee. CLAMSHELL 2×15/side — lie on your side, knees bent ~45°, feet together, open the top knee like a book WITHOUT rolling your pelvis backward. SIDE PLANK 2×20-30s/side — forearm down, stack your feet, lift hips into a straight line; this is the one that trains exactly what\'s dragging. SINGLE-LEG GLUTE BRIDGE 2×10/side — on your back, one foot planted, drive hips up through that heel, squeeze at the top. POGO HOPS 2×10 · SKATER BOUNDS 2×6/side — quick, low, springy, the power-upkeep half of the session.';
+    p.name = (p.name || 'ACTIVE RECOVERY') + ' + PLYO/HIP';
     p.lift = true;
     p.steps = (p.steps ? p.steps + ' · ' : '') + plyoBlock;
     p.sets = (p.sets ? p.sets + ' · ' : '') + plyoBlock;
