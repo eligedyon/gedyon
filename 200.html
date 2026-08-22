@@ -3368,6 +3368,12 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
           <div id="paceZonesFoot" style="font-family:'SF Mono',Consolas,monospace;font-size:10px;color:var(--grey);margin-top:6px;"></div>
         </div>
       </div>
+      <div class="card" id="aerobicResponseCard">
+        <div class="ch"><div class="ct">AM I RESPONDING?</div></div>
+        <div class="cb" style="padding:8px 14px;">
+          <div id="aerobicResponseBody" style="font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.9;"></div>
+        </div>
+      </div>
       <!-- TRAIL MAP -->
       <div id="trailMapWrap" style="margin-bottom:10px;"></div>
       <div class="sh" onclick="var wl=document.getElementById('woList');var arrow=this.querySelector('.sh-arrow');if(wl.style.display==='none'){wl.style.display='';arrow.textContent='▾';}else{wl.style.display='none';arrow.textContent='▸';}" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;">WORKOUT HISTORY <span class="sh-arrow" style="font-size:14px;color:var(--grey);">▾</span></div>
@@ -5675,7 +5681,7 @@ function goPage(id,btn){
   if(_scr){ _scr.style.display=(id==='koda')?'none':''; if(id!=='koda')_scr.scrollTop=0; }
   if(id==='dash')renderDash();
   else if(id==='today'){const d=$('docDate').value||td();renderWtHero(d);renderPlanCard(d);renderTodayFood(d);renderSuppGrid(d);restoreToggles(d);}
-  else if(id==='train'){renderSpeedBlock();renderTrailMap();renderTrainLog();renderPaceZones();setTimeout(renderTrainingLoad,80);}
+  else if(id==='train'){renderSpeedBlock();renderTrailMap();renderTrainLog();renderPaceZones();renderAerobicResponse();setTimeout(renderTrainingLoad,80);}
   else if(id==='plan'){filtPlan('all',$('#phFilter .tog'));setTimeout(renderPlanMileage,80);setTimeout(renderPlanTodayBox,80);}
   else if(id==='more'){renderRaceTests();initIntegrationsHub();updateAuthStatus();}
   else if(id==='playbook'){renderPlaybook();}
@@ -9927,6 +9933,65 @@ function renderPaceZones(){
     var srcLabel = paces && paces._source === 'vdot' ? 'Paces from VDOT '+paces.vdot+' ('+paces._sourceEv+' PR)' : 'Paces from plan estimate — log a race for real VDOT paces';
     foot.textContent = maxLabel + ' · ' + srcLabel + ' · Talk test is the primary instrument — HR is a guardrail, not the target.';
   }
+}
+
+// ═══ AEROBIC RESPONSE — "am I responding to training?" ═════════════
+// Cardiac drift check: same easy pace should produce LOWER HR as the
+// aerobic base builds (8-12 weeks). If it doesn't — or HR rises while
+// pace slows — that's the actual signal of non-response, not a guess.
+// This logic already existed buried inside the KODA chat context
+// builder (AI-only, never visible); pulled out into a shared function
+// so both the chat context and this card compute it identically.
+function computeAerobicResponse(){
+  var runWos = (D.workouts||[]).filter(function(w){ return w.avgHR > 100 && w.pace > 0 && w.dist >= 2; })
+    .sort(function(a,b){ return a.date > b.date ? -1 : 1; });
+  if(runWos.length < 3) return null;
+  var recent3 = runWos.slice(0, 3);
+  var older = runWos.filter(function(w){
+    var age = (new Date() - new Date(w.date+'T12:00:00'))/86400000;
+    return age >= 21 && age <= 42;
+  }).slice(0, 3);
+  var recAvgHR = recent3.reduce(function(s,w){return s+w.avgHR;},0)/recent3.length;
+  var recAvgPace = recent3.reduce(function(s,w){return s+w.pace;},0)/recent3.length;
+  var result = { recAvgHR: Math.round(recAvgHR), recAvgPace: Math.round(recAvgPace*10)/10, sampleSize: recent3.length };
+  if(older.length >= 2){
+    var oldAvgHR = older.reduce(function(s,w){return s+w.avgHR;},0)/older.length;
+    var oldAvgPace = older.reduce(function(s,w){return s+w.pace;},0)/older.length;
+    var hrDelta = Math.round(recAvgHR - oldAvgHR);
+    var paceDelta = Math.round((recAvgPace - oldAvgPace)*10)/10;
+    result.oldAvgHR = Math.round(oldAvgHR); result.oldAvgPace = Math.round(oldAvgPace*10)/10;
+    result.hrDelta = hrDelta; result.paceDelta = paceDelta;
+    if(hrDelta < -5 && Math.abs(paceDelta) < 0.5) result.status = 'adapting';
+    else if(hrDelta > 5 && paceDelta > 0.3) result.status = 'stress';
+    else result.status = 'neutral';
+  } else {
+    result.status = 'building';
+  }
+  return result;
+}
+
+function renderAerobicResponse(){
+  var body = document.getElementById('aerobicResponseBody');
+  if(!body) return;
+  var r = null; try{ r = computeAerobicResponse(); }catch(e){}
+  if(!r){
+    body.innerHTML = '<div style="color:var(--grey);">Not enough HR-logged runs yet (need 3+, with avg HR recorded) — this fills in as you log runs with a watch/strap.</div>';
+    return;
+  }
+  var statusMap = {
+    adapting: { label: 'ADAPTING', color: 'var(--green)', line: 'Same pace, lower HR — the base is building. This is what responding looks like.' },
+    stress:   { label: 'NOT RESPONDING — WATCH THIS', color: 'var(--red)', line: 'HR rising while pace slows at the same effort. Flag for extra recovery, not more volume.' },
+    neutral:  { label: 'TOO EARLY TO TELL', color: 'var(--gold)', line: 'No clear trend yet either way — keep training, recheck in a couple weeks.' },
+    building: { label: 'BUILDING BASELINE', color: 'var(--grey)', line: 'Need 2+ weeks of comparison data (a run from 3-4 weeks back) before a trend means anything.' },
+  }[r.status];
+  var html = '<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:16px;letter-spacing:1px;color:'+statusMap.color+';margin-bottom:4px;">'+statusMap.label+'</div>';
+  html += '<div style="color:var(--off);margin-bottom:8px;">'+statusMap.line+'</div>';
+  html += '<div style="display:flex;justify-content:space-between;"><span style="color:var(--grey);">Last '+r.sampleSize+' runs avg</span><span style="color:var(--white);">'+r.recAvgHR+' bpm @ '+r.recAvgPace+' min/mi</span></div>';
+  if(r.oldAvgHR != null){
+    html += '<div style="display:flex;justify-content:space-between;"><span style="color:var(--grey);">3-4 weeks ago</span><span style="color:var(--white);">'+r.oldAvgHR+' bpm @ '+r.oldAvgPace+' min/mi</span></div>';
+    html += '<div style="display:flex;justify-content:space-between;"><span style="color:var(--grey);">Change</span><span style="color:'+(r.hrDelta<0?'var(--green)':'var(--red)')+';">'+(r.hrDelta>0?'+':'')+r.hrDelta+' bpm · '+(r.paceDelta>0?'+':'')+r.paceDelta+' min/mi</span></div>';
+  }
+  body.innerHTML = html;
 }
 
 // ═══ TRAIN LOG ═══
@@ -21866,35 +21931,20 @@ function buildKodaContext() {
       // ── AEROBIC EFFICIENCY TREND (cardiac drift tracking) ─────────────
       // As base builds, the same pace should produce lower HR over weeks.
       // KODA uses this to confirm adaptation is happening — or flag stagnation.
+      // Shared with the visible "AM I RESPONDING?" card (computeAerobicResponse)
+      // so the chat and the UI never disagree on the same numbers.
       try {
-        var _runWos = (D.workouts||[])
-          .filter(function(w){ return w.avgHR > 100 && w.pace > 0 && w.dist >= 2; })
-          .sort(function(a,b){ return a.date > b.date ? -1 : 1 });
-        if (_runWos.length >= 3) {
-          // Compare most recent 3 runs vs 3 runs from 3-4 weeks ago
-          var _recent3  = _runWos.slice(0, 3);
-          var _older    = _runWos.filter(function(w){
-            var age = (new Date() - new Date(w.date+'T12:00:00'))/86400000;
-            return age >= 21 && age <= 42;
-          }).slice(0, 3);
-          var _recAvgHR   = _recent3.reduce(function(s,w){return s+w.avgHR;},0)/_recent3.length;
-          var _recAvgPace = _recent3.reduce(function(s,w){return s+w.pace;},0)/_recent3.length;
+        var _ar = computeAerobicResponse();
+        if (_ar) {
           lines.push('\nAEROBIC EFFICIENCY (cardiac drift):');
-          lines.push('  Recent 3 runs avg: ' + Math.round(_recAvgHR) + ' bpm @ ' + Math.round(_recAvgPace*10)/10 + ' min/mi pace');
-          if (_older.length >= 2) {
-            var _oldAvgHR   = _older.reduce(function(s,w){return s+w.avgHR;},0)/_older.length;
-            var _oldAvgPace = _older.reduce(function(s,w){return s+w.pace;},0)/_older.length;
-            var _hrDelta = Math.round(_recAvgHR - _oldAvgHR);
-            var _paceDelta = Math.round((_recAvgPace - _oldAvgPace)*10)/10;
-            lines.push('  3–4 weeks ago avg: ' + Math.round(_oldAvgHR) + ' bpm @ ' + Math.round(_oldAvgPace*10)/10 + ' min/mi pace');
-            lines.push('  HR change: ' + (_hrDelta > 0 ? '+' : '') + _hrDelta + ' bpm | Pace change: ' + (_paceDelta > 0 ? '+' : '') + _paceDelta + ' min/mi');
-            if (_hrDelta < -5 && Math.abs(_paceDelta) < 0.5) {
-              lines.push('  STATUS: AEROBIC ADAPTATION CONFIRMED — same pace, lower HR. Base is building.');
-            } else if (_hrDelta > 5 && _paceDelta > 0.3) {
-              lines.push('  STATUS: CARDIAC STRESS — HR rising with slower pace. Flag for recovery.');
-            } else {
-              lines.push('  STATUS: NEUTRAL — too early to confirm adaptation trend. Continue tracking.');
-            }
+          lines.push('  Recent ' + _ar.sampleSize + ' runs avg: ' + _ar.recAvgHR + ' bpm @ ' + _ar.recAvgPace + ' min/mi pace');
+          if (_ar.oldAvgHR != null) {
+            lines.push('  3–4 weeks ago avg: ' + _ar.oldAvgHR + ' bpm @ ' + _ar.oldAvgPace + ' min/mi pace');
+            lines.push('  HR change: ' + (_ar.hrDelta > 0 ? '+' : '') + _ar.hrDelta + ' bpm | Pace change: ' + (_ar.paceDelta > 0 ? '+' : '') + _ar.paceDelta + ' min/mi');
+            var _arStatusText = { adapting: 'AEROBIC ADAPTATION CONFIRMED — same pace, lower HR. Base is building.',
+              stress: 'CARDIAC STRESS — HR rising with slower pace. Flag for recovery.',
+              neutral: 'NEUTRAL — too early to confirm adaptation trend. Continue tracking.' }[_ar.status];
+            lines.push('  STATUS: ' + _arStatusText);
           } else {
             lines.push('  STATUS: Baseline building — need 2+ weeks of data to show trend.');
           }
