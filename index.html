@@ -3361,16 +3361,11 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
         <div class="sv2"><div class="svl">Avg Watts</div><div class="svv" style="color:var(--teal);" id="wWatts">—</div></div>
         <div class="sv2"><div class="svl">Avg Cal/Run</div><div class="svv" style="color:var(--orange);" id="wLac">—</div></div>
       </div>
-      <div class="card">
-        <div class="ch"><div class="ct">HR ZONES (Max: 188 bpm)</div></div>
+      <div class="card" id="paceZonesCard">
+        <div class="ch"><div class="ct" id="paceZonesTitle">PACE &amp; HR ZONES</div></div>
         <div class="cb" style="padding:8px 14px;">
-          <div style="font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:2.5;">
-            <div style="display:flex;justify-content:space-between;"><span style="color:var(--blue);">Z1 Recovery</span><span>&lt;113 bpm</span></div>
-            <div style="display:flex;justify-content:space-between;"><span style="color:var(--green);">Z2 Easy (Norwegian Base)</span><span>113–132 bpm</span></div>
-            <div style="display:flex;justify-content:space-between;"><span style="color:var(--gold);">Z3 Threshold (2.0–2.5 mmol)</span><span>132–150 bpm</span></div>
-            <div style="display:flex;justify-content:space-between;"><span style="color:var(--orange);">Z4 Threshold High (2.5–3.5)</span><span>150–168 bpm</span></div>
-            <div style="display:flex;justify-content:space-between;"><span style="color:var(--red);">Z5 VO2max / Race</span><span>168+ bpm</span></div>
-          </div>
+          <div id="paceZonesBody" style="font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:2.2;"></div>
+          <div id="paceZonesFoot" style="font-family:'SF Mono',Consolas,monospace;font-size:10px;color:var(--grey);margin-top:6px;"></div>
         </div>
       </div>
       <!-- TRAIL MAP -->
@@ -5680,7 +5675,7 @@ function goPage(id,btn){
   if(_scr){ _scr.style.display=(id==='koda')?'none':''; if(id!=='koda')_scr.scrollTop=0; }
   if(id==='dash')renderDash();
   else if(id==='today'){const d=$('docDate').value||td();renderWtHero(d);renderPlanCard(d);renderTodayFood(d);renderSuppGrid(d);restoreToggles(d);}
-  else if(id==='train'){renderSpeedBlock();renderTrailMap();renderTrainLog();setTimeout(renderTrainingLoad,80);}
+  else if(id==='train'){renderSpeedBlock();renderTrailMap();renderTrainLog();renderPaceZones();setTimeout(renderTrainingLoad,80);}
   else if(id==='plan'){filtPlan('all',$('#phFilter .tog'));setTimeout(renderPlanMileage,80);setTimeout(renderPlanTodayBox,80);}
   else if(id==='more'){renderRaceTests();initIntegrationsHub();updateAuthStatus();}
   else if(id==='playbook'){renderPlaybook();}
@@ -9891,6 +9886,47 @@ function gradeWorkout(w){
   // De-duplicate notes and cap at 2
   const insight=[...new Set(notes)].slice(0,2).join(', ');
   return {score:pct,grade,gradeColor,insight};
+}
+
+// ═══ PACE & HR ZONES ═══
+// Live-computed from VDOT (getTrainingPaces) — was a static card hardcoded
+// to a max HR (188) the app's own doctrine had already flagged as wrong
+// (a formula guess; real max estimated 195-205). Now pulls the highest
+// logged maxHR as an observed value when available, falls back to the
+// doctrine's evidence-based estimate otherwise, and spans the full range
+// from Z1 (no pace floor) to peak interval pace — "how slow you can go"
+// through "how fast you can go" in one place.
+function renderPaceZones(){
+  var card = document.getElementById('paceZonesCard');
+  if(!card) return;
+  var paces = null;
+  try{ paces = getTrainingPaces(typeof getPRs==='function' ? getPRs() : {}); }catch(e){}
+
+  var observedMax = (D.workouts||[]).reduce(function(m,w){ return Math.max(m, w.maxHR||0); }, 0);
+  var maxHR = observedMax > 140 ? observedMax : 200;
+  function pct(p){ return Math.round(maxHR*p); }
+
+  var zones = [
+    {name:'Z1 · Recovery', hr:'<'+pct(0.60)+' bpm', pace:'no floor — walk/shuffle, as slow as needed', color:'var(--blue)'},
+    {name:'Z2 · Easy — how slow you train', hr:pct(0.60)+'–'+pct(0.72)+' bpm', pace: paces&&paces.easy ? _fmtPace(paces.easy)+' or slower' : '—', color:'var(--green)'},
+    {name:'Z3 · Tempo / Steady', hr:pct(0.72)+'–'+pct(0.82)+' bpm', pace: paces&&paces.tempo ? _fmtPace(paces.tempo) : '—', color:'var(--gold)'},
+    {name:'Z4 · Threshold', hr:pct(0.82)+'–'+pct(0.90)+' bpm', pace: paces&&paces.threshold ? _fmtPace(paces.threshold) : '—', color:'var(--orange)'},
+    {name:'Z5 · VO2max — peak pace', hr:pct(0.90)+'+ bpm', pace: paces&&paces.vo2max&&paces.interval ? _fmtPace(paces.interval)+'–'+_fmtPace(paces.vo2max) : '—', color:'var(--red)'},
+  ];
+
+  var body = document.getElementById('paceZonesBody');
+  if(body){
+    body.innerHTML = zones.map(function(z){
+      return '<div style="display:flex;justify-content:space-between;gap:8px;"><span style="color:'+z.color+';">'+z.name+'</span><span style="text-align:right;color:var(--off);">'+z.pace+' <span style="color:var(--grey);">· '+z.hr+'</span></span></div>';
+    }).join('')
+    + (paces && paces.race ? '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:4px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);"><span style="color:var(--white);">Current race pace</span><span style="color:var(--white);font-weight:700;">'+_fmtPace(paces.race)+'</span></div>' : '');
+  }
+  var foot = document.getElementById('paceZonesFoot');
+  if(foot){
+    var maxLabel = observedMax > 140 ? ('Max HR: '+observedMax+' bpm (observed)') : 'Max HR: 200 bpm (estimated — no measured max logged yet)';
+    var srcLabel = paces && paces._source === 'vdot' ? 'Paces from VDOT '+paces.vdot+' ('+paces._sourceEv+' PR)' : 'Paces from plan estimate — log a race for real VDOT paces';
+    foot.textContent = maxLabel + ' · ' + srcLabel + ' · Talk test is the primary instrument — HR is a guardrail, not the target.';
+  }
 }
 
 // ═══ TRAIN LOG ═══
@@ -22904,8 +22940,8 @@ function startLiveWorkout() {
           var avgPace = _liveWo.paces.reduce(function(a,b){return a+b;},0)/_liveWo.paces.length;
           var paceEl = document.getElementById('lw-pace');
           var avgEl = document.getElementById('lw-avg');
-          if (paceEl) paceEl.textContent = _fmtPace(curPace);
-          if (avgEl) avgEl.textContent = _fmtPace(avgPace);
+          if (paceEl) paceEl.textContent = _fmtPaceMin(curPace);
+          if (avgEl) avgEl.textContent = _fmtPaceMin(avgPace);
         }
       }
     }
@@ -22944,7 +22980,7 @@ function stopLiveWorkout() {
       name: 'LIVE RUN',
       dist: Math.round(dist * 100) / 100,
       time: Math.round(durationMin),
-      pace: avgPace ? _fmtPace(avgPace) : null,
+      pace: avgPace ? _fmtPaceMin(avgPace) : null,
       src: 'LIVE_GPS',
       grade: null
     };
@@ -22963,7 +22999,7 @@ function stopLiveWorkout() {
 
   // KODA post-workout summary
   if (dist > 0.05) {
-    var summary = 'I just completed a live GPS run: ' + dist.toFixed(2) + ' miles in ' + Math.round(durationMin) + ' minutes' + (avgPace ? ' at avg ' + _fmtPace(avgPace) + '/mi pace' : '') + '. Analyze this effort and tell me how to recover.';
+    var summary = 'I just completed a live GPS run: ' + dist.toFixed(2) + ' miles in ' + Math.round(durationMin) + ' minutes' + (avgPace ? ' at avg ' + _fmtPaceMin(avgPace) + '/mi pace' : '') + '. Analyze this effort and tell me how to recover.';
     setTimeout(function(){ if(typeof kodaQuick==='function') kodaQuick(summary); }, 800);
   }
 }
@@ -22994,7 +23030,11 @@ function _geoDistMiles(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
-function _fmtPace(minPerMile) {
+// NOTE: distinct from _fmtPace(sec) above (line ~19553) — that one takes
+// seconds/mile (VDOT paces), this one takes decimal minutes/mile (live
+// GPS tracking). Renamed to stop the second definition silently shadowing
+// the first, which broke every seconds-based pace display in the app.
+function _fmtPaceMin(minPerMile) {
   var m = Math.floor(minPerMile);
   var s = Math.round((minPerMile-m)*60);
   return m+':'+String(s).padStart(2,'0');
