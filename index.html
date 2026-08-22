@@ -10020,11 +10020,13 @@ function renderPlanTodayBox(){
   }
   if(plan.sets) html+='<div style="font-family:SF Mono,Consolas,monospace;font-size:13px;color:var(--gold);padding:8px 12px;background:rgba(245,196,0,.05);border-radius:8px;margin-bottom:8px;">'+plan.sets+'</div>';
   html+='<div style="font-family:SF Mono,Consolas,monospace;font-size:13px;color:var(--grey);">Wake: '+plan.wake+' &nbsp;·&nbsp; Bed: '+plan.bed+'</div>';
+  html+='</div></div>'; // close body + the TODAY plan card — nutrition gets its own card below, not nested inside this one
 
-  // ── NUTRITION PLAN ──────────────────────────────────────────
+  // ── NUTRITION PLAN — separate card, not merged into the plan card ──
+  html += '<div style="background:var(--card);border:2px solid rgba(245,196,0,.4);border-radius:12px;padding:14px;margin-top:12px;">';
   html += buildNutritionPlan(plan);
+  html += '</div>';
 
-  html+='</div></div>';
   el.innerHTML=html;
   // Update daily calorie total after nutrition plan renders
   setTimeout(function(){ if(typeof updateDailyCalTotal==='function') updateDailyCalTotal(); },120);
@@ -10329,7 +10331,7 @@ function buildNutritionPlan(plan){
   // Build meal timing based on workout type
   const meals = getNutritionTiming(plan, cal, macros);
 
-  let h = '<div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.08);padding-top:14px;">';
+  let h = '<div>';
   h += '<div style="font-family:SF Mono,Consolas,monospace;font-size:13px;color:var(--gold);letter-spacing:2px;margin-bottom:10px;">NUTRITION PLAN · '+cal+' CAL TARGET</div>';
 
   // Macro targets bar
