@@ -6732,12 +6732,48 @@ function formatSteps(steps, totalMi){
   // level. Use the live VDOT-derived easy pace when race data is available.
   var _easyMph = _paces.easy ? Math.round(3600/_paces.easy*10)/10 : parseFloat(_band.mph);
   var _easy    = _paces.easy ? _toMMSS(_paces.easy) : _band.easy;
-  // Replace paces in steps text
+  // Easy is a RANGE, not a point — the calibrated pace is the fast end
+  // (don't run faster than this on an easy day); +25s/mi is the slow end
+  // (still counts as easy, doesn't need to be pinpoint). Used for every
+  // easy/warm-up/cool-down mention so "how slow/fast" is never implicit.
+  var _easySec = _paces.easy ? _paces.easy : (function(){ var p=_band.easy.split(':'); return (+p[0])*60+(+p[1]); })();
+  var _easyLo  = _easy;
+  var _easyHi  = _toMMSS(_easySec + 25);
+  var _easyRange = _easyLo + '-' + _easyHi;
+  // Replace range-format paces FIRST: "at 9:30-10:00/mi", "at 6:20-6:40/mi",
+  // and "threshold pace 6:20-6:40/mi" — some PLAN_DB entries name the
+  // range after the word "pace" instead of "at", which the old regex
+  // (matching only "at") silently skipped, leaving those workout ranges
+  // hardcoded and never recalibrating to current VDOT. Must run BEFORE
+  // the single-value regex below: the easy branch here outputs a range
+  // shape ("at LO-HI/mi"), and running single-value second would try to
+  // re-match plain "at H:MM/mi" inside it — but that pattern requires
+  // "/mi" immediately after H:MM with no dash, so it correctly skips
+  // range output. Running them in the other order double-appends the
+  // "(X.X mph)" suffix instead (each pass adding its own copy).
+  steps = steps.replace(/(?:at|pace) (\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})\/mi/g, function(match, m1, s1, m2, s2) {
+    var t1 = parseInt(m1,10)*60 + parseInt(s1,10);
+    var t2 = parseInt(m2,10)*60 + parseInt(s2,10);
+    var avg = (t1 + t2) / 2;
+    var prefix = match.slice(0, match.indexOf(m1 + ':') - 1); // preserve "at " or "pace " wording
+    if (avg >= 480) {
+      // Easy range → VDOT-calibrated easy pace band
+      return prefix + ' ' + _easyRange + '/mi (' + _easyMph + ' mph)';
+    } else if (avg >= 360 && avg < 420) {
+      // Threshold range → VDOT LT2
+      return prefix + ' ' + _thresh + '/mi (LT2 target)';
+    } else if (avg < 360) {
+      // Sub-6:00 → VO2max
+      return prefix + ' ' + _vo2 + '/mi';
+    }
+    return match; // 7:xx tempo range → keep
+  });
+  // Then single-value paces: "at 10:00/mi" etc.
   steps = steps.replace(/at (\d{1,2}):(\d{2})\/mi/g, function(match, mins, secs) {
     var totalSec = parseInt(mins, 10)*60 + parseInt(secs, 10);
     if (totalSec >= 480) {
-      // Easy range (≥8:00/mi) → VDOT-calibrated easy pace
-      return 'at ' + _easy + '/mi (' + _easyMph + ' mph)';
+      // Easy range (≥8:00/mi) → VDOT-calibrated easy pace band
+      return 'at ' + _easyRange + '/mi (' + _easyMph + ' mph)';
     } else if (totalSec >= 360 && totalSec < 420) {
       // Threshold range (6:00-6:59) → VDOT threshold
       return 'at ' + _thresh + '/mi';
@@ -6747,22 +6783,17 @@ function formatSteps(steps, totalMi){
     }
     return match; // 7:xx range (tempo, keep as-is)
   });
-  // Replace range-format paces: "at 9:30-10:00/mi", "at 6:20-6:40/mi"
-  steps = steps.replace(/at (\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})\/mi/g, function(match, m1, s1, m2, s2) {
-    var t1 = parseInt(m1,10)*60 + parseInt(s1,10);
-    var t2 = parseInt(m2,10)*60 + parseInt(s2,10);
-    var avg = (t1 + t2) / 2;
-    if (avg >= 480) {
-      // Easy range → VDOT-calibrated easy pace
-      return 'at ' + _easy + '/mi (' + _easyMph + ' mph)';
-    } else if (avg >= 360 && avg < 420) {
-      // Threshold range → VDOT LT2
-      return 'at ' + _thresh + '/mi (LT2 target)';
-    } else if (avg < 360) {
-      // Sub-6:00 → VO2max
-      return 'at ' + _vo2 + '/mi';
-    }
-    return match; // 7:xx tempo range → keep
+  // WU:/CD: segments are always easy effort by definition, but many
+  // PLAN_DB entries never stated a pace for them at all (just "WU: 0.8mi
+  // easy jog" with nothing after) — inject the live easy-pace band right
+  // after the distance so warm-ups and cool-downs are never paceless.
+  steps = steps.replace(/\b(WU|CD):\s*(\d+(?:\.\d+)?)mi(?!\s*at\s)/gi, function(match, label, dist){
+    return label.toUpperCase() + ': ' + dist + 'mi at ' + _easyRange + '/mi';
+  });
+  // Same fix for the label-less "1.5mi warm-up." / "1mi cool-down." form
+  // used in continuous-tempo sessions.
+  steps = steps.replace(/(\d+(?:\.\d+)?)mi (warm-up|cool-down)(?!\s*at\s)\./gi, function(match, dist, word){
+    return dist + 'mi ' + word + ' at ' + _easyRange + '/mi.';
   });
   // Also replace treadmill speed + bracketed pace: "8.2mph (7:19/mi)" → updated threshold note
   steps = steps.replace(/(\d+\.\d+)\s*mph\s*\((\d+):(\d+)\/mi\)/g, function(match, sp, m, s) {
