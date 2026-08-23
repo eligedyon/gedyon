@@ -6912,6 +6912,42 @@ function applyWorkoutPreferences(date, plan){
     p.sets = (p.sets ? p.sets + ' · ' : '') + plyoBlock;
     p.coreNote = (p.coreNote ? p.coreNote + ' · ' : '') + plyoBlock;
   }
+  // TUESDAY → Race-Pace Intervals (Kerr-Mackey Specific, wk61+) / Speed Reps (Championship
+  // Sharpening & Trials Taper, wk85+) — the base-building phases (Foundation/Base/Norwegian
+  // Threshold) keep the 1000m threshold reps as-is; only once that aerobic base is actually
+  // built does short, fast rep work get introduced (Lydiard/Canova sequencing). Friday's
+  // second threshold session is left alone — the aerobic-power work doesn't disappear, it
+  // just stops being the ONLY quality work. Pace comes live off current VDOT, not a fixed
+  // number, so it keeps tracking real fitness as it improves through 2027-2028.
+  if(dow===2 && wk>=61 && !isDeload && p.type==='threshold'){
+    var ph2 = getPhase(wk);
+    var prsSpd = getPRs();
+    var pacesSpd = getTrainingPaces(prsSpd);
+    var mmssP = function(sec){ sec=Math.round(sec); return Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0'); };
+    if(ph2.n===4){ // KERR-MACKEY SPECIFIC — bridge threshold to race speed: 600m at live VO2max (I) pace
+      var i600 = mmssP(pacesSpd.vo2max ? pacesSpd.vo2max*600/1609.34 : 130);
+      var reps600 = Math.min(8, 5+Math.floor((wk-61)/8));
+      var mainMi6 = +(reps600*0.373).toFixed(1);
+      p.mi = +(2.0+mainMi6+1.0).toFixed(1); p.amMi = p.mi; p.pmMi = 0;
+      p.name = 'RACE-PACE INTERVALS · WK ' + wk;
+      p.zone = 'Z4-Z5'; p.hr = [160,178]; p.lac = [4.0,7.0];
+      p.steps = 'WU: 2.0mi easy + 4×20s strides + 2×100m strides at goal pace · MAIN: '+reps600+'×600m at '+i600+' (VO2max pace — live off current VDOT) · 2–3min full jog recovery between reps · CD: 1.0mi easy · Purpose: bridge threshold fitness into true race speed';
+      p.sets = reps600+'×600m at '+i600+' · 2–3min full recovery jog · Pace updates automatically as VDOT improves';
+      p.coreNote = '';
+    } else { // CHAMPIONSHIP SHARPENING / TRIALS TAPER — true repetition-pace speed: 400m at live
+      // R-pace (105% VO2max), full recovery, low volume — builds the ability to handle fast 400m reps.
+      var r400 = mmssP(pacesSpd.interval ? pacesSpd.interval*400/1609.34 : 78);
+      var isTaper = ph2.n>=6;
+      var reps400 = isTaper ? 4 : Math.min(10, 6+Math.floor((wk-85)/6));
+      var mainMi4 = +(reps400*0.249).toFixed(1);
+      p.mi = +(2.0+mainMi4+1.0).toFixed(1); p.amMi = p.mi; p.pmMi = 0;
+      p.name = 'SPEED REPS · WK ' + wk;
+      p.zone = 'Z5'; p.hr = [165,182]; p.lac = [5.0,9.0];
+      p.steps = 'WU: 2.0mi easy + 4×20s strides + 3×100m strides building to top speed · MAIN: '+reps400+'×400m at '+r400+' (repetition pace, full recovery) · 2–3min full jog/walk recovery — ready-when-ready, not clock-driven · CD: 1.0mi easy · Purpose: race-day closing speed — the fast-turnover capability everything since Foundation was built toward';
+      p.sets = reps400+'×400m at '+r400+' · Full recovery (2–3min) between reps — quality over fatigue · Pace derived live from current VDOT';
+      p.coreNote = '';
+    }
+  }
   // FRIDAY → Fartlek (odd block weeks, from wk 5+, only easy/shakeout sessions, not deload)
   if(dow===5 && wk>=5 && !isDeload && wkInBlock%2===1 && (p.type==='easy'||p.type==='rest') && p.mi>=1.5 && p.mi<=8){
     var miF = Math.max(5.0, (p.mi||4) * 1.3);
