@@ -5657,7 +5657,7 @@ function launchApp(){
   loadWACode();
   loadAthlinksId();
   initLacRows();
-  renderDash(); renderWtHero(t); renderPlanCard(t);
+  renderDash(); renderWtHero(t); renderPlanCard(t); renderCoachCard();
   renderSuppGrid(t); renderTodayFood(t);
   setTimeout(renderTrainingLoad, 200); restoreToggles(t);
   // Show tutorial on first login
@@ -9284,6 +9284,44 @@ function logWeightHome(){
   showAlert('homeWtAlert',' '+v+' lbs logged at '+timeStr+' ('+timeLabel+')','ok');
 }
 
+// TOMORROW'S SESSION REMINDER — best-effort in-app notification. This is a
+// PWA running in Safari/Chrome, not the native Capacitor build (see
+// IOS-INSTALL.md) — there's no push server, so this can't wake the phone
+// while the app is closed. What it CAN do: the moment you open the app any
+// time after 6pm, if you haven't been told about tomorrow yet today, it
+// fires a real system notification with tomorrow's session. Reliable if you
+// open the app in the evening (which most people do); silent if you don't
+// open it at all that day. The native build would give a true scheduled
+// push regardless of whether you open the app — ask if that's wanted later.
+function enableTomorrowReminders(){
+  if(!('Notification' in window)){ if(typeof showToast==='function') showToast('Notifications aren\'t supported in this browser','error'); return; }
+  Notification.requestPermission().then(function(perm){
+    D.settings.remindersEnabled = (perm === 'granted');
+    save();
+    if(perm === 'granted'){
+      if(typeof showToast==='function') showToast('Reminders on — open the app in the evening and I\'ll tell you tomorrow\'s session','ok');
+      checkTomorrowReminder();
+    } else if(typeof showToast==='function') showToast('Notifications blocked — enable them in your browser/phone settings to use this','error');
+    try{ renderCoachCard(); }catch(e){}
+  });
+}
+function checkTomorrowReminder(){
+  try{
+    if(!D.settings.remindersEnabled) return;
+    if(!('Notification' in window) || Notification.permission !== 'granted') return;
+    if(new Date().getHours() < 18) return; // only from 6pm on — this is an evening "here's tomorrow" nudge
+    var todayStr = td();
+    var flagKey = 'gedyon_reminder_shown_' + todayStr;
+    if(localStorage.getItem(flagKey)) return;
+    var tmrwDate = new Date(Date.now() + 864e5).toISOString().slice(0,10);
+    var tmrw = getDayPlan(tmrwDate);
+    if(!tmrw) return;
+    var body = (tmrw.name||'Run') + (tmrw.mi ? ' · ' + tmrw.mi + 'mi' : '');
+    new Notification('Tomorrow — GEDYON', { body: body, tag: 'gedyon-tomorrow' });
+    localStorage.setItem(flagKey, '1');
+  }catch(e){}
+}
+
 // COACH CARD — glanceable "today's job + tomorrow's prep" on the TODAY tab
 function _cc_prep(type){
   var t=(type||'').toLowerCase();
@@ -9310,7 +9348,11 @@ function renderCoachCard(){
       +'<span style="color:#f5b13d;">☾</span>'
       +'<div style="font-family:\'SF Mono\',monospace;font-size:11.5px;color:#c9b98a;line-height:1.6;"><b style="color:#f5d08a;">Tonight prep:</b> '+_cc_prep(tmrw.type)+'</div></div>':'')
     +'<div style="display:flex;gap:6px;margin-top:12px;font-family:\'SF Mono\',monospace;font-size:10px;color:#565f78;letter-spacing:.05em;">✓ scale · ✓ water+protein · ✓ log run · ✓ sleep 9h</div>'
+    +(D.settings.remindersEnabled
+      ? '<div style="margin-top:10px;font-family:\'SF Mono\',monospace;font-size:10.5px;color:#5fb88a;">🔔 Reminders on — I\'ll tell you tomorrow\'s session if you open the app in the evening</div>'
+      : '<button onclick="enableTomorrowReminders()" style="margin-top:10px;background:rgba(0,200,230,.1);border:1px solid rgba(0,200,230,.3);color:#00c8e6;font-family:\'SF Mono\',monospace;font-size:10.5px;padding:7px 10px;border-radius:8px;cursor:pointer;">🔔 Remind me what\'s next</button>')
     +'</div>';
+  try{ checkTomorrowReminder(); }catch(e){}
 }
 function renderDash(){
   renderDashPlanCard();
