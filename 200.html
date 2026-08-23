@@ -6830,24 +6830,6 @@ function formatSteps(steps, totalMi){
     }
     return match + ' → <span style="color:var(--green);font-weight:700;">target ' + _thresh + '/mi VDOT</span>';
   });
-  // Hill reps were flat "15×80m ... 9.5–11.5 mph" from Foundation clear through
-  // Trials Taper — mileage is capped at 35mi/wk, so hills (the strength-session
-  // stand-in) are the intensity lever that needs to progress instead: rep
-  // count builds then tapers by phase, and top sprint speed ties to the live
-  // VDOT repetition (R) pace — hills are always faster than current race fitness.
-  steps = steps.replace(/HILLS: \d+×80m at MAX effort \(incline [\d.]+–[\d.]+, speed [\d.]+–[\d.]+ mph\)/g, function(match){
-    var _wkNow = typeof getWk==='function' ? getWk(td()) : _wk;
-    var _phNow = typeof getPhase==='function' ? getPhase(_wkNow) : {n:1};
-    var HILL_BY_PHASE = {
-      1:{reps:12,inc:'8.0–10.0'}, 2:{reps:15,inc:'8.0–10.0'}, 3:{reps:16,inc:'8.0–11.0'},
-      4:{reps:15,inc:'9.0–11.0'}, 5:{reps:12,inc:'9.0–11.0'}, 6:{reps:8, inc:'8.0–10.0'}
-    };
-    var cfg = HILL_BY_PHASE[_phNow.n] || HILL_BY_PHASE[1];
-    var intervalMph = _paces.interval ? Math.round((3600/_paces.interval)*10)/10 : 11.5;
-    var spLo = Math.max(8.5, Math.round((intervalMph-1.5)*10)/10);
-    var spHi = Math.max(spLo+1, Math.round((intervalMph+0.5)*10)/10);
-    return 'HILLS: '+cfg.reps+'×80m at MAX effort (incline '+cfg.inc+', speed '+spLo+'–'+spHi+' mph)';
-  });
   // If already has [AM]/[PM] labels, render with colored badges
   if(steps.indexOf('[AM]')>-1 || steps.indexOf('[PM]')>-1){
     return steps.replace(/\[AM\]/g,'<span style="display:inline-block;background:rgba(21,101,192,0.85);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-right:4px;letter-spacing:1px;">AM</span>')
@@ -7127,8 +7109,36 @@ function _getDayPlanRaw(date){
 // of being asked for 42-mile weeks off a 15-mile base. Structure, zones
 // and workout types stay; only volume shrinks.
 var _rawWkSumCache = {};
+// Hill reps were flat "15×80m ... 9.5–11.5 mph" from Foundation clear through
+// Trials Taper — mileage is capped at 35mi/wk, so hills (the strength-session
+// stand-in) are the intensity lever that needs to progress instead: rep count
+// builds then tapers by phase, and top sprint speed ties to the live VDOT
+// repetition (R) pace. This runs here (not in formatSteps) because phase is a
+// deterministic function of the session's OWN calendar date — unlike pace,
+// which reflects current fitness and is correctly the same regardless of
+// which day you're previewing, phase must NOT default to "today's phase" or
+// every future week would preview wrong until the day actually arrives.
+var HILL_BY_PHASE = {
+  1:{reps:12,inc:'8.0–10.0'}, 2:{reps:15,inc:'8.0–10.0'}, 3:{reps:16,inc:'8.0–11.0'},
+  4:{reps:15,inc:'9.0–11.0'}, 5:{reps:12,inc:'9.0–11.0'}, 6:{reps:8, inc:'8.0–10.0'}
+};
+function _applyHillProgression(steps, date){
+  if(!steps || steps.indexOf('HILLS:') === -1) return steps;
+  try{
+    var ph = getPhase(getWk(date));
+    var cfg = HILL_BY_PHASE[ph.n] || HILL_BY_PHASE[1];
+    var prs = typeof getPRs==='function' ? getPRs() : {};
+    var paces = typeof getTrainingPaces==='function' ? getTrainingPaces(prs) : {};
+    var intervalMph = paces.interval ? Math.round((3600/paces.interval)*10)/10 : 11.5;
+    var spLo = Math.max(8.5, Math.round((intervalMph-1.5)*10)/10);
+    var spHi = Math.max(spLo+1, Math.round((intervalMph+0.5)*10)/10);
+    return steps.replace(/HILLS: \d+×80m at MAX effort \(incline [\d.]+–[\d.]+, speed [\d.]+–[\d.]+ mph\)/g,
+      'HILLS: '+cfg.reps+'×80m at MAX effort (incline '+cfg.inc+', speed '+spLo+'–'+spHi+' mph)');
+  }catch(e){ return steps; }
+}
 function getDayPlan(date){
   var raw = _getDayPlanRaw(date);
+  raw.steps = _applyHillProgression(raw.steps, date);
   try{
     if(typeof _rampTargetForWeek !== 'function' || typeof RAMP_ANCHOR === 'undefined') return raw;
     var dMs = parseLocalDate(date).getTime();
