@@ -5234,7 +5234,7 @@ function updateAuthStatus(){
 const DEFAULT_PIN = '042028'; // April 2028 — Trials month/year
 
 let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
-  logs:[], food:[], workouts:[], weights:[],
+  logs:[], food:[], workouts:[], weights:[], bodyComp:[],
   races:[
     {id:1006,date:'2026-04-26',ev:'10k',time:'37:53',meet:'Pueblo Spring Runoff',location:'Pueblo, CO',pr:true,priority:'A',place:4,ageGroup:'1st/3 AG 30-34'},
     {id:1001,date:'2018-02-10',ev:'mile',time:'4:01.10',meet:'UW Invitational',location:'Seattle, WA',pr:true,priority:'A'},
@@ -5312,6 +5312,24 @@ if(D.settings.start === '2026-02-23'){
     else if(dup.id!==pr.id){ dup.id=pr.id; } // normalise id to canonical
   });
 })();
+if(!D.bodyComp) D.bodyComp=[];
+// One-time seed (Aug 2026): Navy-method tape-measure baseline, logged from
+// athlete-provided measurements (neck 15in, waist 38in at navel, height 5'11").
+// %BF = 86.010*log10(waist-neck) - 70.041*log10(height) + 36.76
+if(!localStorage.getItem('gedyon_bodycomp_seed_2026_08')){
+  D.bodyComp.push({date:'2026-08-23', method:'navy', neck:15, waist:38, heightIn:71, bf:24.2});
+  localStorage.setItem('gedyon_bodycomp_seed_2026_08','1');
+  try{ localStorage.setItem('gedyon_v5', JSON.stringify(D)); }catch(e){}
+}
+function logBodyComp(date, neck, waist, heightIn, method){
+  method = method || 'navy';
+  var bf = +(86.010*Math.log10(waist-neck) - 70.041*Math.log10(heightIn) + 36.76).toFixed(1);
+  D.bodyComp = D.bodyComp.filter(function(b){ return b.date!==date; });
+  D.bodyComp.push({date:date, method:method, neck:neck, waist:waist, heightIn:heightIn, bf:bf});
+  D.bodyComp.sort(function(a,b){ return a.date.localeCompare(b.date); });
+  save();
+  return bf;
+}
 function saveData(){
   localStorage.setItem(KEY, JSON.stringify(D));
   if(currentUser && sbClient){
