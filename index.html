@@ -19477,7 +19477,6 @@ async function _logRunConfirm(){
   var eff  = (document.getElementById('lrEffort')||{}).value || '5';
   if(!date){ showSyncToast('Pick a date','red'); return; }
   if(!mins || parseInt(mins) < 1){ showSyncToast('How many minutes did you run?','red'); return; }
-  var m = document.getElementById('logRunModal'); if(m) m.remove();
   await logManualWorkout(date, mins, eff, dist, 'run');
   try{ renderTrainingSummary(); }catch(e){}
   // Fresh placement with the new mileage included
@@ -19485,6 +19484,32 @@ async function _logRunConfirm(){
     localStorage.removeItem('gedyon_autorecal_shown'); // allow the modal to show for this
     setTimeout(autoFitnessCheck, 400);
   }
+  // Real-time vs-plan comparison, right in the modal — reuses the exact same
+  // scoring/rendering scoreWorkout() already builds for screenshot imports,
+  // just captured here instead of requiring a trip to another tab.
+  try{
+    var plan = getDayPlan(date);
+    var wo = { dist: parseFloat(dist)||0, dur: parseInt(mins)||0, duration: parseInt(mins)||0, hr:0, source:'manual', type:'run' };
+    var hadExecCard = !!document.getElementById('execCard');
+    var tmpExec = null;
+    if(!hadExecCard){ tmpExec = document.createElement('div'); tmpExec.id='execCard'; tmpExec.style.display='none'; document.body.appendChild(tmpExec); }
+    var dA=document.createElement('div'), dB=document.createElement('div'), dL=document.createElement('div');
+    await scoreWorkout(wo, date, plan, dA, dB, dL);
+    var resultHtml = document.getElementById('execCard').innerHTML;
+    if(tmpExec) tmpExec.remove();
+    _showLogRunResult(resultHtml);
+  }catch(e){
+    console.warn('[LogRun] scoring failed', e);
+    var m = document.getElementById('logRunModal'); if(m) m.remove();
+  }
+}
+
+function _showLogRunResult(execHtml){
+  var sheet = document.querySelector('#logRunModal > div');
+  if(!sheet){ var m=document.getElementById('logRunModal'); if(m) m.remove(); return; }
+  sheet.innerHTML = '<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:24px;letter-spacing:2px;color:#00E676;margin-bottom:14px;">✅ RUN LOGGED</div>'
+    + execHtml
+    + '<button onclick="document.getElementById(\'logRunModal\').remove();" style="width:100%;padding:14px;background:#00C853;color:#00210f;font-family:Impact,Arial Narrow,sans-serif;font-size:18px;letter-spacing:3px;border:none;border-radius:14px;cursor:pointer;margin-top:14px;">DONE</button>';
 }
 
 // ── SHARE WEEK — canvas training card + native share sheet ──────────
