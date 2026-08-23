@@ -5321,6 +5321,15 @@ if(!localStorage.getItem('gedyon_bodycomp_seed_2026_08')){
   localStorage.setItem('gedyon_bodycomp_seed_2026_08','1');
   try{ localStorage.setItem('gedyon_v5', JSON.stringify(D)); }catch(e){}
 }
+// One-time seed (Aug 2026): athlete-confirmed current weight, for the
+// maintenance-calorie estimate (BMR ~1793 @ 181lb/5'11" -> ~2800-2900
+// kcal/day maintenance with 35mi/wk training) and to anchor the weight trend.
+if(!localStorage.getItem('gedyon_weight_seed_2026_08') && !D.weights.some(function(w){return w.date==='2026-08-23';})){
+  D.weights.push({date:'2026-08-23', wt:181, context:'athlete-reported'});
+  D.weights.sort(function(a,b){return a.date.localeCompare(b.date);});
+  localStorage.setItem('gedyon_weight_seed_2026_08','1');
+  try{ localStorage.setItem('gedyon_v5', JSON.stringify(D)); }catch(e){}
+}
 function logBodyComp(date, neck, waist, heightIn, method){
   method = method || 'navy';
   var bf = +(86.010*Math.log10(waist-neck) - 70.041*Math.log10(heightIn) + 36.76).toFixed(1);
