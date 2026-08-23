@@ -13941,7 +13941,7 @@ function checkAllConnectionStates(){
 // ════════════════════════════════════════════
 const WHOOP_AUTH_URL     = 'https://api.prod.whoop.com/oauth/oauth2/auth';
 const WHOOP_TOKEN_URL    = 'https://api.prod.whoop.com/oauth/oauth2/token';
-const WHOOP_API_BASE     = 'https://api.prod.whoop.com/developer/v1';
+const WHOOP_API_BASE     = 'https://api.prod.whoop.com/developer/v2';
 const WHOOP_SCOPES       = 'read:recovery read:sleep read:workout read:profile read:cycles offline';
 
 function whoopConnectServer(){
@@ -14891,7 +14891,7 @@ async function whoopDirectFetchRecovery(token){
   if(!token) token = await whoopGetDirectToken();
   if(!token) return;
   try{
-    const resp = await fetch(WHOOP_API+'/developer/v1/recovery?limit=30', {
+    const resp = await fetch(WHOOP_API+'/developer/v2/recovery?limit=30', {
       headers:{'Authorization':'Bearer '+token}
     });
     if(!resp.ok) return;
@@ -14911,8 +14911,14 @@ async function whoopDirectFetchRecovery(token){
     if(todayRec){
       if(!D.whoopData) D.whoopData = {};
       D.whoopData.recovery=todayRec.recovery; D.whoopData.hrv=todayRec.hrv; D.whoopData.rhr=todayRec.rhr;
-      if(!D.logs) D.logs={}; if(!D.logs[today]) D.logs[today]={};
-      D.logs[today].hrv=todayRec.hrv; D.logs[today].recovery=todayRec.recovery;
+      // D.logs is an ARRAY (find/push), not a date-keyed object — the old
+      // D.logs[today]={} form silently wrote to an inaccessible property
+      // instead of a real log entry, so this data never reached the rest
+      // of the app (which always reads via D.logs.find(e=>e.date===...)).
+      if(!D.logs) D.logs=[];
+      var _logEntry = D.logs.find(function(e){return e.date===today;});
+      if(!_logEntry){ _logEntry={date:today}; D.logs.push(_logEntry); }
+      _logEntry.hrv=todayRec.hrv; _logEntry.recovery=todayRec.recovery;
     }
     save();
     showSyncToast('\u2713 '+(data.records||[]).length+' WHOOP recovery days synced','green');
@@ -14923,7 +14929,7 @@ async function whoopDirectFetchSleep(token){
   if(!token) token = await whoopGetDirectToken();
   if(!token) return;
   try{
-    const resp = await fetch(WHOOP_API+'/developer/v1/activity/sleep?limit=30', {
+    const resp = await fetch(WHOOP_API+'/developer/v2/activity/sleep?limit=30', {
       headers:{'Authorization':'Bearer '+token}
     });
     if(!resp.ok) return;
@@ -14933,9 +14939,12 @@ async function whoopDirectFetchSleep(token){
       if(!date) return;
       const totalMs = s.score?.stage_summary?.total_in_bed_time_milli||0;
       const sleepHrs = +(totalMs/3600000).toFixed(1);
-      if(!D.logs) D.logs={}; if(!D.logs[date]) D.logs[date]={};
-      D.logs[date].sleep=sleepHrs;
-      if(s.score?.sleep_performance_percentage) D.logs[date].sleepScore=s.score.sleep_performance_percentage;
+      // Same array-vs-object fix as recovery above.
+      if(!D.logs) D.logs=[];
+      var _logEntry = D.logs.find(function(e){return e.date===date;});
+      if(!_logEntry){ _logEntry={date:date}; D.logs.push(_logEntry); }
+      _logEntry.sleep=sleepHrs;
+      if(s.score?.sleep_performance_percentage) _logEntry.sleepScore=s.score.sleep_performance_percentage;
     });
     save();
   }catch(e){ console.error('[WHOOP DIRECT] Sleep error:', e); }
@@ -14945,7 +14954,7 @@ async function whoopDirectFetchWorkouts(token){
   if(!token) token = await whoopGetDirectToken();
   if(!token) return;
   try{
-    const resp = await fetch(WHOOP_API+'/developer/v1/activity/workout?limit=50', {
+    const resp = await fetch(WHOOP_API+'/developer/v2/activity/workout?limit=50', {
       headers:{'Authorization':'Bearer '+token}
     });
     if(!resp.ok) return;
@@ -14953,26 +14962,50 @@ async function whoopDirectFetchWorkouts(token){
     const wos = (data.records||[]).map(w=>{
       const date = w.created_at ? w.created_at.slice(0,10) : null;
       if(!date) return null;
+      // V2 identifies sport by `sport_name` (a string, e.g. "running") — the old
+      // `sport_id` numeric lookup is being phased out, so prefer the name field
+      // and fall back to the id map only for pre-migration cached data.
+      const sportKey = w.sport_name || w.sport_id;
+      const zd = w.score?.zone_durations || {};
+      // _normaliseWorkout() reads `avgHR`/`calories` specifically, not `hr`/`cal` —
+      // those got silently dropped on merge before this matched the expected names.
       return {date:date, source:'whoop', whoopId:w.id,
-        name:whoopSportName(w.sport_id), type:whoopSportType(w.sport_id),
-        dur:Math.round((w.score?.zone_duration?.zone_zero_milli||0+w.score?.zone_duration?.zone_one_milli||0+w.score?.zone_duration?.zone_two_milli||0+w.score?.zone_duration?.zone_three_milli||0+w.score?.zone_duration?.zone_four_milli||0+w.score?.zone_duration?.zone_five_milli||0)/60000)||0,
-        strain:w.score?.strain||0, cal:Math.round((w.score?.kilojoule||0)/4.184),
-        hr:Math.round(w.score?.average_heart_rate||0), maxHR:Math.round(w.score?.max_heart_rate||0),
+        name:whoopSportName(sportKey), type:whoopSportType(sportKey),
+        dur:Math.round(((zd.zone_zero_milli||0)+(zd.zone_one_milli||0)+(zd.zone_two_milli||0)+(zd.zone_three_milli||0)+(zd.zone_four_milli||0)+(zd.zone_five_milli||0))/60000),
+        strain:w.score?.strain||0, calories:Math.round((w.score?.kilojoule||0)/4.184),
+        avgHR:Math.round(w.score?.average_heart_rate||0), maxHR:Math.round(w.score?.max_heart_rate||0),
         dist:w.score?.distance_meter?+(w.score.distance_meter/1609.34).toFixed(2):0};
     }).filter(Boolean);
     if(wos.length>0){ mergeServerWorkouts(wos); save(); }
   }catch(e){ console.error('[WHOOP DIRECT] Workouts error:', e); }
 }
 
-function whoopSportName(id){
+// Accepts either the V2 sport_name string ("running") or a legacy numeric
+// sport_id, since cached pre-migration workout data may still carry the id.
+function whoopSportName(key){
+  if(typeof key === 'string') return key.charAt(0).toUpperCase()+key.slice(1);
   const m={0:'Activity',1:'Running',63:'Running',16:'Cycling',48:'Cycling',71:'Weightlifting',43:'Yoga',44:'Swim',
     52:'CrossFit',55:'HIIT',64:'Walking',82:'Rowing',96:'Pilates'};
-  return m[id]||'Workout';
+  return m[key]||'Workout';
 }
-function whoopSportType(id){
+function whoopSportType(key){
+  if(typeof key === 'string'){
+    const s=key.toLowerCase();
+    if(s.indexOf('run')>=0) return 'Run';
+    if(s.indexOf('cycl')>=0||s.indexOf('bik')>=0) return 'Ride';
+    if(s.indexOf('swim')>=0) return 'Swim';
+    if(s.indexOf('walk')>=0) return 'Walk';
+    if(s.indexOf('row')>=0) return 'Row';
+    if(s.indexOf('weight')>=0||s.indexOf('strength')>=0||s.indexOf('lift')>=0) return 'Strength';
+    if(s.indexOf('yoga')>=0) return 'Yoga';
+    if(s.indexOf('crossfit')>=0) return 'CrossFit';
+    if(s.indexOf('hiit')>=0) return 'HIIT';
+    if(s.indexOf('pilates')>=0) return 'Pilates';
+    return 'Workout';
+  }
   const m={0:'Workout',1:'Run',63:'Run',16:'Ride',48:'Ride',71:'Strength',43:'Yoga',44:'Swim',
     52:'CrossFit',55:'HIIT',64:'Walk',82:'Row',96:'Pilates'};
-  return m[id]||'Workout';
+  return m[key]||'Workout';
 }
 
 function updateWhoopDirectUI(){
@@ -21187,7 +21220,7 @@ async function runDiagnostic() {
   if(whoopDirectTok){
     try {
       const r = await Promise.race([
-        fetch('https://api.prod.whoop.com/developer/v1/recovery?limit=1', { headers: { Authorization: 'Bearer ' + whoopDirectTok } }),
+        fetch('https://api.prod.whoop.com/developer/v2/recovery?limit=1', { headers: { Authorization: 'Bearer ' + whoopDirectTok } }),
         new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 6000))
       ]);
       if(r.ok){
