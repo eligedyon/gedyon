@@ -9305,6 +9305,21 @@ function enableTomorrowReminders(){
     try{ renderCoachCard(); }catch(e){}
   });
 }
+// Same plain-language effort-by-feel used in the 24-week reference doc —
+// what the notification body actually needs isn't a data dump, it's "how
+// hard, how far, and roughly when" at a glance.
+var _REMINDER_EFFORT = {
+  rest:      'No running — walk + mobility',
+  easy:      'Easy — conversational pace',
+  long:      'Steady aerobic — stay relaxed',
+  threshold: 'Comfortably hard — short phrases only',
+  hill:      'Max effort — full recovery between reps',
+};
+function _reminderEffort(plan){
+  var name = (plan.name||'').toUpperCase();
+  if(name.indexOf('SPEED REPS')>=0 || name.indexOf('RACE-PACE')>=0) return 'Hard — full recovery between reps';
+  return _REMINDER_EFFORT[plan.type] || _REMINDER_EFFORT.easy;
+}
 function checkTomorrowReminder(){
   try{
     if(!D.settings.remindersEnabled) return;
@@ -9316,8 +9331,16 @@ function checkTomorrowReminder(){
     var tmrwDate = new Date(Date.now() + 864e5).toISOString().slice(0,10);
     var tmrw = getDayPlan(tmrwDate);
     if(!tmrw) return;
-    var body = (tmrw.name||'Run') + (tmrw.mi ? ' · ' + tmrw.mi + 'mi' : '');
-    new Notification('Tomorrow — GEDYON', { body: body, tag: 'gedyon-tomorrow' });
+    var lines = [(tmrw.name||'Run') + (tmrw.mi ? ' · ' + tmrw.mi + 'mi' : '')];
+    var zoneHr = [];
+    if(tmrw.zone) zoneHr.push('Zone ' + tmrw.zone);
+    if(tmrw.hr && tmrw.hr.length===2 && !(tmrw.hr[0]===0 && tmrw.hr[1]===0)) zoneHr.push(tmrw.hr[0]+'-'+tmrw.hr[1]+' bpm');
+    if(zoneHr.length) lines.push(zoneHr.join(' · '));
+    lines.push(_reminderEffort(tmrw));
+    if(tmrw.wake) lines.push('Wake ' + tmrw.wake);
+    if(tmrw.lift) lines.push('+ Weight room / mobility after');
+    var notif = new Notification('Tomorrow — GEDYON', { body: lines.join('\n'), tag: 'gedyon-tomorrow' });
+    notif.onclick = function(){ try{ window.focus(); }catch(e){} notif.close(); };
     localStorage.setItem(flagKey, '1');
   }catch(e){}
 }
