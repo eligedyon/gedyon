@@ -9389,6 +9389,20 @@ function _cc_prep(type){
   if(t==='long') return 'Long run tomorrow — lay out kit, fuel a bit before, lights out 9:15';
   return 'Easy tomorrow — clothes/shoes out, fill water bottle, lights out 9:15';
 }
+function _renderHealthCheckHtml(){
+  var results = computeHealthCheck();
+  if(!results || !results.length) return '';
+  var inRangeCount = results.filter(function(r){return r.inRange;}).length;
+  var allGood = inRangeCount === results.length;
+  var rows = results.map(function(r){
+    var arrow = r.diffPct > 0.01 ? '▲' : (r.diffPct < -0.01 ? '▼' : '·');
+    return '<span style="color:'+(r.inRange?'#5fb88a':'#e8935a')+';">'+arrow+' '+r.label+' '+r.value+' <span style="color:#6b7794;">(avg '+r.avg+')</span></span>';
+  }).join('<br>');
+  return '<div style="margin-top:10px;padding:9px 11px;background:'+(allGood?'rgba(0,230,118,.06)':'rgba(232,147,90,.07)')+';border:1px solid '+(allGood?'rgba(0,230,118,.2)':'rgba(232,147,90,.25)')+';border-radius:10px;">'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:10px;letter-spacing:1px;color:'+(allGood?'#5fb88a':'#e8935a')+';margin-bottom:5px;">'+(allGood?'✓ ':'')+'HEALTH CHECK — '+inRangeCount+'/'+results.length+' WITHIN YOUR RANGE</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;line-height:1.8;">'+rows+'</div>'
+    + '</div>';
+}
 function renderCoachCard(){
   var el=document.getElementById('coachCard'); if(!el) return;
   var today, tmrw;
@@ -9404,6 +9418,7 @@ function renderCoachCard(){
     +'<div style="font-family:Impact,Arial Narrow,sans-serif;letter-spacing:1px;font-size:22px;color:#e8f0ff;">'+(today.name||'RUN')+(mi?' · '+mi+'mi':'')+'</div>'
     +'<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:#9fb0cc;line-height:1.7;margin-top:6px;">'+steps+'</div>'
     +_renderChecklistHtml(td(), _checklistItemsFor(today))
+    +_renderHealthCheckHtml()
     +(tmrw?'<div style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;background:rgba(245,177,61,.07);border-radius:10px;padding:9px 11px;">'
       +'<span style="color:#f5b13d;">☾</span>'
       +'<div style="font-family:\'SF Mono\',monospace;font-size:11.5px;color:#c9b98a;line-height:1.6;"><b style="color:#f5d08a;">Tonight prep:</b> '+_cc_prep(tmrw.type)+'</div></div>':'')
@@ -14991,6 +15006,10 @@ async function whoopDirectFetchRecovery(token){
       if(!date) return;
       const entry = {date:date, recovery:Math.round(r.score?.recovery_score||0),
         hrv:Math.round(r.score?.hrv_rmssd_milli||0), rhr:Math.round(r.score?.resting_heart_rate||0)};
+      // Only WHOOP 4.0+ reports these — leave unset rather than write a
+      // fake 0 that would corrupt the rolling-average health check below.
+      if(r.score?.spo2_percentage != null) entry.spo2 = +r.score.spo2_percentage.toFixed(1);
+      if(r.score?.skin_temp_celsius != null) entry.skinTemp = +r.score.skin_temp_celsius.toFixed(1);
       const ex = D.whoopRecovery.find(x=>x.date===date);
       if(ex) Object.assign(ex, entry); else D.whoopRecovery.push(entry);
     });
@@ -15034,9 +15053,51 @@ async function whoopDirectFetchSleep(token){
       if(!_logEntry){ _logEntry={date:date}; D.logs.push(_logEntry); }
       _logEntry.sleep=sleepHrs;
       if(s.score?.sleep_performance_percentage) _logEntry.sleepScore=s.score.sleep_performance_percentage;
+      // Respiratory rate lives on Sleep, not Recovery, but conceptually it's
+      // one of the same "daily vitals" — merge it into the same whoopRecovery
+      // entry for the date so the health check below has one place to read.
+      if(s.score?.respiratory_rate != null){
+        if(!D.whoopRecovery) D.whoopRecovery = [];
+        var _wr = D.whoopRecovery.find(function(x){return x.date===date;});
+        if(!_wr){ _wr = {date:date}; D.whoopRecovery.push(_wr); D.whoopRecovery.sort(function(a,b){return a.date.localeCompare(b.date);}); }
+        _wr.respRate = +s.score.respiratory_rate.toFixed(1);
+      }
     });
     save();
   }catch(e){ console.error('[WHOOP DIRECT] Sleep error:', e); }
+}
+
+// Approximates WHOOP's own "Health Monitor — X/Y within range" using the
+// athlete's own logged history as the baseline, the same way WHOOP compares
+// today against your personal rolling average rather than a population norm.
+// RHR/respiratory-rate are "lower is better" (in-range = at or below average);
+// HRV is "higher is better" (in-range = at or above average) — matches how
+// WHOOP itself colors these (green up-arrow on HRV gains, RHR drops).
+var HEALTH_CHECK_METRICS = [
+  {key:'rhr',      label:'Resting HR',      lowerIsBetter:true,  band:0.08},
+  {key:'hrv',      label:'HRV',             lowerIsBetter:false, band:0.12},
+  {key:'respRate', label:'Respiratory Rate',lowerIsBetter:true,  band:0.08},
+  {key:'spo2',     label:'SpO2',            lowerIsBetter:false, band:0.03},
+  {key:'skinTemp', label:'Skin Temp',       lowerIsBetter:true,  band:0.02},
+];
+function computeHealthCheck(){
+  var hist = (D.whoopRecovery||[]).slice();
+  var today = td();
+  var todayEntry = hist.find(function(x){return x.date===today;});
+  if(!todayEntry) return null;
+  var baseline = hist.filter(function(x){return x.date!==today;}).slice(-30);
+  var results = [];
+  HEALTH_CHECK_METRICS.forEach(function(m){
+    var todayVal = todayEntry[m.key];
+    if(todayVal == null) return; // metric not available on this device/plan
+    var samples = baseline.map(function(x){return x[m.key];}).filter(function(v){return v!=null;});
+    if(samples.length < 3) return; // not enough history to call a baseline yet
+    var avg = samples.reduce(function(a,b){return a+b;},0) / samples.length;
+    var diffPct = (todayVal - avg) / avg;
+    var inRange = m.lowerIsBetter ? diffPct <= m.band : diffPct >= -m.band;
+    results.push({key:m.key, label:m.label, value:todayVal, avg:+avg.toFixed(1), diffPct:diffPct, inRange:inRange});
+  });
+  return results;
 }
 
 async function whoopDirectFetchWorkouts(token){
