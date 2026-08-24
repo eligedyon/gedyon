@@ -14942,9 +14942,38 @@ async function whoopDirectFetchAll(){
   await Promise.all([
     whoopDirectFetchRecovery(token),
     whoopDirectFetchSleep(token),
-    whoopDirectFetchWorkouts(token)
+    whoopDirectFetchWorkouts(token),
+    whoopDirectFetchCycle(token)
   ]);
   try{renderDash();}catch(e){}
+}
+
+// Cycle = WHOOP's daily strain (the number on the home screen, separate from
+// Recovery/Sleep/Workout). The overtraining card (renderOvertrainingCard)
+// already reads D.whoopData.strain to give real-time "back off today" /
+// "well balanced" guidance -- it was only ever getting that value from the
+// optional legacy server, so on direct-OAuth-only setups strain silently
+// stayed null and the card ran without 25 points of its own scoring logic.
+async function whoopDirectFetchCycle(token){
+  if(!token) token = await whoopGetDirectToken();
+  if(!token) return;
+  try{
+    const resp = await fetch(WHOOP_API+'/developer/v2/cycle?limit=1', {
+      headers:{'Authorization':'Bearer '+token}
+    });
+    if(!resp.ok) return;
+    const data = await resp.json();
+    const cyc = (data.records||[])[0];
+    if(!cyc || !cyc.score) return;
+    if(!D.whoopData) D.whoopData = {};
+    D.whoopData.strain = cyc.score.strain != null ? +cyc.score.strain.toFixed(1) : D.whoopData.strain;
+    D.whoopData.dayCalories = cyc.score.kilojoule ? Math.round(cyc.score.kilojoule/4.184) : D.whoopData.dayCalories;
+    D.whoopData.dayAvgHR = cyc.score.average_heart_rate || D.whoopData.dayAvgHR;
+    save();
+    const el = document.getElementById('whoopStrain');
+    if(el && D.whoopData.strain != null) el.textContent = D.whoopData.strain;
+    try{ renderOvertrainingCard(); }catch(e){}
+  }catch(e){ console.error('[WHOOP DIRECT] Cycle error:', e); }
 }
 
 async function whoopDirectFetchRecovery(token){
