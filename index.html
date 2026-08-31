@@ -4781,6 +4781,12 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
     <div id="koda-history-list"></div>
 
     <!-- Quick chips -->
+    <!-- COACH REVIEW QUEUE banner: pending koda_changesets awaiting approval -->
+    <div id="koda-review-banner" style="display:none;position:relative;z-index:5;margin:0 12px 4px;padding:9px 12px;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.35);border-radius:10px;cursor:pointer;align-items:center;gap:10px;" onclick="openKodaReviewModal()">
+      <span style="font-family:'SF Mono',Consolas,monospace;font-size:10px;letter-spacing:2px;color:var(--gold);">COACH REVIEW</span>
+      <span id="koda-review-banner-text" style="font-size:12px;color:#ddd;flex:1;">—</span>
+      <span style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--gold);">REVIEW ›</span>
+    </div>
     <div id="koda-chips" style="position:relative;z-index:5;padding:6px 12px 4px;display:none;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;border-top:1px solid rgba(212,175,55,0.06);">
       <div style="display:flex;gap:6px;">
         <button class="koda-chip" onclick="kodaQuick('What should my current pace zones be?')">PACE ZONES</button>
@@ -5715,6 +5721,7 @@ function goPage(id,btn){
   else if(id==='atlas')initAtlasPage();
   else if(id==='koda'){kodaInit();const ch=document.getElementById('koda-chips');if(ch)ch.style.display='flex';loadKodaCharacter();}
   const ch2=document.getElementById('koda-chips');if(ch2&&id!=='koda')ch2.style.display='none';
+  const rb=document.getElementById('koda-review-banner');if(rb)rb.style.display=(id==='koda'&&window._kodaChangesets&&window._kodaChangesets.some(c=>c.status==='pending'))?'flex':'none';
   setTimeout(initCollapsibles,150);
 }
 function showMore(tab){
@@ -22458,6 +22465,23 @@ function buildKodaContext() {
       }
     }
   } catch(e) {}
+  // COACH REVIEW QUEUE: changeset decisions — approved changes are mandates,
+  // pending ones must NOT be acted on (approval-gated by design)
+  try {
+    var _cs = window._kodaChangesets || [];
+    var _pend = [], _dec = [];
+    _cs.forEach(function(c){
+      (c.changeset || []).forEach(function(it){
+        if (c.status === 'pending') _pend.push(it.what);
+        else if (it.decision) _dec.push('[' + it.decision.toUpperCase() + ' ' + (c.decided_at||'').slice(0,10) + '] ' + it.what);
+      });
+    });
+    if (_pend.length || _dec.length) {
+      lines.push('\n=== COACH REVIEW QUEUE (changeset approvals) ===');
+      if (_dec.length) lines.push('DECIDED (apply APPROVED items to prescriptions; drop REJECTED ones):\n  ' + _dec.slice(0,8).join('\n  '));
+      if (_pend.length) lines.push('PENDING APPROVAL (do NOT apply yet — you may remind him to review):\n  ' + _pend.slice(0,8).join('\n  '));
+    }
+  } catch(e) {}
   return lines.join('\n');
 }
 
@@ -24438,6 +24462,9 @@ async function kodaInit() {
       if (!lc.error && lc.data) window._kodaLearnCtx = lc.data;
     }
   } catch(e) { console.warn('[KodaLearn] context:', e && e.message); }
+  // COACH REVIEW: pull the changeset queue so pending proposals surface as a
+  // banner and decisions (approved/rejected) reach KODA's context below
+  try { await kodaFetchChangesets(); } catch(e) {}
   const ctx = buildKodaContext();
 
   // Detect recent race — if athlete just raced, open with that
@@ -24544,6 +24571,92 @@ async function kodaFetchMorningMessage() {
   return data.message;
 }
 
+// ── COACH REVIEW QUEUE (koda_changesets approval UI) ─────────────────────
+// The weekly agent parks consequential proposals (VDOT moves, phase
+// transitions) in koda_changesets with status 'pending'. Nothing is ever
+// auto-applied: Eli approves/rejects here, and decisions flow back into
+// KODA's context so the live coach acts on approved changes only.
+async function kodaFetchChangesets() {
+  if (typeof sbClient === 'undefined' || !sbClient || typeof currentUser === 'undefined' || !currentUser) return;
+  try {
+    const { data, error } = await sbClient.from('koda_changesets')
+      .select('id, week_of, changeset, report, status, decided_at')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false }).limit(12);
+    if (error) { console.warn('[KodaReview] fetch:', error.message); return; }
+    window._kodaChangesets = data || [];
+    kodaUpdateReviewBanner();
+  } catch(e) { console.warn('[KodaReview]', e && e.message); }
+}
+
+function kodaUpdateReviewBanner() {
+  const banner = document.getElementById('koda-review-banner');
+  if (!banner) return;
+  const pending = (window._kodaChangesets || []).filter(c => c.status === 'pending');
+  const nItems = pending.reduce((n, c) => n + ((c.changeset || []).length), 0);
+  const onKodaTab = document.getElementById('koda-chips') && document.getElementById('koda-chips').style.display !== 'none';
+  if (!pending.length || !nItems) { banner.style.display = 'none'; return; }
+  const txt = document.getElementById('koda-review-banner-text');
+  if (txt) txt.textContent = nItems + ' proposed change' + (nItems === 1 ? '' : 's') + ' awaiting your call';
+  banner.style.display = onKodaTab ? 'flex' : 'none';
+}
+
+function openKodaReviewModal() {
+  const pending = (window._kodaChangesets || []).filter(c => c.status === 'pending');
+  const body = document.getElementById('kodaReviewBody');
+  if (!body) return;
+  if (!pending.length) { body.innerHTML = '<div style="color:var(--grey);font-size:13px;">Nothing pending — the weekly agent will file new proposals here.</div>'; }
+  else {
+    body.innerHTML = pending.map(cs => {
+      const items = (cs.changeset || []).map((it, i) =>
+        '<label style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;cursor:pointer;">'
+        + '<input type="checkbox" checked data-cs="' + cs.id + '" data-item="' + i + '" style="margin-top:3px;accent-color:var(--gold);">'
+        + '<div style="flex:1;min-width:0;">'
+        + '<div style="font-size:13px;color:#eee;font-weight:600;">' + kodaEsc(it.what || '') + '</div>'
+        + '<div style="font-size:12px;color:#999;margin-top:3px;">' + kodaEsc(it.why || '') + '</div>'
+        + '<div style="font-family:\'SF Mono\',Consolas,monospace;font-size:10px;color:#666;margin-top:5px;letter-spacing:.5px;">'
+        + 'confidence: ' + kodaEsc(it.confidence || '—') + ' · risk: ' + kodaEsc(it.risk || '—') + ' · reversibility: ' + kodaEsc(it.reversibility || '—') + '</div>'
+        + '</div></label>').join('');
+      return '<div data-csblock="' + cs.id + '" style="margin-bottom:18px;">'
+        + '<div style="font-family:\'SF Mono\',Consolas,monospace;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:6px;">WEEK OF ' + kodaEsc(cs.week_of || '') + '</div>'
+        + (cs.report ? '<div style="font-size:12px;color:#aaa;line-height:1.5;margin-bottom:10px;white-space:pre-wrap;">' + kodaEsc(cs.report) + '</div>' : '')
+        + '<div style="display:flex;flex-direction:column;gap:8px;">' + items + '</div>'
+        + '<div style="display:flex;gap:8px;margin-top:10px;">'
+        + '<button onclick="kodaDecideChangeset(' + cs.id + ',true)" style="flex:1;padding:10px;background:rgba(0,230,118,0.12);border:1px solid rgba(0,230,118,0.4);border-radius:10px;color:#00E676;font-family:\'SF Mono\',Consolas,monospace;font-size:11px;letter-spacing:1px;cursor:pointer;">APPROVE CHECKED</button>'
+        + '<button onclick="kodaDecideChangeset(' + cs.id + ',false)" style="flex:1;padding:10px;background:rgba(255,61,87,0.10);border:1px solid rgba(255,61,87,0.35);border-radius:10px;color:#FF3D57;font-family:\'SF Mono\',Consolas,monospace;font-size:11px;letter-spacing:1px;cursor:pointer;">REJECT ALL</button>'
+        + '</div></div>';
+    }).join('');
+  }
+  document.getElementById('kodaReviewModal').style.display = 'block';
+}
+
+function closeKodaReviewModal() { document.getElementById('kodaReviewModal').style.display = 'none'; }
+
+function kodaEsc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// rejectAll=false → status from checkboxes: all checked = approved,
+// none = rejected, mix = partial. Each item gets a durable `decision` field.
+async function kodaDecideChangeset(id, approve) {
+  const cs = (window._kodaChangesets || []).find(c => c.id === id);
+  if (!cs || !sbClient) return;
+  const boxes = Array.from(document.querySelectorAll('input[data-cs="' + id + '"]'));
+  const decided = (cs.changeset || []).map((it, i) => {
+    const box = boxes.find(b => +b.dataset.item === i);
+    const ok = approve && (!box || box.checked);
+    return Object.assign({}, it, { decision: ok ? 'approved' : 'rejected' });
+  });
+  const nOk = decided.filter(it => it.decision === 'approved').length;
+  const status = nOk === 0 ? 'rejected' : (nOk === decided.length ? 'approved' : 'partial');
+  const { error } = await sbClient.from('koda_changesets')
+    .update({ status, decided_at: new Date().toISOString(), changeset: decided })
+    .eq('id', id);
+  if (error) { console.warn('[KodaReview] decide:', error.message); return; }
+  cs.status = status; cs.changeset = decided; cs.decided_at = new Date().toISOString();
+  const block = document.querySelector('[data-csblock="' + id + '"]');
+  if (block) block.innerHTML = '<div style="padding:12px;text-align:center;font-family:\'SF Mono\',Consolas,monospace;font-size:11px;letter-spacing:2px;color:' + (status === 'rejected' ? '#FF3D57' : '#00E676') + ';">' + status.toUpperCase() + ' — KODA WILL ' + (nOk ? 'APPLY THE APPROVED CHANGES' : 'HOLD COURSE') + '</div>';
+  kodaUpdateReviewBanner();
+}
+
 function kodaQuick(prompt) {
   const chips = document.getElementById('koda-chips');
   if (chips) chips.style.display = 'none';
@@ -24582,6 +24695,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
+
+  <!-- COACH REVIEW MODAL (koda_changesets approval) -->
+  <div id="kodaReviewModal" style="display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);overflow-y:auto;padding:20px;" onclick="if(event.target===this)closeKodaReviewModal()">
+    <div style="max-width:480px;margin:20px auto;background:#0D0D14;border:1px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden;max-height:90vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+        <div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--gold);letter-spacing:2px;">COACH REVIEW QUEUE</div>
+        <button onclick="closeKodaReviewModal()" style="background:none;border:none;color:var(--grey);font-size:18px;cursor:pointer;padding:0 4px;line-height:1;">&times;</button>
+      </div>
+      <div id="kodaReviewBody" style="padding:16px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;"></div>
+    </div>
+  </div>
 
   <!-- DAY DETAIL MODAL -->
   <div id="dayModal" style="display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);overflow-y:auto;padding:20px;" onclick="if(event.target===this)closeDayModal()">
