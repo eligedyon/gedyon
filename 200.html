@@ -7144,6 +7144,9 @@ function _applyHillProgression(steps, date){
   }catch(e){ return steps; }
 }
 function getDayPlan(date){
+  return _applyReadinessGate(_getDayPlanUngated(date), date);
+}
+function _getDayPlanUngated(date){
   var raw = _getDayPlanRaw(date);
   raw.steps = _applyHillProgression(raw.steps, date);
   try{
@@ -7176,6 +7179,37 @@ function getDayPlan(date){
     sc.steps = '⚡ RAMP-ADJUSTED: run ' + sc.mi + 'mi today — the full-plan version below (' + raw.mi + 'mi) is what this day becomes once your base is built. Scale its paces/structure down to today\'s distance and ignore fueling advice meant for the long version. ' + (raw.steps||'');
     return sc;
   }catch(e){ return raw; }
+}
+
+// READINESS GATE: TODAY's quality prescription bends to the synced WHOOP
+// recovery so the athlete never has to argue with the plan on a bad day.
+// Yellow (<67%): one quality session only — a double's PM converts to easy,
+// and the quality segment gets an HR cap (hold effort, not pace).
+// Red (<34%): quality is cancelled outright; easy aerobic miles instead.
+// Green, no data, or past/future dates: untouched — previews stay pure plan.
+function _applyReadinessGate(plan, date){
+  try{
+    if(!plan || (typeof td==='function' && date !== td())) return plan;
+    var rec = (D.whoopData && +D.whoopData.recovery) || 0;
+    if(!rec) return plan;
+    var isQuality = /tempo|threshold|interval|vo2|workout|hill|race/i.test((plan.type||'') + ' ' + (plan.name||''));
+    if(!isQuality || rec >= 67) return plan;
+    var observedMax = (D.workouts||[]).reduce(function(m,w){ return Math.max(m, w.maxHR||0); }, 0);
+    var maxHR = observedMax > 140 ? observedMax : 200;
+    var cap = Math.round(maxHR * 0.82);
+    var p = Object.assign({}, plan);
+    if(rec < 34){
+      p.readinessGate = 'red';
+      p.type = 'easy';
+      p.name = 'READINESS OVERRIDE — EASY (' + rec + '% recovery)';
+      p.steps = '🔴 RED RECOVERY (' + rec + '%): quality is cancelled today — pushing through a red is how a bad day becomes a bad month. Run ' + (p.mi||3) + 'mi easy, HR under ' + Math.round(maxHR*0.72) + ', or take a full rest day. The planned session (' + (plan.name||'workout') + ') moves to your next green day.';
+      p.sets = 'Easy aerobic only · no strides, no surges';
+    } else {
+      p.readinessGate = 'yellow';
+      p.steps = '🟡 YELLOW RECOVERY (' + rec + '%): ONE quality session only today — if this day is an AM+PM double, run the PM as 30min easy (Z1-Z2) instead. Cap the quality segment at HR ~' + cap + ' and hold the effort, not the pace; if HR won\'t settle within 8min, convert the rest to easy and take the session on the next green day. ' + (p.steps||'');
+    }
+    return p;
+  }catch(e){ return plan; }
 }
 
 // ═══ WEIGHT ═══
@@ -10178,7 +10212,9 @@ function renderPaceZones(){
   var foot = document.getElementById('paceZonesFoot');
   if(foot){
     var maxLabel = observedMax > 140 ? ('Max HR: '+observedMax+' bpm (observed)') : 'Max HR: 200 bpm (estimated — no measured max logged yet)';
-    var srcLabel = paces && paces._source === 'vdot' ? 'Paces from VDOT '+paces.vdot+' ('+paces._sourceEv+' PR)' : 'Paces from plan estimate — log a race for real VDOT paces';
+    var srcLabel = paces && paces._source === 'effective'
+      ? 'Paces from CURRENT effective VDOT '+paces.vdot+' ('+paces._sourceEv+')'+(paces._prVdot?' — PR fitness is VDOT '+paces._prVdot+', paces climb back as pace-at-HR improves':'')
+      : paces && paces._source === 'vdot' ? 'Paces from VDOT '+paces.vdot+' ('+paces._sourceEv+' PR)' : 'Paces from plan estimate — log a race for real VDOT paces';
     foot.textContent = maxLabel + ' · ' + srcLabel + ' · Talk test is the primary instrument — HR is a guardrail, not the target.';
   }
 }
@@ -11595,6 +11631,46 @@ function isPR(ev,time){
   if(!prs[ev]) return true;
   return timeToSec(time)<prs[ev].sec;
 }
+// ═══ EFFECTIVE VDOT — what the athlete can run TODAY ═══════════════
+// PR-derived VDOT encodes a fitter, lighter athlete; prescriptions built
+// on it demand paces current-you can't hold, which turns every quality
+// day into a negotiation. This estimates current capability from the
+// last 21 days of synced runs (pace at heart rate → implied VDOT via
+// Daniels + Swain %HRmax→%VO2max), so prescribed paces track the athlete
+// who shows up, and rise on their own as pace-at-HR improves and weight
+// comes off. Display/prescription layer only — the durable Supabase
+// anchor still moves through the coach-review changeset queue.
+function getEffectiveVdot(){
+  try{
+    // True max HR: a setting if provided, else an observed max only when it
+    // plausibly IS a max (>=180 — an easy-run peak of 150 is not a max and
+    // would wreck the %VO2 conversion), else an age-appropriate 190.
+    var observedMax = (D.workouts||[]).reduce(function(m,w){ return Math.max(m, w.maxHR||0); }, 0);
+    var maxHR = (D.settings && +D.settings.maxHR) || (observedMax >= 180 ? observedMax : 190);
+    var now = new Date();
+    var implied = [];
+    (D.workouts||[]).forEach(function(w){
+      var hr = w.avgHR || w.hr || 0;
+      var pace = +w.pace || 0;                       // min/mi
+      var age = (now - new Date(w.date+'T12:00:00'))/86400000;
+      if(age < 0 || age > 21) return;
+      if(!(w.dist >= 2) || hr < 105 || hr > 195) return;
+      if(pace < 5 || pace > 13) return;              // watch-mangled treadmill paces land outside this
+      var pctVO2 = (hr/maxHR - 0.26) / 0.74;         // Swain conversion
+      if(pctVO2 < 0.65 || pctVO2 > 1.0) return;      // below ~65% the conversion is too noisy to trust
+      var v = 1609.34 / pace;                        // m/min
+      var vo2 = -4.60 + 0.182258*v + 0.000104*v*v;
+      var iv = vo2 / pctVO2;
+      if(iv > 30 && iv < 85) implied.push(iv);
+    });
+    if(implied.length < 2) return null;              // one run is noise, not fitness
+    implied.sort(function(a,b){return a-b;});
+    // conservative median: lower-middle on even counts — under-prescribing
+    // pace by a hair is recoverable, over-prescribing costs a session
+    var med = implied[Math.ceil(implied.length/2) - 1];
+    return { vdot: Math.round(med*10)/10, n: implied.length };
+  }catch(e){ return null; }
+}
 function getTrainingPaces(prs){
   var paces={};
 
@@ -11630,6 +11706,26 @@ function getTrainingPaces(prs){
     }
   }
 
+  // Blend in current capability: when recent pace-at-HR says the athlete
+  // is fitter on paper than in practice, prescribe from the effective
+  // number (never punish a good patch — the PR VDOT stays the ceiling
+  // until a race raises it). Recent runs beat the plan fallback too.
+  var eff = getEffectiveVdot();
+  if(eff){
+    if(vdot && eff.vdot < vdot - 1){
+      paces._prVdot = Math.round(vdot*10)/10;
+      // clamp: recent-run noise may not downgrade more than ~22% below PR
+      // fitness — beyond that the data is suspect, not the athlete
+      vdot = Math.max(eff.vdot, Math.round(vdot*0.78*10)/10);
+      sourceEv = 'recent runs (' + eff.n + ')';
+      paces._source = 'effective';
+    } else if(!vdot){
+      vdot = eff.vdot; sourceEv = 'recent runs (' + eff.n + ')';
+      paces._source = 'effective';
+    }
+    paces._effVdot = eff.vdot;
+  }
+
   if(vdot){
     // Jack Daniels %VO2max zones:
     // Easy 65-79%, Marathon 79-84%, Threshold 88-92%, VO2max 95-100%, Reps 105-110%
@@ -11640,7 +11736,7 @@ function getTrainingPaces(prs){
     paces.vo2max    = vdotToPace(vdot, 1.00);   // 100% — VO2max intervals
     paces.race      = vdotToPace(vdot, 0.98);   // ~98% — current mile race pace
     paces.interval  = vdotToPace(vdot, 1.05);   // 105% — speed reps
-    paces._source   = 'vdot';
+    paces._source   = paces._source || 'vdot';
     paces._sourceEv = sourceEv;
     return paces;
   }
