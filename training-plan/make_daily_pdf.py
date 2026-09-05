@@ -69,6 +69,17 @@ def POWER(ph):
     if ph <= 5:
         return 'bounding 3x30m · single-leg hops 2x10/side · squat jumps 3x5 — explosive, never grinding'
     return 'pogo hops 2x20 · 2x30m bounding — touch it, keep it, spend nothing'
+def LIFT_A(ph):
+    if ph >= 5:
+        return 'MAINTENANCE: goblet squat 2x8 + RDL 2x8 — same weights as P4, NEVER add load in race season'
+    return ('goblet squat 3x8-10 (start 25-35lb DB) · Romanian deadlift 3x8-10 (start 40-50lb total) · step-ups 3x8/side (bodyweight, then +15lb) '
+            '· stop 2-3 reps short of failure · 90s+ rest between sets · PROGRESS: reps first (3x8 to 3x10), then +5lb and back to 3x8 · grinding rep = drop 10%%'
+            + (' · DELOAD WEEK: 1 set of each at half weight' if False else ''))
+def LIFT_B(ph):
+    if ph >= 5:
+        return 'MAINTENANCE: single-leg RDL 2x8/side + split squat 2x8/side — hold weights, crisp reps only'
+    return ('single-leg RDL 3x8/side (bodyweight, then 15-20lb) · split squat 3x8/side (bodyweight, then +20lb) · calf raises 3x15/side slow '
+            '· same progression rule: reps first, then +5lb · always AFTER the PM run, never before a quality day')
 DUR = 'single-leg calf raises 3x15/side (slow down, drive up) · monster walks or hip airplanes 2x10 — 5min, protects shins/achilles/hips'
 def SUPPS(kind):
     if kind == 'quality':
@@ -123,6 +134,7 @@ def day_rows(w):
         ('AM', '%dmi @ %s — talk test: full sentences' % (ez, T['easy'])),
         ('DRILLS', DRILLS), ('STRIDES', STRIDES(6, T)),
         ('PM', '%dmi shake-out @ %s' % (ezpm, T['cd'])),
+        ('LIFT', ('DELOAD: 1 set of each at half weight — ' if d else '') + LIFT_A(ph)),
         ('CORE', CORE_A(ph)),
         ('SUPPS', SUPPS('easy'))))
     if race and w >= 30:
@@ -185,6 +197,7 @@ def day_rows(w):
         ('AM', '%dmi @ %s — conversational' % (ez, T['easy'])),
         ('DRILLS', DRILLS), ('STRIDES', STRIDES(6, T)),
         ('PM', '%dmi @ %s' % (ezpm, T['cd'])),
+        ('LIFT', ('DELOAD: 1 set of each at half weight — ' if d else '') + LIFT_B(ph)),
         ('CORE', CORE_B(ph)),
         ('SUPPS', SUPPS('easy'))))
     if d:
@@ -262,7 +275,7 @@ story.append(Paragraph('<b>THE COACHING DNA</b> — every element traces to a sy
 story.append(Paragraph('Companion to the 45-Week Build. Every day written out. Paces shown assume each tier gate is PASSED at its earliest week — '
                        'if a gate isn\'t passed yet, keep using your current tier\'s paces for every session (the structure stays identical). '
                        'WHOOP gates every day: yellow = one quality max + HR caps, red = easy/rest and the session moves. '
-                       'Updated Fri Sep 4, 2026 — Thursday\'s tempo is BANKED; Fri-Sun below, Week 1 starts Mon Sep 7. Strides now carry exact paces (min/mi + treadmill mph) per tier; every WU/CD line has numbers. SUPPS lines use YOUR cabinet. STRENGTH SYSTEM: core Mon/Thu (A/B circuits, progress by phase) · POWER after Wed hills/speed (plyos at max intent, full rest — this is where lean speed comes from) · DURABILITY 5min after Tue/Fri quality (calves/hips — the anti-breakdown work). All bodyweight: powerful and cut, never bulky. The rule: power reps are always FRESH and explosive; core is done to quality, not to burnout.', SUB))
+                       'Updated Fri Sep 4, 2026 — Thursday\'s tempo is BANKED; Fri-Sun below, Week 1 starts Mon Sep 7. Strides now carry exact paces (min/mi + treadmill mph) per tier; every WU/CD line has numbers. SUPPS lines use YOUR cabinet. STRENGTH SYSTEM: LIFT A/B Mon/Thu after the PM run (loads + progression printed on each day; reps first, then +5lb; deloads halve it; race season maintains) · core Mon/Thu (A/B circuits, progress by phase) · POWER after Wed hills/speed (plyos at max intent, full rest — this is where lean speed comes from) · DURABILITY 5min after Tue/Fri quality (calves/hips — the anti-breakdown work). All bodyweight: powerful and cut, never bulky. The rule: power reps are always FRESH and explosive; core is done to quality, not to burnout.', SUB))
 
 
 # ── Execution guide: how to run every piece ────────────────────────
