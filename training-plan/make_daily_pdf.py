@@ -30,21 +30,21 @@ start = date(2026, 9, 7)
 
 # ── tiers: paces assuming each gate is passed at the earliest week ──
 TIERS = {
- 'T1': dict(easy='9:30-10:15', tempo='7:35-7:50', k='7:38-7:53', test='7:25-7:30', hill='8-10',
+ 'T1': dict(easy='9:30-10:15', tempo='7:35-7:50', k='7:38-7:53', test='7:25-7:30', hill='8-10', str='6:30-6:50/mi (8.8-9.2 mph)', p200='48-52s', p300='—',
             wu='5min @ 10:45 shuffle, 5min @ 10:00, last 3-4min @ 9:30', cd='10:30-11:00', flt='10:15+'),
- 'T2': dict(easy='9:15-10:00', tempo='7:20-7:35', k='7:25-7:40', test='7:05-7:20', hill='10-12',
+ 'T2': dict(easy='9:15-10:00', tempo='7:20-7:35', k='7:25-7:40', test='7:05-7:20', hill='10-12', str='6:15-6:35/mi (9.1-9.6 mph)', p200='46-50s', p300='—',
             wu='5min @ 10:30 shuffle, 5min @ 9:45, last 3-4min @ 9:15', cd='10:15-10:45', flt='10:00+'),
- 'T3': dict(easy='9:00-9:45',  tempo='7:05-7:20', k='7:10-7:25', test='6:55-7:10', hill='12-14',
+ 'T3': dict(easy='9:00-9:45',  tempo='7:05-7:20', k='7:10-7:25', test='6:55-7:10', hill='12-14', str='6:00-6:20/mi (9.5-10.0 mph)', p200='44-47s', p300='68-72s',
             wu='5min @ 10:15 shuffle, 5min @ 9:30, last 3-4min @ 9:00', cd='10:00-10:30', flt='9:45+'),
- 'T4': dict(easy='8:45-9:30',  tempo='6:55-7:10', k='6:58-7:12', test='6:45-7:00', hill='12-15',
+ 'T4': dict(easy='8:45-9:30',  tempo='6:55-7:10', k='6:58-7:12', test='6:45-7:00', hill='12-15', str='5:45-6:05/mi (9.9-10.4 mph)', p200='42-45s', p300='65-69s',
             wu='5min @ 10:00 shuffle, 5min @ 9:15, last 3-4min @ 8:45', cd='9:45-10:15', flt='9:30+'),
- 'T5': dict(easy='8:30-9:15',  tempo='6:45-7:00', k='6:48-7:02', test='6:40-6:55', hill='10-12',
+ 'T5': dict(easy='8:30-9:15',  tempo='6:45-7:00', k='6:48-7:02', test='6:40-6:55', hill='10-12', str='5:35-5:50/mi (10.3-10.7 mph)', p200='40-43s', p300='62-66s',
             wu='5min @ 9:45 shuffle, 5min @ 9:00, last 3-4min @ 8:30', cd='9:30-10:00', flt='9:15+'),
- 'T6': dict(easy='8:30-9:15',  tempo='6:40-6:55', k='6:43-6:57', test='race results', hill='8-10',
+ 'T6': dict(easy='8:30-9:15',  tempo='6:40-6:55', k='6:43-6:57', test='race results', hill='8-10', str='5:30-5:45/mi (10.4-10.9 mph)', p200='38-42s', p300='60-64s',
             wu='5min @ 9:45 shuffle, 5min @ 9:00, last 3-4min @ 8:30', cd='9:30-10:00', flt='9:15+'),
 }
-def STRIDES(n):
-    return '%dx20s — build to mile effort, relaxed · walk 60-90s between' % n
+def STRIDES(n, T):
+    return ('%dx20s — jog first 5s, reach %s by 10s and hold, relaxed and tall · walk 60-90s between each' % (n, T['str']))
 SETTLE = '2min walk — never jump into rep 1'
 SUPP_AM = 'creatine 5g + omega-3 + D3/K2 with breakfast'
 SUPP_PM = 'magnesium malate before bed'
@@ -121,14 +121,14 @@ def day_rows(w):
         rows.append((dayname, sess, detail))
     add('Mon', 'EASY DOUBLE + CORE', L(
         ('AM', '%dmi @ %s — talk test: full sentences' % (ez, T['easy'])),
-        ('DRILLS', DRILLS), ('STRIDES', STRIDES(6)),
+        ('DRILLS', DRILLS), ('STRIDES', STRIDES(6, T)),
         ('PM', '%dmi shake-out @ %s' % (ezpm, T['cd'])),
         ('CORE', CORE_A(ph)),
         ('SUPPS', SUPPS('easy'))))
     if race and w >= 30:
         add('Tue', 'SHARP + LIGHT', L(
             ('WU', '2mi progressive — %s' % T['wu']),
-            ('STRIDES', STRIDES(4)), ('SETTLE', SETTLE),
+            ('STRIDES', STRIDES(4, T)), ('SETTLE', SETTLE),
             ('MAIN', '4-6x400m @ race pace'),
             ('REST', '2-3min full walk/stand'),
             ('CD', '1mi @ %s' % T['cd']),
@@ -144,7 +144,7 @@ def day_rows(w):
     else:
         add('Tue', 'THRESHOLD 1000s', L(
             ('WU', '2mi progressive — %s' % T['wu']),
-            ('STRIDES', STRIDES(4)), ('SETTLE', SETTLE),
+            ('STRIDES', STRIDES(4, T)), ('SETTLE', SETTLE),
             ('MAIN', '%dx1000m @ %s · HR 148-158, NEVER above 160 (Norwegian control: lactate ~2.5-3.5 — if you could not do 3 more reps, you went too fast)' % (n, T['k'])),
             ('REST', '%s STANDING — timed, no jogging' % ('90s' if d else '60-75s')),
             ('CD', '1.5mi slow @ %s' % T['cd']),
@@ -152,21 +152,21 @@ def day_rows(w):
             ('DURABILITY', DUR),
             ('SUPPS', SUPPS('quality'))))
     if race and w >= 30:
-        wed = ('STRIDES ONLY', L(('RUN', '%dmi easy @ %s' % (max(2, ez-1), T['easy'])), ('STRIDES', STRIDES(6)), ('RULE', 'race week — nothing that costs anything'),
+        wed = ('STRIDES ONLY', L(('RUN', '%dmi easy @ %s' % (max(2, ez-1), T['easy'])), ('STRIDES', STRIDES(6, T)), ('RULE', 'race week — nothing that costs anything'),
             ('SUPPS', SUPPS('easy'))))
     elif ph >= 5:
         wed = ('SPEED 300s', L(
             ('WU', '1.5mi progressive — %s' % T['wu']),
-            ('STRIDES', STRIDES(4)), ('SETTLE', SETTLE),
-            ('MAIN', '8x300m @ 1500-race effort — form first'),
+            ('STRIDES', STRIDES(4, T)), ('SETTLE', SETTLE),
+            ('MAIN', '8x300m @ %s per rep — 1500-race effort, form first' % T['p300']),
             ('REST', '3min full walk/stand'),
             ('CD', '1.5mi @ %s' % T['cd']),
             ('SUPPS', SUPPS('quality'))))
     elif ph >= 3 and wib % 2 == 0:
         wed = ('200s + EASY', L(
             ('WU', '1mi building 10:00 to %s' % T['easy'].split('-')[0]),
-            ('STRIDES', STRIDES(4)), ('SETTLE', SETTLE),
-            ('MAIN', '8-10x200m fast-relaxed — mile effort, never straining'),
+            ('STRIDES', STRIDES(4, T)), ('SETTLE', SETTLE),
+            ('MAIN', '8-10x200m @ %s per rep (%s pace) — fast-relaxed, never straining' % (T['p200'], T['str'])),
             ('REST', 'WALK back the full 200m'),
             ('THEN', '%dmi easy @ %s' % (max(2, ez-1), T['easy'])),
             ('POWER', POWER(ph)),
@@ -183,14 +183,14 @@ def day_rows(w):
     add('Wed', wed[0], wed[1])
     add('Thu', 'EASY DOUBLE + CORE', L(
         ('AM', '%dmi @ %s — conversational' % (ez, T['easy'])),
-        ('DRILLS', DRILLS), ('STRIDES', STRIDES(6)),
+        ('DRILLS', DRILLS), ('STRIDES', STRIDES(6, T)),
         ('PM', '%dmi @ %s' % (ezpm, T['cd'])),
         ('CORE', CORE_B(ph)),
         ('SUPPS', SUPPS('easy'))))
     if d:
         add('Fri', 'TEMPO TEST (fresh legs)', L(
             ('WU', '2mi progressive — %s' % T['wu']),
-            ('STRIDES', STRIDES(4)), ('SETTLE', SETTLE),
+            ('STRIDES', STRIDES(4, T)), ('SETTLE', SETTLE),
             ('TEST', '20min @ %s · HR cap 162 — hold effort, pace is the readout' % T['test']),
             ('CD', '1mi slow @ %s — 10min max' % T['cd']),
             ('GATE', 'PASS = next tier unlocks · yellow: test Sat · red: skip, retest next block'),
@@ -198,13 +198,13 @@ def day_rows(w):
     elif race:
         add('Fri', 'PRE-RACE SHAKEOUT', L(
             ('RUN', '20min easy @ %s' % T['easy']),
-            ('STRIDES', STRIDES(4)),
+            ('STRIDES', STRIDES(4, T)),
             ('PREP', 'kit out · hydrate · early night'),
             ('SUPPS', SUPPS('easy'))))
     elif wib % 2 == 1:
         add('Fri', 'FARTLEK', L(
             ('WU', '1mi building 10:00 to %s' % T['easy'].split('-')[0]),
-            ('STRIDES', STRIDES(4)), ('SETTLE', SETTLE),
+            ('STRIDES', STRIDES(4, T)), ('SETTLE', SETTLE),
             ('MAIN', '30-40min: 3min hard @ %s / 90s FLOAT @ %s (slow jog!)' % (T['tempo'], T['flt'])),
             ('SURGE', 'at 90s of each hard bout: +15s/mi faster for 30s, then back'),
             ('FINISH', 'last 400m fast'),
@@ -213,7 +213,7 @@ def day_rows(w):
     else:
         add('Fri', 'TEMPO', L(
             ('WU', '2mi progressive — %s' % T['wu']),
-            ('STRIDES', STRIDES(4)), ('SETTLE', SETTLE),
+            ('STRIDES', STRIDES(4, T)), ('SETTLE', SETTLE),
             ('MAIN', '20-30min @ %s · HR cap 160 — break the cap, slow down' % T['tempo']),
             ('CLOSER', 'final 60s: lift to ~15s/mi faster, tall and composed (Kerr rule: finish everything strong, never strained)'),
             ('CD', '1mi slow @ %s — 10min flush, done, eat within 30min' % T['cd']),
@@ -222,7 +222,7 @@ def day_rows(w):
     if race:
         add('Sat', race, L(
             ('WU', '12-15min progressive — %s' % T['wu']),
-            ('STRIDES', STRIDES(4)), ('SETTLE', SETTLE),
+            ('STRIDES', STRIDES(4, T)), ('SETTLE', SETTLE),
             ('RACE', 'the result IS the tier gate — log it in the app'),
             ('CD', '10-15min @ %s' % T['cd']),
             ('SUPPS', SUPPS('race'))))
@@ -262,7 +262,7 @@ story.append(Paragraph('<b>THE COACHING DNA</b> — every element traces to a sy
 story.append(Paragraph('Companion to the 45-Week Build. Every day written out. Paces shown assume each tier gate is PASSED at its earliest week — '
                        'if a gate isn\'t passed yet, keep using your current tier\'s paces for every session (the structure stays identical). '
                        'WHOOP gates every day: yellow = one quality max + HR caps, red = easy/rest and the session moves. '
-                       'Updated Fri Sep 4, 2026 — ramp-in below (Fri-Sun), Week 1 starts Mon Sep 7. SUPPS lines use YOUR cabinet. STRENGTH SYSTEM: core Mon/Thu (A/B circuits, progress by phase) · POWER after Wed hills/speed (plyos at max intent, full rest — this is where lean speed comes from) · DURABILITY 5min after Tue/Fri quality (calves/hips — the anti-breakdown work). All bodyweight: powerful and cut, never bulky. The rule: power reps are always FRESH and explosive; core is done to quality, not to burnout.', SUB))
+                       'Updated Fri Sep 4, 2026 — Thursday\'s tempo is BANKED; Fri-Sun below, Week 1 starts Mon Sep 7. Strides now carry exact paces (min/mi + treadmill mph) per tier; every WU/CD line has numbers. SUPPS lines use YOUR cabinet. STRENGTH SYSTEM: core Mon/Thu (A/B circuits, progress by phase) · POWER after Wed hills/speed (plyos at max intent, full rest — this is where lean speed comes from) · DURABILITY 5min after Tue/Fri quality (calves/hips — the anti-breakdown work). All bodyweight: powerful and cut, never bulky. The rule: power reps are always FRESH and explosive; core is done to quality, not to burnout.', SUB))
 
 
 # ── Execution guide: how to run every piece ────────────────────────
@@ -357,7 +357,8 @@ story.append(PageBreak())
 
 # ── Ramp-in Sep 3-6 ────────────────────────────────────────────────
 ramp = [
- ('Fri Sep 4', 'TEMPO — first gate attempt', L(('WU','2mi progressive - 10:45 to 9:30'),('STRIDES',STRIDES(4)),('SETTLE',SETTLE),('GREEN','20min @ 7:25-7:30 under HR 165 - the T2 gate'),('YELLOW','7:40-7:50 capped at 160 instead'),('CD','1mi slow'),('SUPPS', SUPPS('quality')))),
+ ('Thu Sep 3', 'TEMPO — DONE ✓', L(('LOGGED','20min @ 7:35-7:45, HR cap 160 (yellow day) — banked. This was the week\'s quality; nothing hard again before Monday.'),)),
+ ('Fri Sep 4', 'EASY OR OFF', L(('RUN','30min easy @ 9:30-10:15 (HR under 140) — or full rest, both correct 24h after a tempo'),('RULE','NO second tempo. Two quality sessions in 24h is how a good week breaks.'),('SUPPS', SUPPS('easy')))),
  ('Sat Sep 5', 'LONG RUN', L(('RUN','7mi @ 9:45-10:30 · HR under 145'),('RULE','no strides, no surges'),('SUPPS', SUPPS('long')))),
  ('Sun Sep 6', 'ACTIVE RECOVERY', L(('MOVE','30-40min walk/jog · HR under 125'),('ROLL','15min foam roll + 10min mobility'),('SUPPS', SUPPS('easy')))),
 ]
@@ -369,7 +370,7 @@ t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),DARK), ('ROWBACKGROUNDS',(0,1)
                        ('GRID',(0,0),(-1,-1),0.5,colors.HexColor('#DDDAD0')), ('VALIGN',(0,0),(-1,-1),'TOP'),
                        ('TOPPADDING',(0,0),(-1,-1),3.5), ('BOTTOMPADDING',(0,0),(-1,-1),3.5),
                        ('LEFTPADDING',(0,0),(-1,-1),5), ('RIGHTPADDING',(0,0),(-1,-1),5)]))
-story.append(KeepTogether([Paragraph('RAMP-IN · SEP 4-6', ParagraphStyle('h', parent=CELLW, fontSize=10, textColor=GOLD, spaceBefore=6, spaceAfter=3)), t]))
+story.append(KeepTogether([Paragraph('RAMP-IN · SEP 3-6 (tempo already banked Thu)', ParagraphStyle('h', parent=CELLW, fontSize=10, textColor=GOLD, spaceBefore=6, spaceAfter=3)), t]))
 story.append(Spacer(1, 8))
 
 # ── 45 weeks of days ───────────────────────────────────────────────
