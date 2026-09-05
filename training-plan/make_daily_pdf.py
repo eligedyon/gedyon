@@ -48,6 +48,7 @@ def STRIDES(n):
 SETTLE = '2min walk — never jump into rep 1'
 SUPP_AM = 'creatine 5g + omega-3 + D3/K2 with breakfast'
 SUPP_PM = 'magnesium malate before bed'
+DRILLS = 'A-skip 2x20m · B-skip 2x20m · high knees 2x20m — crisp, before strides'
 def CORE_A(ph):
     if ph <= 2:
         return 'dead bug 3x12 · plank 3x45s · side plank 3x30s/side · hollow hold 3x20s · glute bridge 3x15 (~10min)'
@@ -120,7 +121,7 @@ def day_rows(w):
         rows.append((dayname, sess, detail))
     add('Mon', 'EASY DOUBLE + CORE', L(
         ('AM', '%dmi @ %s — talk test: full sentences' % (ez, T['easy'])),
-        ('STRIDES', STRIDES(6)),
+        ('DRILLS', DRILLS), ('STRIDES', STRIDES(6)),
         ('PM', '%dmi shake-out @ %s' % (ezpm, T['cd'])),
         ('CORE', CORE_A(ph)),
         ('SUPPS', SUPPS('easy'))))
@@ -132,14 +133,22 @@ def day_rows(w):
             ('REST', '2-3min full walk/stand'),
             ('CD', '1mi @ %s' % T['cd']),
             ('SUPPS', SUPPS('quality'))))
+    elif ph == 4:
+        add('Tue', 'DOUBLE THRESHOLD (Ingebrigtsen day)', L(
+            ('AM', 'WU 2mi progressive + strides + settle · %dx1000m @ %s, HR 148-156 · 60s standing rest · CD 1mi' % (max(4, n-1), T['k'])),
+            ('GAP', '6-8 hours between sessions · eat + nap if possible'),
+            ('PM', 'WU 1.5mi easy · 8-10x400m @ threshold effort (HR under 158) · 30s rest · CD 1mi'),
+            ('RULE', 'BOTH sessions controlled — the magic is two sub-threshold doses, never two races. GREEN days only; yellow = AM only; red = easy'),
+            ('DURABILITY', DUR),
+            ('SUPPS', SUPPS('quality'))))
     else:
         add('Tue', 'THRESHOLD 1000s', L(
             ('WU', '2mi progressive — %s' % T['wu']),
             ('STRIDES', STRIDES(4)), ('SETTLE', SETTLE),
-            ('MAIN', '%dx1000m @ %s · HR under 164' % (n, T['k'])),
+            ('MAIN', '%dx1000m @ %s · HR 148-158, NEVER above 160 (Norwegian control: lactate ~2.5-3.5 — if you could not do 3 more reps, you went too fast)' % (n, T['k'])),
             ('REST', '%s STANDING — timed, no jogging' % ('90s' if d else '60-75s')),
             ('CD', '1.5mi slow @ %s' % T['cd']),
-            ('RULE', 'last rep feels like the third — not a race'),
+            ('RULE', 'threshold is a faucet, not a race — control today buys tomorrow'),
             ('DURABILITY', DUR),
             ('SUPPS', SUPPS('quality'))))
     if race and w >= 30:
@@ -174,7 +183,7 @@ def day_rows(w):
     add('Wed', wed[0], wed[1])
     add('Thu', 'EASY DOUBLE + CORE', L(
         ('AM', '%dmi @ %s — conversational' % (ez, T['easy'])),
-        ('STRIDES', STRIDES(6)),
+        ('DRILLS', DRILLS), ('STRIDES', STRIDES(6)),
         ('PM', '%dmi @ %s' % (ezpm, T['cd'])),
         ('CORE', CORE_B(ph)),
         ('SUPPS', SUPPS('easy'))))
@@ -205,7 +214,8 @@ def day_rows(w):
         add('Fri', 'TEMPO', L(
             ('WU', '2mi progressive — %s' % T['wu']),
             ('STRIDES', STRIDES(4)), ('SETTLE', SETTLE),
-            ('MAIN', '20-30min @ %s · HR cap 162 — break the cap, slow down' % T['tempo']),
+            ('MAIN', '20-30min @ %s · HR cap 160 — break the cap, slow down' % T['tempo']),
+            ('CLOSER', 'final 60s: lift to ~15s/mi faster, tall and composed (Kerr rule: finish everything strong, never strained)'),
             ('CD', '1mi slow @ %s — 10min flush, done, eat within 30min' % T['cd']),
             ('DURABILITY', DUR),
             ('SUPPS', SUPPS('quality'))))
@@ -217,13 +227,23 @@ def day_rows(w):
             ('CD', '10-15min @ %s' % T['cd']),
             ('SUPPS', SUPPS('race'))))
     else:
-        parts = [('RUN', '%dmi @ %s · HR under 145' % (lng, T['easy'])),
-                 ('START', 'slow end of the band — settle in before drifting faster')]
-        if ph >= 2: parts.append(('FINISH', 'last 10-15min may lift to steady (~45s/mi faster) IF green'))
-        parts.append(('FUEL', 'at 45min on 90min+ runs'))
-        parts.append(('RULE', 'no strides, no surges, no racing the last mile'))
-        parts.append(('SUPPS', SUPPS('long')))
-        add('Sat', 'LONG RUN', L(*parts))
+        if ph >= 2 and wib == 2:
+            add('Sat', 'PROGRESSION LONG (Ethiopian thirds)', L(
+                ('RUN', '%dmi in thirds — Bekele/Kejelcha style' % lng),
+                ('THIRD 1', 'slow end of easy (%s) — patience, boringly slow' % T['easy'].split('-')[1]),
+                ('THIRD 2', 'fast end of easy (%s)' % T['easy'].split('-')[0]),
+                ('THIRD 3', 'steady, ~40s/mi faster than easy · HR may reach 155, no higher'),
+                ('RULE', 'the speed-up is gradual and controlled — teach the body to run fast on tired legs, never sprint the end'),
+                ('FUEL', 'at 45min on 90min+ runs'),
+                ('SUPPS', SUPPS('long'))))
+        else:
+            parts = [('RUN', '%dmi @ %s · HR under 145' % (lng, T['easy'])),
+                     ('START', 'slow end of the band — settle in before drifting faster')]
+            if ph >= 2: parts.append(('FINISH', 'last 10-15min may lift to steady (~45s/mi faster) IF green'))
+            parts.append(('FUEL', 'at 45min on 90min+ runs'))
+            parts.append(('RULE', 'no strides, no surges, no racing the last mile — base is built with patience (Bekele ran his easy runs EASY)'))
+            parts.append(('SUPPS', SUPPS('long')))
+            add('Sat', 'LONG RUN', L(*parts))
     add('Sun', 'ACTIVE RECOVERY', L(
         ('MOVE', '30-40min walk/jog · HR under 125 · no pace floor'),
         ('ROLL', '15min — calves, quads, IT band'),
@@ -232,6 +252,13 @@ def day_rows(w):
     return rows
 
 story.append(Paragraph('GEDYON — DAILY WORKOUTS, ALL 45 WEEKS', H1))
+story.append(Paragraph('<b>THE COACHING DNA</b> — every element traces to a system that produced champions: '
+    '<b>Lananna/Thomas</b> (championship patience: drills + strides daily, peak in July not October) · '
+    '<b>Ingebrigtsen/Norwegian</b> (threshold CONTROLLED at lactate 2.5-3.5, reps always in the bank; double-threshold only in P4, only green days, only earned) · '
+    '<b>Kerr/Mackey</b> (power work, composed fast closers on everything) · '
+    '<b>Kejelcha/Ethiopian</b> (progression longs — slow start, strong finish, speed on tired legs) · '
+    '<b>Bekele</b> (massive patient aerobic base, hills as strength, form never sacrificed). '
+    'The thread that unites all five: EASY DAYS ARE INSULTINGLY EASY, hard days are controlled, and nobody races training.', SUB))
 story.append(Paragraph('Companion to the 45-Week Build. Every day written out. Paces shown assume each tier gate is PASSED at its earliest week — '
                        'if a gate isn\'t passed yet, keep using your current tier\'s paces for every session (the structure stays identical). '
                        'WHOOP gates every day: yellow = one quality max + HR caps, red = easy/rest and the session moves. '
