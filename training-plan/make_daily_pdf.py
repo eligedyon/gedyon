@@ -48,6 +48,27 @@ def STRIDES(n):
 SETTLE = '2min walk — never jump into rep 1'
 SUPP_AM = 'creatine 5g + omega-3 + D3/K2 with breakfast'
 SUPP_PM = 'magnesium malate before bed'
+def CORE_A(ph):
+    if ph <= 2:
+        return 'dead bug 3x12 · plank 3x45s · side plank 3x30s/side · hollow hold 3x20s · glute bridge 3x15 (~10min)'
+    if ph <= 4:
+        return 'dead bug 3x15 · plank 3x60s · side plank w/ leg lift 3x30s/side · hollow rocks 3x15 · single-leg glute bridge 3x12/side (~12min)'
+    return 'plank 3x45s · side plank 3x30s · dead bug 3x12 · glute bridge 3x12 — maintain, do not chase burn in race season (~8min)'
+def CORE_B(ph):
+    if ph <= 2:
+        return 'Copenhagen 3x20s/side · bird dog 3x10/side · plank shoulder taps 3x12 · single-leg glute bridge 3x10/side (~10min)'
+    if ph <= 4:
+        return 'Copenhagen 3x30s/side · bird dog 3x12/side · plank taps 3x16 · single-leg RDL reach 3x8/side (bodyweight) (~12min)'
+    return 'Copenhagen 3x20s/side · bird dog 3x10 · plank taps 3x12 — maintain (~8min)'
+def POWER(ph):
+    if ph <= 1:
+        return 'pogo hops 2x20 · A-skips 2x20m — landing stiffness first, height later'
+    if ph <= 3:
+        return 'pogo hops 3x20 · bounding 2x30m · squat jumps 3x5 (max intent, full 90s rest) — power lives in FRESH reps'
+    if ph <= 5:
+        return 'bounding 3x30m · single-leg hops 2x10/side · squat jumps 3x5 — explosive, never grinding'
+    return 'pogo hops 2x20 · 2x30m bounding — touch it, keep it, spend nothing'
+DUR = 'single-leg calf raises 3x15/side (slow down, drive up) · monster walks or hip airplanes 2x10 — 5min, protects shins/achilles/hips'
 def SUPPS(kind):
     if kind == 'quality':
         return SUPP_AM + ' · whey 1 scoop within 30min after the session · tart cherry tonight · ' + SUPP_PM
@@ -101,7 +122,7 @@ def day_rows(w):
         ('AM', '%dmi @ %s — talk test: full sentences' % (ez, T['easy'])),
         ('STRIDES', STRIDES(6)),
         ('PM', '%dmi shake-out @ %s' % (ezpm, T['cd'])),
-        ('CORE', 'dead bug 3x12 · plank 3x45s · side plank 3x30s'),
+        ('CORE', CORE_A(ph)),
         ('SUPPS', SUPPS('easy'))))
     if race and w >= 30:
         add('Tue', 'SHARP + LIGHT', L(
@@ -119,6 +140,7 @@ def day_rows(w):
             ('REST', '%s STANDING — timed, no jogging' % ('90s' if d else '60-75s')),
             ('CD', '1.5mi slow @ %s' % T['cd']),
             ('RULE', 'last rep feels like the third — not a race'),
+            ('DURABILITY', DUR),
             ('SUPPS', SUPPS('quality'))))
     if race and w >= 30:
         wed = ('STRIDES ONLY', L(('RUN', '%dmi easy @ %s' % (max(2, ez-1), T['easy'])), ('STRIDES', STRIDES(6)), ('RULE', 'race week — nothing that costs anything'),
@@ -138,6 +160,7 @@ def day_rows(w):
             ('MAIN', '8-10x200m fast-relaxed — mile effort, never straining'),
             ('REST', 'WALK back the full 200m'),
             ('THEN', '%dmi easy @ %s' % (max(2, ez-1), T['easy'])),
+            ('POWER', POWER(ph)),
             ('SUPPS', SUPPS('quality'))))
     else:
         wed = ('HILLS + EASY', L(
@@ -146,13 +169,14 @@ def day_rows(w):
             ('REST', 'WALK all the way down · +30s stand if still breathing hard'),
             ('THEN', '%dmi easy @ %s' % (max(2, ez-1), T['easy'])),
             ('RULE', '8 fresh reps beat 12 tired ones — this is the strength session'),
+            ('POWER', POWER(ph)),
             ('SUPPS', SUPPS('quality'))))
     add('Wed', wed[0], wed[1])
     add('Thu', 'EASY DOUBLE + CORE', L(
         ('AM', '%dmi @ %s — conversational' % (ez, T['easy'])),
         ('STRIDES', STRIDES(6)),
         ('PM', '%dmi @ %s' % (ezpm, T['cd'])),
-        ('CORE', 'dead bug 3x12 · plank 3x45s · Copenhagen 3x20s/side'),
+        ('CORE', CORE_B(ph)),
         ('SUPPS', SUPPS('easy'))))
     if d:
         add('Fri', 'TEMPO TEST (fresh legs)', L(
@@ -183,6 +207,7 @@ def day_rows(w):
             ('STRIDES', STRIDES(4)), ('SETTLE', SETTLE),
             ('MAIN', '20-30min @ %s · HR cap 162 — break the cap, slow down' % T['tempo']),
             ('CD', '1mi slow @ %s — 10min flush, done, eat within 30min' % T['cd']),
+            ('DURABILITY', DUR),
             ('SUPPS', SUPPS('quality'))))
     if race:
         add('Sat', race, L(
@@ -210,7 +235,7 @@ story.append(Paragraph('GEDYON — DAILY WORKOUTS, ALL 45 WEEKS', H1))
 story.append(Paragraph('Companion to the 45-Week Build. Every day written out. Paces shown assume each tier gate is PASSED at its earliest week — '
                        'if a gate isn\'t passed yet, keep using your current tier\'s paces for every session (the structure stays identical). '
                        'WHOOP gates every day: yellow = one quality max + HR caps, red = easy/rest and the session moves. '
-                       'Updated Fri Sep 4, 2026 — ramp-in below (Fri-Sun), Week 1 starts Mon Sep 7. SUPPS lines use YOUR cabinet: whey, creatine, omega-3, D3/K2, magnesium malate, electrolyte complex, tart cherry (hard days only).', SUB))
+                       'Updated Fri Sep 4, 2026 — ramp-in below (Fri-Sun), Week 1 starts Mon Sep 7. SUPPS lines use YOUR cabinet. STRENGTH SYSTEM: core Mon/Thu (A/B circuits, progress by phase) · POWER after Wed hills/speed (plyos at max intent, full rest — this is where lean speed comes from) · DURABILITY 5min after Tue/Fri quality (calves/hips — the anti-breakdown work). All bodyweight: powerful and cut, never bulky. The rule: power reps are always FRESH and explosive; core is done to quality, not to burnout.', SUB))
 
 
 # ── Execution guide: how to run every piece ────────────────────────
