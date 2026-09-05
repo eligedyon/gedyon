@@ -81,6 +81,12 @@ def LIFT_B(ph):
     return ('single-leg RDL 3x8/side (bodyweight, then 15-20lb) · split squat 3x8/side (bodyweight, then +20lb) · calf raises 3x15/side slow '
             '· same progression rule: reps first, then +5lb · always AFTER the PM run, never before a quality day')
 DUR = 'single-leg calf raises 3x15/side (slow down, drive up) · monster walks or hip airplanes 2x10 — 5min, protects shins/achilles/hips'
+def RECOV(ph, d):
+    if ph >= 5:
+        return 'heat 1-2x/wk maintenance · COLD PLUNGE now in play: 50-55F, 5-10min evening after races/hard efforts (never after lifting) · contrast shower other days'
+    if ph >= 2:
+        return 'SAUNA 15-25min right after this run (or overdress the run) — plasma-volume builder, 3-4x/wk · NO cold plunge in build phases (kills adaptation) · contrast shower ok'
+    return 'contrast shower 30s cold/90s warm x4 · no sauna needed yet, no cold plunges — adaptation is the whole point right now'
 def SUPPS(kind):
     if kind == 'quality':
         return SUPP_AM + ' · whey 1 scoop within 30min after the session · tart cherry tonight · ' + SUPP_PM
@@ -135,6 +141,7 @@ def day_rows(w):
         ('DRILLS', DRILLS), ('STRIDES', STRIDES(6, T)),
         ('PM', '%dmi shake-out @ %s' % (ezpm, T['cd'])),
         ('LIFT', ('DELOAD: 1 set of each at half weight — ' if d else '') + LIFT_A(ph)),
+        ('HEAT/COLD', RECOV(ph, d)),
         ('CORE', CORE_A(ph)),
         ('SUPPS', SUPPS('easy'))))
     if race and w >= 30:
@@ -366,6 +373,29 @@ mt.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),DARK), ('ROWBACKGROUNDS',(0,1
 story.append(mt)
 story.append(Paragraph('Most of this is already automatic: WHOOP syncs to the app, runs sync from Strava/watch, the app computes effective VDOT and the '
     'Aerobic Response trend, and the weekly agent files its report every Sunday. Your only manual jobs: RPE after runs, Mon/Thu weigh-ins, and honesty on "could I have done 3 more reps."', NOTE))
+story.append(PageBreak())
+
+
+# ── Heat & cold protocol ───────────────────────────────────────────
+story.append(Paragraph('HEAT & COLD — DOSE THEM LIKE DRUGS', ParagraphStyle('hc', parent=H1, fontSize=14, spaceBefore=6)))
+hc_rows = [[Paragraph(x, CELLW) for x in ['TOOL', 'PROTOCOL', 'WHEN', 'NEVER']]]
+for r in [
+    ('SAUNA / HEAT', '15-25min @ 170-190F immediately after EASY runs · electrolytes after · no sauna? overdress easy runs (hoodie+tights) for the same stimulus',
+     'P2 onward, 3-4x/wk — plasma volume + stroke volume on top of altitude: the free 2-4%%', 'Before quality · on red days · race week (except one 10min familiarizer)'),
+    ('COLD PLUNGE', '50-55F, 5-10min, legs in, evening', 'P5-P6 between races · back-to-back hard days when tomorrow matters more · acute niggle flare',
+     'Within 6h of lifting or quality in ANY build phase — it erases the adaptation you just paid for'),
+    ('CONTRAST SHOWER', '30s cold / 90s warm x4, finish warm', 'Any day, all year — circulation without the adaptation cost', 'No restrictions'),
+    ('HOT BATH (pre-sleep)', '15min warm bath ~90min before bed', 'Nights before quality when sleep has been poor — drops core temp after, deepens sleep', 'Right at bedtime (too hot too late delays sleep)'),
+]:
+    hc_rows.append([Paragraph('<b>%s</b>' % r[0], CELL), Paragraph(r[1], CELL), Paragraph(r[2], CELL), Paragraph(r[3], CELL)])
+hct = Table(hc_rows, colWidths=[1.0*inch, 2.45*inch, 2.2*inch, 1.75*inch], repeatRows=1)
+hct.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),DARK), ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,LIGHT]),
+                         ('GRID',(0,0),(-1,-1),0.5,colors.HexColor('#DDDAD0')), ('VALIGN',(0,0),(-1,-1),'TOP'),
+                         ('TOPPADDING',(0,0),(-1,-1),3.5), ('BOTTOMPADDING',(0,0),(-1,-1),3.5),
+                         ('LEFTPADDING',(0,0),(-1,-1),5), ('RIGHTPADDING',(0,0),(-1,-1),5)]))
+story.append(hct)
+story.append(Paragraph('THE RULE: in build phases (P1-P4) the goal is ADAPTATION — heat helps it, cold erases it. In race season (P5-P6) the goal flips to '
+    'FRESHNESS — cold earns its place between races. Same logic as tart cherry. A Mon/Thu HEAT/COLD line on the daily pages tells you the current phase\'s dose.', NOTE))
 story.append(PageBreak())
 
 # ── Ramp-in Sep 3-6 ────────────────────────────────────────────────
