@@ -318,6 +318,43 @@ story.append(gt)
 story.append(Paragraph('WU/CD paces above are for your CURRENT tier (T1). When a tier gate is passed, shift them with it: warm-up always ends at the fast end of that tier\'s easy band, cool-down is always ~60s/mi slower than easy. The quality-day template never changes: progressive WU -> strides -> 2min settle -> work -> short slow CD.', NOTE))
 story.append(PageBreak())
 
+
+# ── Measurement protocol ───────────────────────────────────────────
+story.append(Paragraph('MEASURE EVERYTHING — THE TESTING PROTOCOL', ParagraphStyle('mh', parent=H1, fontSize=14, spaceBefore=6)))
+story.append(Paragraph('Tests are the truth-tellers of this plan: they decide the tiers, catch breakdown before it happens, and prove the training works. '
+    'Every metric below is either automatic (WHOOP/watch/app) or takes under a minute. The rule: measure everything, react only to TRENDS — single data points are noise.', NOTE))
+m_rows = [[Paragraph(x, CELLW) for x in ['WHEN', 'MEASURE', 'WHAT IT TELLS YOU / ACT WHEN']]]
+for m in [
+    ('Every morning', 'WHOOP: recovery %, HRV, RHR, sleep — automatic',
+     'Gates the day (green/yellow/red). ACT: HRV below your SWC band 3+ days = cut the week 20%, no debate.'),
+    ('Every run', 'Watch: avg pace, avg + max HR, splits — automatic. Log RPE 1-10 in the app after',
+     'Feeds effective VDOT. Pace-at-HR is THE fitness signal: same pace at lower HR = engine growing.'),
+    ('Quality days', 'HR in the working sets vs the ceiling · did the last rep feel like the third? (yes/no)',
+     'ACT: two sessions in a row pinned at ceiling or grinding = tier is too hot, hold and retest.'),
+    ('Mon + Thu AM', 'Weight, same scale, after bathroom before food/water',
+     'Trend line only — 2 points/week, ignore daily bounce. ACT: dropping faster than 1.5 lb/wk = eat more, you are burning muscle.'),
+    ('Weekly (Sun)', 'The app\'s Aerobic Response card: last-3-runs HR@pace vs 3-4 weeks ago',
+     'ADAPTING = base building. STRESS (HR up, pace down) = flag — next week easy regardless of the calendar.'),
+    ('Every 4th Fri', 'TEMPO TEST: 20min at next tier pace — avg pace, avg HR, HR drift first 10min vs last 10min',
+     'The gate. Drift under 5% = aerobic durability is real. Pass = tier up. Fail = data, not failure — retest in 4 weeks.'),
+    ('Every block', 'Hill rep count at same effort · stride mechanics (film one occasionally)',
+     'Power trend. More quality reps at the same max effort = the strength system is working.'),
+    ('Races / TTs (wk 10, 18, 22, 26, 30...)', 'Time, splits, HR, RPE, last-400 speed',
+     'The only measurements that outrank everything else. Race results move tiers instantly.'),
+    ('Monthly', 'Resting morning test: 60s standing HR after waking · niggle inventory 0-10 by body part',
+     'Early-warning radar. Any niggle at 4+ for a week = tell KODA, adjust before it becomes an injury.'),
+]:
+    m_rows.append([Paragraph('<b>%s</b>' % m[0], CELL), Paragraph(m[1], CELL), Paragraph(m[2], CELL)])
+mt = Table(m_rows, colWidths=[1.15*inch, 2.85*inch, 3.4*inch], repeatRows=1)
+mt.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),DARK), ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,LIGHT]),
+                        ('GRID',(0,0),(-1,-1),0.5,colors.HexColor('#DDDAD0')), ('VALIGN',(0,0),(-1,-1),'TOP'),
+                        ('TOPPADDING',(0,0),(-1,-1),3.5), ('BOTTOMPADDING',(0,0),(-1,-1),3.5),
+                        ('LEFTPADDING',(0,0),(-1,-1),5), ('RIGHTPADDING',(0,0),(-1,-1),5)]))
+story.append(mt)
+story.append(Paragraph('Most of this is already automatic: WHOOP syncs to the app, runs sync from Strava/watch, the app computes effective VDOT and the '
+    'Aerobic Response trend, and the weekly agent files its report every Sunday. Your only manual jobs: RPE after runs, Mon/Thu weigh-ins, and honesty on "could I have done 3 more reps."', NOTE))
+story.append(PageBreak())
+
 # ── Ramp-in Sep 3-6 ────────────────────────────────────────────────
 ramp = [
  ('Fri Sep 4', 'TEMPO — first gate attempt', L(('WU','2mi progressive - 10:45 to 9:30'),('STRIDES',STRIDES(4)),('SETTLE',SETTLE),('GREEN','20min @ 7:25-7:30 under HR 165 - the T2 gate'),('YELLOW','7:40-7:50 capped at 160 instead'),('CD','1mi slow'),('SUPPS', SUPPS('quality')))),
