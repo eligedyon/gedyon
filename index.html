@@ -2663,6 +2663,29 @@ body.theme-keynote .topbar { backdrop-filter: blur(32px) saturate(200%) !importa
 body.theme-keynote .bnav   { backdrop-filter: blur(32px) saturate(200%) !important; -webkit-backdrop-filter: blur(32px) saturate(200%) !important; }
 body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; border: 1px solid rgba(184,150,90,0.18) !important; }
 
+/* ═══ PRINTABLE MONTH ═══
+   #printMonthArea is only ever shown via @media print — the
+   visibility trick hides the live app but keeps it in the DOM,
+   so print doesn't need to enumerate every top-level element. */
+#printMonthArea{ display:none; }
+@media print{
+  body *{ visibility:hidden !important; }
+  #printMonthArea, #printMonthArea *{ visibility:visible !important; }
+  #printMonthArea{
+    display:block !important; position:absolute; left:0; top:0; width:100%;
+    background:#fff; color:#111; font-family:'Barlow',Arial,sans-serif;
+  }
+  .pm-page-break{ page-break-before:always; }
+  @page{ margin:0.5in; }
+}
+.pm-cal{ width:100%; border-collapse:collapse; table-layout:fixed; }
+.pm-cal th{ font-size:10px; letter-spacing:1px; color:#666; padding:4px; border-bottom:2px solid #111; text-align:left; }
+.pm-cal td{ border:1px solid #ccc; vertical-align:top; height:80px; padding:4px; font-size:10px; }
+.pm-cal .pm-date{ font-weight:700; font-size:12px; }
+.pm-cal .pm-blank{ background:#f5f5f5; }
+.pm-daylist{ width:100%; border-collapse:collapse; margin-top:8px; }
+.pm-daylist th, .pm-daylist td{ border-bottom:1px solid #ddd; padding:6px 4px; font-size:11px; text-align:left; vertical-align:top; }
+
 </style>
 </head>
 <body class="theme-void">
@@ -3338,16 +3361,17 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
         <div class="sv2"><div class="svl">Avg Watts</div><div class="svv" style="color:var(--teal);" id="wWatts">—</div></div>
         <div class="sv2"><div class="svl">Avg Cal/Run</div><div class="svv" style="color:var(--orange);" id="wLac">—</div></div>
       </div>
-      <div class="card">
-        <div class="ch"><div class="ct">HR ZONES (Max: 188 bpm)</div></div>
+      <div class="card" id="paceZonesCard">
+        <div class="ch"><div class="ct" id="paceZonesTitle">PACE &amp; HR ZONES</div></div>
         <div class="cb" style="padding:8px 14px;">
-          <div style="font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:2.5;">
-            <div style="display:flex;justify-content:space-between;"><span style="color:var(--blue);">Z1 Recovery</span><span>&lt;113 bpm</span></div>
-            <div style="display:flex;justify-content:space-between;"><span style="color:var(--green);">Z2 Easy (Norwegian Base)</span><span>113–132 bpm</span></div>
-            <div style="display:flex;justify-content:space-between;"><span style="color:var(--gold);">Z3 Threshold (2.0–2.5 mmol)</span><span>132–150 bpm</span></div>
-            <div style="display:flex;justify-content:space-between;"><span style="color:var(--orange);">Z4 Threshold High (2.5–3.5)</span><span>150–168 bpm</span></div>
-            <div style="display:flex;justify-content:space-between;"><span style="color:var(--red);">Z5 VO2max / Race</span><span>168+ bpm</span></div>
-          </div>
+          <div id="paceZonesBody" style="font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:2.2;"></div>
+          <div id="paceZonesFoot" style="font-family:'SF Mono',Consolas,monospace;font-size:10px;color:var(--grey);margin-top:6px;"></div>
+        </div>
+      </div>
+      <div class="card" id="aerobicResponseCard">
+        <div class="ch"><div class="ct">AM I RESPONDING?</div></div>
+        <div class="cb" style="padding:8px 14px;">
+          <div id="aerobicResponseBody" style="font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.9;"></div>
         </div>
       </div>
       <!-- TRAIL MAP -->
@@ -3361,6 +3385,19 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
       <!-- MILEAGE TRACKER + TODAY'S PLAN -->
       <div id="planMileageSummary" style="margin-bottom:10px;"></div>
       <div id="planTodayBox" style="margin-bottom:10px;"></div>
+      <!-- CALENDAR VIEW -->
+      <div style="margin-bottom:10px;">
+        <button onclick="openCalendarModal()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:rgba(90,212,141,0.08);border:1px solid rgba(90,212,141,0.25);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:20px;">📅</div>
+            <div style="text-align:left;">
+              <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:16px;letter-spacing:2px;color:var(--green);">CALENDAR</div>
+              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:1px;">Browse any month, tap a day for full detail</div>
+            </div>
+          </div>
+          <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--green);opacity:.6;">›</div>
+        </button>
+      </div>
       <!-- RECALIBRATE BANNER -->
       <div style="margin-bottom:10px;">
         <button onclick="showRecalibrationModal()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
@@ -3372,6 +3409,45 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
             </div>
           </div>
           <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--gold);opacity:.6;">›</div>
+        </button>
+      </div>
+      <!-- PRINT MONTH -->
+      <div style="margin-bottom:10px;">
+        <button onclick="openPrintMonthModal()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:rgba(74,158,255,0.08);border:1px solid rgba(74,158,255,0.25);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:20px;">🖨️</div>
+            <div style="text-align:left;">
+              <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:16px;letter-spacing:2px;color:var(--blue);">PRINT MONTH</div>
+              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:1px;">Calendar + full session detail, any month</div>
+            </div>
+          </div>
+          <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--blue);opacity:.6;">›</div>
+        </button>
+      </div>
+      <!-- 24-WEEK EXECUTION BLOCK -->
+      <div style="margin-bottom:10px;">
+        <button onclick="printExecutionBlock(24)" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:rgba(163,116,255,0.08);border:1px solid rgba(163,116,255,0.25);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:20px;">📋</div>
+            <div style="text-align:left;">
+              <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:16px;letter-spacing:2px;color:var(--purple);">24-WEEK EXECUTION BLOCK</div>
+              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:1px;">Every day, today onward — zero gaps, full detail</div>
+            </div>
+          </div>
+          <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--purple);opacity:.6;">›</div>
+        </button>
+      </div>
+      <!-- ROADMAP TO SPEED -->
+      <div style="margin-bottom:10px;">
+        <button onclick="showRoadmapModal()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:rgba(232,88,88,0.08);border:1px solid rgba(232,88,88,0.25);border-radius:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:20px;">🚀</div>
+            <div style="text-align:left;">
+              <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:16px;letter-spacing:2px;color:var(--red);">ROADMAP TO SPEED</div>
+              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:1px;">Real dates: when threshold, doubles, race-pace kick in</div>
+            </div>
+          </div>
+          <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--red);opacity:.6;">›</div>
         </button>
       </div>
       <!-- LOG RUN + SHARE WEEK + FITNESS SUMMARY -->
@@ -3411,6 +3487,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
     <div id="pg-more" class="pg">
       <div class="snav">
         <button class="snb on" id="snb-supps" onclick="showMore('supps')">Protocol</button>
+        <button class="snb" id="snb-labs" onclick="showMore('labs')">Labs</button>
         <button class="snb" id="snb-race" onclick="showMore('race')">Racing</button>
         <button class="snb" id="snb-wt" onclick="showMore('wt')">Weight</button>
         <button class="snb" id="snb-rl" onclick="showMore('rl')">Races</button>
@@ -3430,7 +3507,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
       </div>
       <div id="ms-supps" class="msec on">
         <div class="sh" style="margin-top:0;">SUPPLEMENT PROTOCOL</div>
-        <div class="supc sg"><div class="sco">$20/3mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Creatine Monohydrate</div><div class="sdo">5g daily · no loading</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> Morning with water</div><div class="swy">Protects muscle during 29 lb weight loss. Non-negotiable.</div></div>
+        <div class="supc sg"><div class="sco">$20/3mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Creatine Monohydrate</div><div class="sdo">5g daily · no loading</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> Morning with water</div><div class="swy">Protects muscle during 29 lb weight loss. Non-negotiable. ISSN position stand: 3-5g/day reaches full muscle saturation in ~3-4 weeks — same endpoint as a 20g/day loading week, just slower. No performance benefit above 5g; don't chase bigger doses.</div></div>
         <div class="supc sbl"><div class="sco">$20/mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Vitamin D3 + K2</div><div class="sdo">5000 IU D3 + 100mcg K2</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> Morning with fat</div><div class="swy">Bone density, testosterone, immunity.</div></div>
         <div class="supc sg"><div class="sco">$15/mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Magnesium Glycinate</div><div class="sdo">400mg every night</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> 9:00pm — every night</div><div class="swy">Sleep quality, muscle recovery, cramp prevention.</div></div>
         <div class="supc sol"><div class="sco">$30/mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Omega-3 Fish Oil</div><div class="sdo">2–3g EPA+DHA daily</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> Morning with breakfast</div><div class="swy">Joint lubrication. Reduces DOMS 20–30%.</div></div>
@@ -3445,6 +3522,24 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
           <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);letter-spacing:1px;margin-bottom:10px;">NO MATCH IN PROTOCOL</div>
           <div style="font-family:'SF Mono',monospace;font-size:11px;color:#555;margin-bottom:12px;">Search the full supplement database above for a match to add.</div>
         </div>
+      </div>
+      <div id="ms-labs" class="msec">
+        <div class="sh" style="margin-top:0;">RECOMMENDED PANEL — UNEXPLAINED FATIGUE</div>
+        <div style="padding:10px 14px;font-family:'SF Mono',monospace;font-size:11px;color:var(--off);line-height:1.8;background:rgba(255,255,255,.03);border-radius:10px;margin:0 14px 12px;">
+          Four clusters cover most causes: <b>iron</b> (ferritin, hemoglobin), <b>thyroid</b> (TSH + Free T3/T4 — TSH alone misses a lot), <b>blood sugar</b> (fasting glucose, HbA1c), and <b>vitamins</b> (B12, folate, vitamin D, magnesium). Add <b>hs-CRP</b> (inflammation) and a full <b>lipid panel</b> given the family heart history. Standard panels often skip ferritin and Free T3/T4 — ask for them by name.
+        </div>
+        <div class="sh">LOG A RESULT</div>
+        <div style="padding:0 14px 14px;display:flex;flex-direction:column;gap:8px;">
+          <select id="labTestSel" style="width:100%;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-family:'SF Mono',monospace;font-size:12px;outline:none;"></select>
+          <div style="display:flex;gap:8px;">
+            <input id="labValInput" type="number" step="any" placeholder="Value" style="flex:1;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-family:'SF Mono',monospace;font-size:12px;outline:none;">
+            <input id="labDateInput" type="date" style="flex:1;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#fff;font-family:'SF Mono',monospace;font-size:12px;outline:none;">
+          </div>
+          <button onclick="addLabResult()" style="width:100%;padding:12px;background:rgba(0,230,118,0.07);border:1px solid rgba(0,230,118,0.25);border-radius:12px;color:#00E676;font-family:Impact,'Arial Narrow',sans-serif;font-size:14px;letter-spacing:2px;cursor:pointer;">LOG RESULT</button>
+          <div id="labAlert" class="al"></div>
+        </div>
+        <div class="sh">RESULTS LOG</div>
+        <div id="labResultsList" style="padding:0 14px 14px;"></div>
       </div>
       <div id="ms-race" class="msec"><div id="raceTestList"></div></div>
       <div id="ms-wt" class="msec">
@@ -4686,6 +4781,12 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
     <div id="koda-history-list"></div>
 
     <!-- Quick chips -->
+    <!-- COACH REVIEW QUEUE banner: pending koda_changesets awaiting approval -->
+    <div id="koda-review-banner" style="display:none;position:relative;z-index:5;margin:0 12px 4px;padding:9px 12px;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.35);border-radius:10px;cursor:pointer;align-items:center;gap:10px;" onclick="openKodaReviewModal()">
+      <span style="font-family:'SF Mono',Consolas,monospace;font-size:10px;letter-spacing:2px;color:var(--gold);">COACH REVIEW</span>
+      <span id="koda-review-banner-text" style="font-size:12px;color:#ddd;flex:1;">—</span>
+      <span style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--gold);">REVIEW ›</span>
+    </div>
     <div id="koda-chips" style="position:relative;z-index:5;padding:6px 12px 4px;display:none;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;border-top:1px solid rgba(212,175,55,0.06);">
       <div style="display:flex;gap:6px;">
         <button class="koda-chip" onclick="kodaQuick('What should my current pace zones be?')">PACE ZONES</button>
@@ -5139,7 +5240,7 @@ function updateAuthStatus(){
 const DEFAULT_PIN = '042028'; // April 2028 — Trials month/year
 
 let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
-  logs:[], food:[], workouts:[], weights:[],
+  logs:[], food:[], workouts:[], weights:[], bodyComp:[],
   races:[
     {id:1006,date:'2026-04-26',ev:'10k',time:'37:53',meet:'Pueblo Spring Runoff',location:'Pueblo, CO',pr:true,priority:'A',place:4,ageGroup:'1st/3 AG 30-34'},
     {id:1001,date:'2018-02-10',ev:'mile',time:'4:01.10',meet:'UW Invitational',location:'Seattle, WA',pr:true,priority:'A'},
@@ -5217,6 +5318,33 @@ if(D.settings.start === '2026-02-23'){
     else if(dup.id!==pr.id){ dup.id=pr.id; } // normalise id to canonical
   });
 })();
+if(!D.bodyComp) D.bodyComp=[];
+// One-time seed (Aug 2026): Navy-method tape-measure baseline, logged from
+// athlete-provided measurements (neck 15in, waist 38in at navel, height 5'11").
+// %BF = 86.010*log10(waist-neck) - 70.041*log10(height) + 36.76
+if(!localStorage.getItem('gedyon_bodycomp_seed_2026_08')){
+  D.bodyComp.push({date:'2026-08-23', method:'navy', neck:15, waist:38, heightIn:71, bf:24.2});
+  localStorage.setItem('gedyon_bodycomp_seed_2026_08','1');
+  try{ localStorage.setItem('gedyon_v5', JSON.stringify(D)); }catch(e){}
+}
+// One-time seed (Aug 2026): athlete-confirmed current weight, for the
+// maintenance-calorie estimate (BMR ~1793 @ 181lb/5'11" -> ~2800-2900
+// kcal/day maintenance with 35mi/wk training) and to anchor the weight trend.
+if(!localStorage.getItem('gedyon_weight_seed_2026_08') && !D.weights.some(function(w){return w.date==='2026-08-23';})){
+  D.weights.push({date:'2026-08-23', wt:181, context:'athlete-reported'});
+  D.weights.sort(function(a,b){return a.date.localeCompare(b.date);});
+  localStorage.setItem('gedyon_weight_seed_2026_08','1');
+  try{ localStorage.setItem('gedyon_v5', JSON.stringify(D)); }catch(e){}
+}
+function logBodyComp(date, neck, waist, heightIn, method){
+  method = method || 'navy';
+  var bf = +(86.010*Math.log10(waist-neck) - 70.041*Math.log10(heightIn) + 36.76).toFixed(1);
+  D.bodyComp = D.bodyComp.filter(function(b){ return b.date!==date; });
+  D.bodyComp.push({date:date, method:method, neck:neck, waist:waist, heightIn:heightIn, bf:bf});
+  D.bodyComp.sort(function(a,b){ return a.date.localeCompare(b.date); });
+  save();
+  return bf;
+}
 function saveData(){
   localStorage.setItem(KEY, JSON.stringify(D));
   if(currentUser && sbClient){
@@ -5535,7 +5663,7 @@ function launchApp(){
   loadWACode();
   loadAthlinksId();
   initLacRows();
-  renderDash(); renderWtHero(t); renderPlanCard(t);
+  renderDash(); renderWtHero(t); renderPlanCard(t); renderCoachCard();
   renderSuppGrid(t); renderTodayFood(t);
   setTimeout(renderTrainingLoad, 200); restoreToggles(t);
   // Show tutorial on first login
@@ -5586,13 +5714,14 @@ function goPage(id,btn){
   if(_scr){ _scr.style.display=(id==='koda')?'none':''; if(id!=='koda')_scr.scrollTop=0; }
   if(id==='dash')renderDash();
   else if(id==='today'){const d=$('docDate').value||td();renderWtHero(d);renderPlanCard(d);renderTodayFood(d);renderSuppGrid(d);restoreToggles(d);}
-  else if(id==='train'){renderSpeedBlock();renderTrailMap();renderTrainLog();setTimeout(renderTrainingLoad,80);}
+  else if(id==='train'){renderSpeedBlock();renderTrailMap();renderTrainLog();renderPaceZones();renderAerobicResponse();setTimeout(renderTrainingLoad,80);}
   else if(id==='plan'){filtPlan('all',$('#phFilter .tog'));setTimeout(renderPlanMileage,80);setTimeout(renderPlanTodayBox,80);}
   else if(id==='more'){renderRaceTests();initIntegrationsHub();updateAuthStatus();}
   else if(id==='playbook'){renderPlaybook();}
   else if(id==='atlas')initAtlasPage();
   else if(id==='koda'){kodaInit();const ch=document.getElementById('koda-chips');if(ch)ch.style.display='flex';loadKodaCharacter();}
   const ch2=document.getElementById('koda-chips');if(ch2&&id!=='koda')ch2.style.display='none';
+  const rb=document.getElementById('koda-review-banner');if(rb)rb.style.display=(id==='koda'&&window._kodaChangesets&&window._kodaChangesets.some(c=>c.status==='pending'))?'flex':'none';
   setTimeout(initCollapsibles,150);
 }
 function showMore(tab){
@@ -5600,10 +5729,87 @@ function showMore(tab){
   document.querySelectorAll('.snb').forEach(b=>b.classList.remove('on'));
   $('ms-'+tab).classList.add('on'); $('snb-'+tab).classList.add('on');
   if(tab==='wt')renderWeightMore();
+  else if(tab==='labs')renderLabs();
   else if(tab==='rl'){renderAthleteProfile();renderRaceHistory();autoSyncRaces();}
   else if(tab==='social')setTimeout(renderSocialFeed,50);
   else if(tab==='connect')setTimeout(renderConnectPage,60);
   else if(tab==='athletes')setTimeout(renderAthletesBenchmark,60);
+}
+// ═══ BLOODWORK / LABS ═══
+// Reference ranges are general adult guidance, not a diagnosis — the
+// lab's own report always wins if the two disagree. Sourced from the
+// standard fatigue-workup cluster (iron/thyroid/glucose/vitamins) plus
+// a lipid panel + hs-CRP for the family cardiac history angle.
+var LAB_REF = {
+  'Ferritin':            {lo:30,  hi:300, unit:'ng/mL', note:'iron stores — low ferritin is the single most common fatigue finding'},
+  'Hemoglobin':          {lo:13.5,hi:17.5,unit:'g/dL',  note:'part of a CBC — anemia screen'},
+  'TSH':                 {lo:0.4, hi:4.0, unit:'mIU/L', note:'>2.5 is often symptomatic even inside "normal" — pair with Free T3/T4'},
+  'Free T4':             {lo:0.8, hi:1.8, unit:'ng/dL', note:'order alongside TSH, not alone'},
+  'Free T3':             {lo:2.3, hi:4.2, unit:'pg/mL', note:'order alongside TSH, not alone'},
+  'Vitamin B12':         {lo:400, hi:900, unit:'pg/mL', note:'aim >400 — the lab "normal" floor (~200) is often too low to rule out symptoms'},
+  'Folate':              {lo:2.7, hi:17,  unit:'ng/mL', note:''},
+  'Vitamin D (25-OH)':   {lo:30,  hi:100, unit:'ng/mL', note:'optimal commonly cited as 40-60'},
+  'HbA1c':               {lo:4.0, hi:5.6, unit:'%',     note:'blood sugar regulation'},
+  'Fasting Glucose':     {lo:70,  hi:99,  unit:'mg/dL', note:''},
+  'hs-CRP':              {lo:0,   hi:1.0, unit:'mg/L',  note:'inflammation — <1 low risk, 1-3 average, >3 high'},
+  'Magnesium':           {lo:1.7, hi:2.2, unit:'mg/dL', note:''},
+  'Total Cholesterol':   {lo:0,   hi:200, unit:'mg/dL', note:'family heart history — track the trend over time'},
+  'LDL':                 {lo:0,   hi:100, unit:'mg/dL', note:'family heart history — optimal <100'},
+  'HDL':                 {lo:40,  hi:999, unit:'mg/dL', note:'higher is better — flagged low under 40'},
+  'Triglycerides':       {lo:0,   hi:150, unit:'mg/dL', note:''},
+};
+function labFlag(test, value){
+  var ref = LAB_REF[test];
+  if(!ref || value==null || isNaN(value)) return {tag:'—', col:'var(--grey)'};
+  if(value < ref.lo) return {tag:'LOW', col:'#FFB84D'};
+  if(value > ref.hi) return {tag:'HIGH', col:'#FF5252'};
+  return {tag:'NORMAL', col:'#00E676'};
+}
+function addLabResult(){
+  var sel = $('labTestSel'), valEl = $('labValInput'), dateEl = $('labDateInput');
+  var test = sel ? sel.value : '';
+  var val = valEl ? parseFloat(valEl.value) : NaN;
+  var date = (dateEl && dateEl.value) || td();
+  if(!test || isNaN(val)){ showAlert('labAlert','Pick a test and enter a value','err'); return; }
+  if(!D.labs) D.labs = [];
+  D.labs.push({id: D.labs.length ? Math.max.apply(null, D.labs.map(function(l){return l.id||0;}))+1 : 1,
+    test: test, value: val, date: date, unit: (LAB_REF[test]||{}).unit || ''});
+  save();
+  if(valEl) valEl.value = '';
+  renderLabs();
+  showAlert('labAlert', test + ' logged', 'ok');
+}
+function deleteLabResult(id){
+  D.labs = (D.labs||[]).filter(function(l){ return l.id !== id; });
+  save(); renderLabs();
+}
+function renderLabs(){
+  var sel = $('labTestSel');
+  if(sel && !sel.options.length){
+    sel.innerHTML = Object.keys(LAB_REF).map(function(t){ return '<option value="'+t+'">'+t+'</option>'; }).join('');
+  }
+  var dateInp = $('labDateInput');
+  if(dateInp && !dateInp.value) dateInp.value = td();
+
+  var listEl = $('labResultsList');
+  if(!listEl) return;
+  var labs = (D.labs||[]).slice().sort(function(a,b){ return a.date < b.date ? 1 : a.date > b.date ? -1 : (b.id-a.id); });
+  if(!labs.length){
+    listEl.innerHTML = '<div style="padding:14px;text-align:center;font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);">No results logged yet — add your first panel above.</div>';
+    return;
+  }
+  listEl.innerHTML = labs.map(function(l){
+    var f = labFlag(l.test, l.value);
+    var ref = LAB_REF[l.test];
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);">'
+      + '<div><div style="font-family:\'SF Mono\',monospace;font-size:12px;color:#fff;">'+l.test+'</div>'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);">'+l.date+(ref?' · ref '+ref.lo+'–'+ref.hi+' '+ref.unit:'')+'</div></div>'
+      + '<div style="display:flex;align-items:center;gap:10px;">'
+      + '<div style="text-align:right;"><div style="font-family:\'SF Mono\',monospace;font-size:13px;font-weight:700;color:'+f.col+';">'+l.value+' '+(l.unit||'')+'</div>'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:9px;color:'+f.col+';letter-spacing:1px;">'+f.tag+'</div></div>'
+      + '<button onclick="deleteLabResult('+l.id+')" style="background:none;border:none;color:var(--grey);font-size:16px;cursor:pointer;padding:0 4px;">×</button>'
+      + '</div></div>';
+  }).join('');
 }
 function selTog(btn,grp){ document.querySelectorAll('#'+grp+' .tog').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
 function showAlert(id,msg,type){ const el=$(id);if(!el)return; el.textContent=msg; el.className='al show '+(type||'ok'); setTimeout(()=>el.classList.remove('show'),4500); }
@@ -6560,12 +6766,48 @@ function formatSteps(steps, totalMi){
   // level. Use the live VDOT-derived easy pace when race data is available.
   var _easyMph = _paces.easy ? Math.round(3600/_paces.easy*10)/10 : parseFloat(_band.mph);
   var _easy    = _paces.easy ? _toMMSS(_paces.easy) : _band.easy;
-  // Replace paces in steps text
+  // Easy is a RANGE, not a point — the calibrated pace is the fast end
+  // (don't run faster than this on an easy day); +25s/mi is the slow end
+  // (still counts as easy, doesn't need to be pinpoint). Used for every
+  // easy/warm-up/cool-down mention so "how slow/fast" is never implicit.
+  var _easySec = _paces.easy ? _paces.easy : (function(){ var p=_band.easy.split(':'); return (+p[0])*60+(+p[1]); })();
+  var _easyLo  = _easy;
+  var _easyHi  = _toMMSS(_easySec + 25);
+  var _easyRange = _easyLo + '-' + _easyHi;
+  // Replace range-format paces FIRST: "at 9:30-10:00/mi", "at 6:20-6:40/mi",
+  // and "threshold pace 6:20-6:40/mi" — some PLAN_DB entries name the
+  // range after the word "pace" instead of "at", which the old regex
+  // (matching only "at") silently skipped, leaving those workout ranges
+  // hardcoded and never recalibrating to current VDOT. Must run BEFORE
+  // the single-value regex below: the easy branch here outputs a range
+  // shape ("at LO-HI/mi"), and running single-value second would try to
+  // re-match plain "at H:MM/mi" inside it — but that pattern requires
+  // "/mi" immediately after H:MM with no dash, so it correctly skips
+  // range output. Running them in the other order double-appends the
+  // "(X.X mph)" suffix instead (each pass adding its own copy).
+  steps = steps.replace(/(?:at|pace) (\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})\/mi/g, function(match, m1, s1, m2, s2) {
+    var t1 = parseInt(m1,10)*60 + parseInt(s1,10);
+    var t2 = parseInt(m2,10)*60 + parseInt(s2,10);
+    var avg = (t1 + t2) / 2;
+    var prefix = match.slice(0, match.indexOf(m1 + ':') - 1); // preserve "at " or "pace " wording
+    if (avg >= 480) {
+      // Easy range → VDOT-calibrated easy pace band
+      return prefix + ' ' + _easyRange + '/mi (' + _easyMph + ' mph)';
+    } else if (avg >= 360 && avg < 420) {
+      // Threshold range → VDOT LT2
+      return prefix + ' ' + _thresh + '/mi (LT2 target)';
+    } else if (avg < 360) {
+      // Sub-6:00 → VO2max
+      return prefix + ' ' + _vo2 + '/mi';
+    }
+    return match; // 7:xx tempo range → keep
+  });
+  // Then single-value paces: "at 10:00/mi" etc.
   steps = steps.replace(/at (\d{1,2}):(\d{2})\/mi/g, function(match, mins, secs) {
     var totalSec = parseInt(mins, 10)*60 + parseInt(secs, 10);
     if (totalSec >= 480) {
-      // Easy range (≥8:00/mi) → VDOT-calibrated easy pace
-      return 'at ' + _easy + '/mi (' + _easyMph + ' mph)';
+      // Easy range (≥8:00/mi) → VDOT-calibrated easy pace band
+      return 'at ' + _easyRange + '/mi (' + _easyMph + ' mph)';
     } else if (totalSec >= 360 && totalSec < 420) {
       // Threshold range (6:00-6:59) → VDOT threshold
       return 'at ' + _thresh + '/mi';
@@ -6575,22 +6817,17 @@ function formatSteps(steps, totalMi){
     }
     return match; // 7:xx range (tempo, keep as-is)
   });
-  // Replace range-format paces: "at 9:30-10:00/mi", "at 6:20-6:40/mi"
-  steps = steps.replace(/at (\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})\/mi/g, function(match, m1, s1, m2, s2) {
-    var t1 = parseInt(m1,10)*60 + parseInt(s1,10);
-    var t2 = parseInt(m2,10)*60 + parseInt(s2,10);
-    var avg = (t1 + t2) / 2;
-    if (avg >= 480) {
-      // Easy range → VDOT-calibrated easy pace
-      return 'at ' + _easy + '/mi (' + _easyMph + ' mph)';
-    } else if (avg >= 360 && avg < 420) {
-      // Threshold range → VDOT LT2
-      return 'at ' + _thresh + '/mi (LT2 target)';
-    } else if (avg < 360) {
-      // Sub-6:00 → VO2max
-      return 'at ' + _vo2 + '/mi';
-    }
-    return match; // 7:xx tempo range → keep
+  // WU:/CD: segments are always easy effort by definition, but many
+  // PLAN_DB entries never stated a pace for them at all (just "WU: 0.8mi
+  // easy jog" with nothing after) — inject the live easy-pace band right
+  // after the distance so warm-ups and cool-downs are never paceless.
+  steps = steps.replace(/\b(WU|CD):\s*(\d+(?:\.\d+)?)mi(?!\s*at\s)/gi, function(match, label, dist){
+    return label.toUpperCase() + ': ' + dist + 'mi at ' + _easyRange + '/mi';
+  });
+  // Same fix for the label-less "1.5mi warm-up." / "1mi cool-down." form
+  // used in continuous-tempo sessions.
+  steps = steps.replace(/(\d+(?:\.\d+)?)mi (warm-up|cool-down)(?!\s*at\s)\./gi, function(match, dist, word){
+    return dist + 'mi ' + word + ' at ' + _easyRange + '/mi.';
   });
   // Also replace treadmill speed + bracketed pace: "8.2mph (7:19/mi)" → updated threshold note
   steps = steps.replace(/(\d+\.\d+)\s*mph\s*\((\d+):(\d+)\/mi\)/g, function(match, sp, m, s) {
@@ -6655,7 +6892,77 @@ function applyWorkoutPreferences(date, plan){
     p.lac   = [2.0, 5.0];
     p.steps = 'WU: 0.8mi easy jog to treadmill hill · HILLS: '+hillReps+'×80m at MAX effort (incline 8.0–10.0, speed 9.5–11.5 mph) · Walk back down — full recovery between every rep · CD: '+(Math.max(0,mi-0.8)).toFixed(1)+'mi easy · THIS is your strength session — Canova method, power without bulk';
     p.sets  = hillReps+'×80m max effort · Full walk-down recovery · Drive knees high, lean into hill, explosive push-off · HR ceiling: 178 · Treadmill: incline 8.0–10.0, burst to 9.5–11.5 mph each rep';
-    p.coreNote = 'Post-run: single-leg calf raises 3×20 · Hip flexor stretch 3×30s each side · Hills replace all gym/weight work';
+    p.coreNote = 'Post-run: single-leg calf raises 3×20 · Hip flexor stretch 3×30s each side · Hills are the explosive-power work — Monday\'s lift session covers the rest';
+  }
+  // MONDAY → Weight room, the ACTUAL Brooks Beasts TC circuit (not a
+  // secondary-source approximation) — athlete supplied the real session
+  // Josh Kerr's team ran during 2026 USATF Champs / London DL prep in
+  // Albuquerque: 3 blocks, 2-3 sets each, real exercise selection. Kept
+  // the exact movements/set-rep scheme (that's what makes it authentic),
+  // but Kerr's own working loads (44lb KB, 155lb RDL, 80-90lb DB bench)
+  // are HIS current-camp numbers, not a safe starting point for someone
+  // reintroducing lifting — scaled to "build toward these," not start
+  // there, per the athlete's own "1x/wk, start light" call.
+  if(dow===1 && wk>=5 && !isDeload && (p.type==='easy'||p.type==='rest')){
+    var liftBlock = 'WEIGHT ROOM — Brooks Beasts TC circuit (30-40min): BLOCK 1 (2 sets): 20x wall-sit isometric calf raises · 10x push-up w/ T-spine rotation (5/side) · 30s cat-cow, knees elevated. BLOCK 2 (3 sets): 12-16x kettlebell swings (start light — Kerr\'s camp weight is 44lb, build toward it) · 10x med-ball slams (~8lb) · 20x bench side plank w/ hip drop (10/side). BLOCK 3 (3 sets): 5x barbell RDL (start light — Kerr\'s camp weight is 155lb) · 8x DB bench press (start light — Kerr\'s camp weight is 80-90lb) · 5-8x pull-ups (assisted/banded if needed) · 30x anti-rotation press-outs (band or light cable, 15/side). Same movements and set/rep scheme as the real session — only the loads are scaled down for a reintroduction.';
+    p.name = (p.name || 'EASY DOUBLE').replace(/\s*\+\s*DAILY CORE$/i,'').replace(/\s*\+\s*CORE$/i,'') + ' + LIFT';
+    p.lift = true;
+    p.steps = (p.steps ? p.steps + ' · ' : '') + liftBlock;
+    p.sets = (p.sets ? p.sets + ' · ' : '') + liftBlock;
+    p.coreNote = liftBlock;
+  }
+  // SUNDAY → Plyo/bodyweight + hip-drop/glute-medius corrective work, the
+  // day after the long run — this is Mackey's actual structural placement
+  // (Kerr's plyo/bodyweight day sits right after his long easy run).
+  // Completes the 2x/wk target. Light enough for a recovery day; skipped
+  // on deload weeks like the Monday session. The corrective exercises
+  // (pelvic/hip drops, clamshell, side plank) are the 5 moves with the
+  // strongest research support for fixing contralateral pelvic drop —
+  // the weak-glute-medius pattern behind a "heavy hips dragging" feeling
+  // — dosed at the 2-3x/wk shown to improve it within ~6 weeks.
+  if(dow===0 && wk>=5 && !isDeload && (p.type==='easy'||p.type==='rest')){
+    var plyoBlock = 'PLYO + HIP-DROP FIX (25min, day-after-long-run): STANDING HIP DROPS 2×15/side — stand on a step edge, let the free-side hip sag down, then squeeze the STANDING leg\'s glute to snap it level again; the hip leads, not the knee. CLAMSHELL 2×15/side — lie on your side, knees bent ~45°, feet together, open the top knee like a book WITHOUT rolling your pelvis backward. SIDE PLANK 2×20-30s/side — forearm down, stack your feet, lift hips into a straight line; this is the one that trains exactly what\'s dragging. SINGLE-LEG GLUTE BRIDGE 2×10/side — on your back, one foot planted, drive hips up through that heel, squeeze at the top. POGO HOPS 2×10 · SKATER BOUNDS 2×6/side — quick, low, springy, the power-upkeep half of the session.';
+    p.name = (p.name || 'ACTIVE RECOVERY') + ' + PLYO/HIP';
+    p.lift = true;
+    p.steps = (p.steps ? p.steps + ' · ' : '') + plyoBlock;
+    p.sets = (p.sets ? p.sets + ' · ' : '') + plyoBlock;
+    p.coreNote = (p.coreNote ? p.coreNote + ' · ' : '') + plyoBlock;
+  }
+  // TUESDAY → Race-Pace Intervals (Kerr-Mackey Specific, wk61+) / Speed Reps (Championship
+  // Sharpening & Trials Taper, wk85+) — the base-building phases (Foundation/Base/Norwegian
+  // Threshold) keep the 1000m threshold reps as-is; only once that aerobic base is actually
+  // built does short, fast rep work get introduced (Lydiard/Canova sequencing). Friday's
+  // second threshold session is left alone — the aerobic-power work doesn't disappear, it
+  // just stops being the ONLY quality work. Pace comes live off current VDOT, not a fixed
+  // number, so it keeps tracking real fitness as it improves through 2027-2028.
+  if(dow===2 && wk>=61 && !isDeload && p.type==='threshold'){
+    var ph2 = getPhase(wk);
+    var prsSpd = getPRs();
+    var pacesSpd = getTrainingPaces(prsSpd);
+    var mmssP = function(sec){ sec=Math.round(sec); return Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0'); };
+    if(ph2.n===4){ // KERR-MACKEY SPECIFIC — bridge threshold to race speed: 600m at live VO2max (I) pace
+      var i600 = mmssP(pacesSpd.vo2max ? pacesSpd.vo2max*600/1609.34 : 130);
+      var reps600 = Math.min(8, 5+Math.floor((wk-61)/8));
+      var mainMi6 = +(reps600*0.373).toFixed(1);
+      p.mi = +(2.0+mainMi6+1.0).toFixed(1); p.amMi = p.mi; p.pmMi = 0;
+      p.name = 'RACE-PACE INTERVALS · WK ' + wk;
+      p.zone = 'Z4-Z5'; p.hr = [160,178]; p.lac = [4.0,7.0];
+      p.steps = 'WU: 2.0mi easy + 4×20s strides + 2×100m strides at goal pace · MAIN: '+reps600+'×600m at '+i600+' (VO2max pace — live off current VDOT) · 2–3min full jog recovery between reps · CD: 1.0mi easy · Purpose: bridge threshold fitness into true race speed';
+      p.sets = reps600+'×600m at '+i600+' · 2–3min full recovery jog · Pace updates automatically as VDOT improves';
+      p.coreNote = '';
+    } else { // CHAMPIONSHIP SHARPENING / TRIALS TAPER — true repetition-pace speed: 400m at live
+      // R-pace (105% VO2max), full recovery, low volume — builds the ability to handle fast 400m reps.
+      var r400 = mmssP(pacesSpd.interval ? pacesSpd.interval*400/1609.34 : 78);
+      var isTaper = ph2.n>=6;
+      var reps400 = isTaper ? 4 : Math.min(10, 6+Math.floor((wk-85)/6));
+      var mainMi4 = +(reps400*0.249).toFixed(1);
+      p.mi = +(2.0+mainMi4+1.0).toFixed(1); p.amMi = p.mi; p.pmMi = 0;
+      p.name = 'SPEED REPS · WK ' + wk;
+      p.zone = 'Z5'; p.hr = [165,182]; p.lac = [5.0,9.0];
+      p.steps = 'WU: 2.0mi easy + 4×20s strides + 3×100m strides building to top speed · MAIN: '+reps400+'×400m at '+r400+' (repetition pace, full recovery) · 2–3min full jog/walk recovery — ready-when-ready, not clock-driven · CD: 1.0mi easy · Purpose: race-day closing speed — the fast-turnover capability everything since Foundation was built toward';
+      p.sets = reps400+'×400m at '+r400+' · Full recovery (2–3min) between reps — quality over fatigue · Pace derived live from current VDOT';
+      p.coreNote = '';
+    }
   }
   // FRIDAY → Fartlek (odd block weeks, from wk 5+, only easy/shakeout sessions, not deload)
   if(dow===5 && wk>=5 && !isDeload && wkInBlock%2===1 && (p.type==='easy'||p.type==='rest') && p.mi>=1.5 && p.mi<=8){
@@ -6809,8 +7116,39 @@ function _getDayPlanRaw(date){
 // of being asked for 42-mile weeks off a 15-mile base. Structure, zones
 // and workout types stay; only volume shrinks.
 var _rawWkSumCache = {};
+// Hill reps were flat "15×80m ... 9.5–11.5 mph" from Foundation clear through
+// Trials Taper — mileage is capped at 35mi/wk, so hills (the strength-session
+// stand-in) are the intensity lever that needs to progress instead: rep count
+// builds then tapers by phase, and top sprint speed ties to the live VDOT
+// repetition (R) pace. This runs here (not in formatSteps) because phase is a
+// deterministic function of the session's OWN calendar date — unlike pace,
+// which reflects current fitness and is correctly the same regardless of
+// which day you're previewing, phase must NOT default to "today's phase" or
+// every future week would preview wrong until the day actually arrives.
+var HILL_BY_PHASE = {
+  1:{reps:12,inc:'8.0–10.0'}, 2:{reps:15,inc:'8.0–10.0'}, 3:{reps:16,inc:'8.0–11.0'},
+  4:{reps:15,inc:'9.0–11.0'}, 5:{reps:12,inc:'9.0–11.0'}, 6:{reps:8, inc:'8.0–10.0'}
+};
+function _applyHillProgression(steps, date){
+  if(!steps || steps.indexOf('HILLS:') === -1) return steps;
+  try{
+    var ph = getPhase(getWk(date));
+    var cfg = HILL_BY_PHASE[ph.n] || HILL_BY_PHASE[1];
+    var prs = typeof getPRs==='function' ? getPRs() : {};
+    var paces = typeof getTrainingPaces==='function' ? getTrainingPaces(prs) : {};
+    var intervalMph = paces.interval ? Math.round((3600/paces.interval)*10)/10 : 11.5;
+    var spLo = Math.max(8.5, Math.round((intervalMph-1.5)*10)/10);
+    var spHi = Math.max(spLo+1, Math.round((intervalMph+0.5)*10)/10);
+    return steps.replace(/HILLS: \d+×80m at MAX effort \(incline [\d.]+–[\d.]+, speed [\d.]+–[\d.]+ mph\)/g,
+      'HILLS: '+cfg.reps+'×80m at MAX effort (incline '+cfg.inc+', speed '+spLo+'–'+spHi+' mph)');
+  }catch(e){ return steps; }
+}
 function getDayPlan(date){
+  return _applyReadinessGate(_getDayPlanUngated(date), date);
+}
+function _getDayPlanUngated(date){
   var raw = _getDayPlanRaw(date);
+  raw.steps = _applyHillProgression(raw.steps, date);
   try{
     if(typeof _rampTargetForWeek !== 'function' || typeof RAMP_ANCHOR === 'undefined') return raw;
     var dMs = parseLocalDate(date).getTime();
@@ -6841,6 +7179,37 @@ function getDayPlan(date){
     sc.steps = '⚡ RAMP-ADJUSTED: run ' + sc.mi + 'mi today — the full-plan version below (' + raw.mi + 'mi) is what this day becomes once your base is built. Scale its paces/structure down to today\'s distance and ignore fueling advice meant for the long version. ' + (raw.steps||'');
     return sc;
   }catch(e){ return raw; }
+}
+
+// READINESS GATE: TODAY's quality prescription bends to the synced WHOOP
+// recovery so the athlete never has to argue with the plan on a bad day.
+// Yellow (<67%): one quality session only — a double's PM converts to easy,
+// and the quality segment gets an HR cap (hold effort, not pace).
+// Red (<34%): quality is cancelled outright; easy aerobic miles instead.
+// Green, no data, or past/future dates: untouched — previews stay pure plan.
+function _applyReadinessGate(plan, date){
+  try{
+    if(!plan || (typeof td==='function' && date !== td())) return plan;
+    var rec = (D.whoopData && +D.whoopData.recovery) || 0;
+    if(!rec) return plan;
+    var isQuality = /tempo|threshold|interval|vo2|workout|hill|race/i.test((plan.type||'') + ' ' + (plan.name||''));
+    if(!isQuality || rec >= 67) return plan;
+    var observedMax = (D.workouts||[]).reduce(function(m,w){ return Math.max(m, w.maxHR||0); }, 0);
+    var maxHR = observedMax > 140 ? observedMax : 200;
+    var cap = Math.round(maxHR * 0.82);
+    var p = Object.assign({}, plan);
+    if(rec < 34){
+      p.readinessGate = 'red';
+      p.type = 'easy';
+      p.name = 'READINESS OVERRIDE — EASY (' + rec + '% recovery)';
+      p.steps = '🔴 RED RECOVERY (' + rec + '%): quality is cancelled today — pushing through a red is how a bad day becomes a bad month. Run ' + (p.mi||3) + 'mi easy, HR under ' + Math.round(maxHR*0.72) + ', or take a full rest day. The planned session (' + (plan.name||'workout') + ') moves to your next green day.';
+      p.sets = 'Easy aerobic only · no strides, no surges';
+    } else {
+      p.readinessGate = 'yellow';
+      p.steps = '🟡 YELLOW RECOVERY (' + rec + '%): ONE quality session only today — if this day is an AM+PM double, run the PM as 30min easy (Z1-Z2) instead. Cap the quality segment at HR ~' + cap + ' and hold the effort, not the pace; if HR won\'t settle within 8min, convert the rest to easy and take the session on the next green day. ' + (p.steps||'');
+    }
+    return p;
+  }catch(e){ return plan; }
 }
 
 // ═══ WEIGHT ═══
@@ -8956,6 +9325,103 @@ function logWeightHome(){
   showAlert('homeWtAlert',' '+v+' lbs logged at '+timeStr+' ('+timeLabel+')','ok');
 }
 
+// TOMORROW'S SESSION REMINDER — best-effort in-app notification. This is a
+// PWA running in Safari/Chrome, not the native Capacitor build (see
+// IOS-INSTALL.md) — there's no push server, so this can't wake the phone
+// while the app is closed. What it CAN do: the moment you open the app any
+// time after 6pm, if you haven't been told about tomorrow yet today, it
+// fires a real system notification with tomorrow's session. Reliable if you
+// open the app in the evening (which most people do); silent if you don't
+// open it at all that day. The native build would give a true scheduled
+// push regardless of whether you open the app — ask if that's wanted later.
+function enableTomorrowReminders(){
+  if(!('Notification' in window)){ if(typeof showToast==='function') showToast('Notifications aren\'t supported in this browser','error'); return; }
+  Notification.requestPermission().then(function(perm){
+    D.settings.remindersEnabled = (perm === 'granted');
+    save();
+    if(perm === 'granted'){
+      if(typeof showToast==='function') showToast('Reminders on — open the app in the evening and I\'ll tell you tomorrow\'s session','ok');
+      checkTomorrowReminder();
+    } else if(typeof showToast==='function') showToast('Notifications blocked — enable them in your browser/phone settings to use this','error');
+    try{ renderCoachCard(); }catch(e){}
+  });
+}
+// Same plain-language effort-by-feel used in the 24-week reference doc —
+// what the notification body actually needs isn't a data dump, it's "how
+// hard, how far, and roughly when" at a glance.
+var _REMINDER_EFFORT = {
+  rest:      'No running — walk + mobility',
+  easy:      'Easy — conversational pace',
+  long:      'Steady aerobic — stay relaxed',
+  threshold: 'Comfortably hard — short phrases only',
+  hill:      'Max effort — full recovery between reps',
+};
+function _reminderEffort(plan){
+  var name = (plan.name||'').toUpperCase();
+  if(name.indexOf('SPEED REPS')>=0 || name.indexOf('RACE-PACE')>=0) return 'Hard — full recovery between reps';
+  return _REMINDER_EFFORT[plan.type] || _REMINDER_EFFORT.easy;
+}
+function checkTomorrowReminder(){
+  try{
+    if(!D.settings.remindersEnabled) return;
+    if(!('Notification' in window) || Notification.permission !== 'granted') return;
+    if(new Date().getHours() < 18) return; // only from 6pm on — this is an evening "here's tomorrow" nudge
+    var todayStr = td();
+    var flagKey = 'gedyon_reminder_shown_' + todayStr;
+    if(localStorage.getItem(flagKey)) return;
+    var tmrwDate = new Date(Date.now() + 864e5).toISOString().slice(0,10);
+    var tmrw = getDayPlan(tmrwDate);
+    if(!tmrw) return;
+    var lines = [(tmrw.name||'Run') + (tmrw.mi ? ' · ' + tmrw.mi + 'mi' : '')];
+    var zoneHr = [];
+    if(tmrw.zone) zoneHr.push('Zone ' + tmrw.zone);
+    if(tmrw.hr && tmrw.hr.length===2 && !(tmrw.hr[0]===0 && tmrw.hr[1]===0)) zoneHr.push(tmrw.hr[0]+'-'+tmrw.hr[1]+' bpm');
+    if(zoneHr.length) lines.push(zoneHr.join(' · '));
+    lines.push(_reminderEffort(tmrw));
+    if(tmrw.wake) lines.push('Wake ' + tmrw.wake);
+    if(tmrw.lift) lines.push('+ Weight room / mobility after');
+    var notif = new Notification('Tomorrow — GEDYON', { body: lines.join('\n'), tag: 'gedyon-tomorrow' });
+    notif.onclick = function(){ try{ window.focus(); }catch(e){} notif.close(); };
+    localStorage.setItem(flagKey, '1');
+  }catch(e){}
+}
+
+// DAILY CHECKLIST — independent checkable items per session component (AM
+// run, PM run, lift) so checking off the run doesn't dismiss the gym task
+// still pending. Persisted per date, separate from workout logging — this
+// is "did I do the thing" tracking, not the actual pace/HR scoring.
+function _checklistItemsFor(plan){
+  var items = [];
+  if(plan.amMi>0 && plan.pmMi>0){
+    items.push({key:'am', label:'AM Run — '+plan.amMi+'mi'});
+    items.push({key:'pm', label:'PM Run — '+plan.pmMi+'mi'});
+  } else if(plan.mi>0){
+    items.push({key:'run', label:(plan.name||'Run')+' — '+plan.mi+'mi'});
+  }
+  if(plan.lift) items.push({key:'lift', label:'Weight room / mobility'});
+  return items;
+}
+function toggleChecklistItem(date, key){
+  if(!D.checklist) D.checklist = {};
+  if(!D.checklist[date]) D.checklist[date] = {};
+  D.checklist[date][key] = !D.checklist[date][key];
+  save();
+  try{ renderCoachCard(); }catch(e){}
+}
+function _renderChecklistHtml(date, items){
+  if(!items.length) return '';
+  var state = (D.checklist && D.checklist[date]) || {};
+  return '<div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">'
+    + items.map(function(it){
+        var done = !!state[it.key];
+        return '<div onclick="toggleChecklistItem(\''+date+'\',\''+it.key+'\')" style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:'+(done?'rgba(0,230,118,.08)':'rgba(255,255,255,.03)')+';border:1px solid '+(done?'rgba(0,230,118,.3)':'rgba(255,255,255,.08)')+';border-radius:9px;cursor:pointer;">'
+          + '<span style="width:18px;height:18px;flex-shrink:0;border-radius:5px;border:1.5px solid '+(done?'var(--green)':'rgba(255,255,255,.3)')+';background:'+(done?'var(--green)':'transparent')+';display:flex;align-items:center;justify-content:center;font-size:12px;color:#00210f;font-weight:800;">'+(done?'✓':'')+'</span>'
+          + '<span style="font-family:\'SF Mono\',monospace;font-size:12px;color:'+(done?'#8fd9b0':'#c9d4ea')+';text-decoration:'+(done?'line-through':'none')+';">'+it.label+'</span>'
+          + '</div>';
+      }).join('')
+    + '</div>';
+}
+
 // COACH CARD — glanceable "today's job + tomorrow's prep" on the TODAY tab
 function _cc_prep(type){
   var t=(type||'').toLowerCase();
@@ -8963,6 +9429,20 @@ function _cc_prep(type){
     return 'Quality tomorrow — carbs at dinner, charge watch, protected night: lights out 9:00';
   if(t==='long') return 'Long run tomorrow — lay out kit, fuel a bit before, lights out 9:15';
   return 'Easy tomorrow — clothes/shoes out, fill water bottle, lights out 9:15';
+}
+function _renderHealthCheckHtml(){
+  var results = computeHealthCheck();
+  if(!results || !results.length) return '';
+  var inRangeCount = results.filter(function(r){return r.inRange;}).length;
+  var allGood = inRangeCount === results.length;
+  var rows = results.map(function(r){
+    var arrow = r.diffPct > 0.01 ? '▲' : (r.diffPct < -0.01 ? '▼' : '·');
+    return '<span style="color:'+(r.inRange?'#5fb88a':'#e8935a')+';">'+arrow+' '+r.label+' '+r.value+' <span style="color:#6b7794;">(avg '+r.avg+')</span></span>';
+  }).join('<br>');
+  return '<div style="margin-top:10px;padding:9px 11px;background:'+(allGood?'rgba(0,230,118,.06)':'rgba(232,147,90,.07)')+';border:1px solid '+(allGood?'rgba(0,230,118,.2)':'rgba(232,147,90,.25)')+';border-radius:10px;">'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:10px;letter-spacing:1px;color:'+(allGood?'#5fb88a':'#e8935a')+';margin-bottom:5px;">'+(allGood?'✓ ':'')+'HEALTH CHECK — '+inRangeCount+'/'+results.length+' WITHIN YOUR RANGE</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;line-height:1.8;">'+rows+'</div>'
+    + '</div>';
 }
 function renderCoachCard(){
   var el=document.getElementById('coachCard'); if(!el) return;
@@ -8978,11 +9458,17 @@ function renderCoachCard(){
     +'<div style="font-family:Impact,Arial Narrow,sans-serif;letter-spacing:2px;font-size:12px;color:#7f8aa3;margin-bottom:4px;">TODAY · WEEK '+wk+'</div>'
     +'<div style="font-family:Impact,Arial Narrow,sans-serif;letter-spacing:1px;font-size:22px;color:#e8f0ff;">'+(today.name||'RUN')+(mi?' · '+mi+'mi':'')+'</div>'
     +'<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:#9fb0cc;line-height:1.7;margin-top:6px;">'+steps+'</div>'
+    +_renderChecklistHtml(td(), _checklistItemsFor(today))
+    +_renderHealthCheckHtml()
     +(tmrw?'<div style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;background:rgba(245,177,61,.07);border-radius:10px;padding:9px 11px;">'
       +'<span style="color:#f5b13d;">☾</span>'
       +'<div style="font-family:\'SF Mono\',monospace;font-size:11.5px;color:#c9b98a;line-height:1.6;"><b style="color:#f5d08a;">Tonight prep:</b> '+_cc_prep(tmrw.type)+'</div></div>':'')
     +'<div style="display:flex;gap:6px;margin-top:12px;font-family:\'SF Mono\',monospace;font-size:10px;color:#565f78;letter-spacing:.05em;">✓ scale · ✓ water+protein · ✓ log run · ✓ sleep 9h</div>'
+    +(D.settings.remindersEnabled
+      ? '<div style="margin-top:10px;font-family:\'SF Mono\',monospace;font-size:10.5px;color:#5fb88a;">🔔 Reminders on — I\'ll tell you tomorrow\'s session if you open the app in the evening</div>'
+      : '<button onclick="enableTomorrowReminders()" style="margin-top:10px;background:rgba(0,200,230,.1);border:1px solid rgba(0,200,230,.3);color:#00c8e6;font-family:\'SF Mono\',monospace;font-size:10.5px;padding:7px 10px;border-radius:8px;cursor:pointer;">🔔 Remind me what\'s next</button>')
     +'</div>';
+  try{ checkTomorrowReminder(); }catch(e){}
 }
 function renderDash(){
   renderDashPlanCard();
@@ -9690,6 +10176,108 @@ function gradeWorkout(w){
   return {score:pct,grade,gradeColor,insight};
 }
 
+// ═══ PACE & HR ZONES ═══
+// Live-computed from VDOT (getTrainingPaces) — was a static card hardcoded
+// to a max HR (188) the app's own doctrine had already flagged as wrong
+// (a formula guess; real max estimated 195-205). Now pulls the highest
+// logged maxHR as an observed value when available, falls back to the
+// doctrine's evidence-based estimate otherwise, and spans the full range
+// from Z1 (no pace floor) to peak interval pace — "how slow you can go"
+// through "how fast you can go" in one place.
+function renderPaceZones(){
+  var card = document.getElementById('paceZonesCard');
+  if(!card) return;
+  var paces = null;
+  try{ paces = getTrainingPaces(typeof getPRs==='function' ? getPRs() : {}); }catch(e){}
+
+  var observedMax = (D.workouts||[]).reduce(function(m,w){ return Math.max(m, w.maxHR||0); }, 0);
+  var maxHR = observedMax > 140 ? observedMax : 200;
+  function pct(p){ return Math.round(maxHR*p); }
+
+  var zones = [
+    {name:'Z1 · Recovery', hr:'<'+pct(0.60)+' bpm', pace:'no floor — walk/shuffle, as slow as needed', color:'var(--blue)'},
+    {name:'Z2 · Easy — how slow you train', hr:pct(0.60)+'–'+pct(0.72)+' bpm', pace: paces&&paces.easy ? _fmtPace(paces.easy)+' or slower' : '—', color:'var(--green)'},
+    {name:'Z3 · Tempo / Steady', hr:pct(0.72)+'–'+pct(0.82)+' bpm', pace: paces&&paces.tempo ? _fmtPace(paces.tempo) : '—', color:'var(--gold)'},
+    {name:'Z4 · Threshold', hr:pct(0.82)+'–'+pct(0.90)+' bpm', pace: paces&&paces.threshold ? _fmtPace(paces.threshold) : '—', color:'var(--orange)'},
+    {name:'Z5 · VO2max — peak pace', hr:pct(0.90)+'+ bpm', pace: paces&&paces.vo2max&&paces.interval ? _fmtPace(paces.interval)+'–'+_fmtPace(paces.vo2max) : '—', color:'var(--red)'},
+  ];
+
+  var body = document.getElementById('paceZonesBody');
+  if(body){
+    body.innerHTML = zones.map(function(z){
+      return '<div style="display:flex;justify-content:space-between;gap:8px;"><span style="color:'+z.color+';">'+z.name+'</span><span style="text-align:right;color:var(--off);">'+z.pace+' <span style="color:var(--grey);">· '+z.hr+'</span></span></div>';
+    }).join('')
+    + (paces && paces.race ? '<div style="display:flex;justify-content:space-between;gap:8px;margin-top:4px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);"><span style="color:var(--white);">Current race pace</span><span style="color:var(--white);font-weight:700;">'+_fmtPace(paces.race)+'</span></div>' : '');
+  }
+  var foot = document.getElementById('paceZonesFoot');
+  if(foot){
+    var maxLabel = observedMax > 140 ? ('Max HR: '+observedMax+' bpm (observed)') : 'Max HR: 200 bpm (estimated — no measured max logged yet)';
+    var srcLabel = paces && paces._source === 'effective'
+      ? 'Paces from CURRENT effective VDOT '+paces.vdot+' ('+paces._sourceEv+')'+(paces._prVdot?' — PR fitness is VDOT '+paces._prVdot+', paces climb back as pace-at-HR improves':'')
+      : paces && paces._source === 'vdot' ? 'Paces from VDOT '+paces.vdot+' ('+paces._sourceEv+' PR)' : 'Paces from plan estimate — log a race for real VDOT paces';
+    foot.textContent = maxLabel + ' · ' + srcLabel + ' · Talk test is the primary instrument — HR is a guardrail, not the target.';
+  }
+}
+
+// ═══ AEROBIC RESPONSE — "am I responding to training?" ═════════════
+// Cardiac drift check: same easy pace should produce LOWER HR as the
+// aerobic base builds (8-12 weeks). If it doesn't — or HR rises while
+// pace slows — that's the actual signal of non-response, not a guess.
+// This logic already existed buried inside the KODA chat context
+// builder (AI-only, never visible); pulled out into a shared function
+// so both the chat context and this card compute it identically.
+function computeAerobicResponse(){
+  var runWos = (D.workouts||[]).filter(function(w){ return w.avgHR > 100 && w.pace > 0 && w.dist >= 2; })
+    .sort(function(a,b){ return a.date > b.date ? -1 : 1; });
+  if(runWos.length < 3) return null;
+  var recent3 = runWos.slice(0, 3);
+  var older = runWos.filter(function(w){
+    var age = (new Date() - new Date(w.date+'T12:00:00'))/86400000;
+    return age >= 21 && age <= 42;
+  }).slice(0, 3);
+  var recAvgHR = recent3.reduce(function(s,w){return s+w.avgHR;},0)/recent3.length;
+  var recAvgPace = recent3.reduce(function(s,w){return s+w.pace;},0)/recent3.length;
+  var result = { recAvgHR: Math.round(recAvgHR), recAvgPace: Math.round(recAvgPace*10)/10, sampleSize: recent3.length };
+  if(older.length >= 2){
+    var oldAvgHR = older.reduce(function(s,w){return s+w.avgHR;},0)/older.length;
+    var oldAvgPace = older.reduce(function(s,w){return s+w.pace;},0)/older.length;
+    var hrDelta = Math.round(recAvgHR - oldAvgHR);
+    var paceDelta = Math.round((recAvgPace - oldAvgPace)*10)/10;
+    result.oldAvgHR = Math.round(oldAvgHR); result.oldAvgPace = Math.round(oldAvgPace*10)/10;
+    result.hrDelta = hrDelta; result.paceDelta = paceDelta;
+    if(hrDelta < -5 && Math.abs(paceDelta) < 0.5) result.status = 'adapting';
+    else if(hrDelta > 5 && paceDelta > 0.3) result.status = 'stress';
+    else result.status = 'neutral';
+  } else {
+    result.status = 'building';
+  }
+  return result;
+}
+
+function renderAerobicResponse(){
+  var body = document.getElementById('aerobicResponseBody');
+  if(!body) return;
+  var r = null; try{ r = computeAerobicResponse(); }catch(e){}
+  if(!r){
+    body.innerHTML = '<div style="color:var(--grey);">Not enough HR-logged runs yet (need 3+, with avg HR recorded) — this fills in as you log runs with a watch/strap.</div>';
+    return;
+  }
+  var statusMap = {
+    adapting: { label: 'ADAPTING', color: 'var(--green)', line: 'Same pace, lower HR — the base is building. This is what responding looks like.' },
+    stress:   { label: 'NOT RESPONDING — WATCH THIS', color: 'var(--red)', line: 'HR rising while pace slows at the same effort. Flag for extra recovery, not more volume.' },
+    neutral:  { label: 'TOO EARLY TO TELL', color: 'var(--gold)', line: 'No clear trend yet either way — keep training, recheck in a couple weeks.' },
+    building: { label: 'BUILDING BASELINE', color: 'var(--grey)', line: 'Need 2+ weeks of comparison data (a run from 3-4 weeks back) before a trend means anything.' },
+  }[r.status];
+  var html = '<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:16px;letter-spacing:1px;color:'+statusMap.color+';margin-bottom:4px;">'+statusMap.label+'</div>';
+  html += '<div style="color:var(--off);margin-bottom:8px;">'+statusMap.line+'</div>';
+  html += '<div style="display:flex;justify-content:space-between;"><span style="color:var(--grey);">Last '+r.sampleSize+' runs avg</span><span style="color:var(--white);">'+r.recAvgHR+' bpm @ '+r.recAvgPace+' min/mi</span></div>';
+  if(r.oldAvgHR != null){
+    html += '<div style="display:flex;justify-content:space-between;"><span style="color:var(--grey);">3-4 weeks ago</span><span style="color:var(--white);">'+r.oldAvgHR+' bpm @ '+r.oldAvgPace+' min/mi</span></div>';
+    html += '<div style="display:flex;justify-content:space-between;"><span style="color:var(--grey);">Change</span><span style="color:'+(r.hrDelta<0?'var(--green)':'var(--red)')+';">'+(r.hrDelta>0?'+':'')+r.hrDelta+' bpm · '+(r.paceDelta>0?'+':'')+r.paceDelta+' min/mi</span></div>';
+  }
+  body.innerHTML = html;
+}
+
 // ═══ TRAIN LOG ═══
 function renderTrainLog(){
   const wks=D.workouts.filter(w=>{return(new Date()-parseLocalDate(w.date))/86400000<=7;});
@@ -9781,11 +10369,13 @@ function renderPlanTodayBox(){
   }
   if(plan.sets) html+='<div style="font-family:SF Mono,Consolas,monospace;font-size:13px;color:var(--gold);padding:8px 12px;background:rgba(245,196,0,.05);border-radius:8px;margin-bottom:8px;">'+plan.sets+'</div>';
   html+='<div style="font-family:SF Mono,Consolas,monospace;font-size:13px;color:var(--grey);">Wake: '+plan.wake+' &nbsp;·&nbsp; Bed: '+plan.bed+'</div>';
+  html+='</div></div>'; // close body + the TODAY plan card — nutrition gets its own card below, not nested inside this one
 
-  // ── NUTRITION PLAN ──────────────────────────────────────────
+  // ── NUTRITION PLAN — separate card, not merged into the plan card ──
+  html += '<div style="background:var(--card);border:2px solid rgba(245,196,0,.4);border-radius:12px;padding:14px;margin-top:12px;">';
   html += buildNutritionPlan(plan);
+  html += '</div>';
 
-  html+='</div></div>';
   el.innerHTML=html;
   // Update daily calorie total after nutrition plan renders
   setTimeout(function(){ if(typeof updateDailyCalTotal==='function') updateDailyCalTotal(); },120);
@@ -10090,7 +10680,7 @@ function buildNutritionPlan(plan){
   // Build meal timing based on workout type
   const meals = getNutritionTiming(plan, cal, macros);
 
-  let h = '<div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.08);padding-top:14px;">';
+  let h = '<div>';
   h += '<div style="font-family:SF Mono,Consolas,monospace;font-size:13px;color:var(--gold);letter-spacing:2px;margin-bottom:10px;">NUTRITION PLAN · '+cal+' CAL TARGET</div>';
 
   // Macro targets bar
@@ -11041,6 +11631,46 @@ function isPR(ev,time){
   if(!prs[ev]) return true;
   return timeToSec(time)<prs[ev].sec;
 }
+// ═══ EFFECTIVE VDOT — what the athlete can run TODAY ═══════════════
+// PR-derived VDOT encodes a fitter, lighter athlete; prescriptions built
+// on it demand paces current-you can't hold, which turns every quality
+// day into a negotiation. This estimates current capability from the
+// last 21 days of synced runs (pace at heart rate → implied VDOT via
+// Daniels + Swain %HRmax→%VO2max), so prescribed paces track the athlete
+// who shows up, and rise on their own as pace-at-HR improves and weight
+// comes off. Display/prescription layer only — the durable Supabase
+// anchor still moves through the coach-review changeset queue.
+function getEffectiveVdot(){
+  try{
+    // True max HR: a setting if provided, else an observed max only when it
+    // plausibly IS a max (>=180 — an easy-run peak of 150 is not a max and
+    // would wreck the %VO2 conversion), else an age-appropriate 190.
+    var observedMax = (D.workouts||[]).reduce(function(m,w){ return Math.max(m, w.maxHR||0); }, 0);
+    var maxHR = (D.settings && +D.settings.maxHR) || (observedMax >= 180 ? observedMax : 190);
+    var now = new Date();
+    var implied = [];
+    (D.workouts||[]).forEach(function(w){
+      var hr = w.avgHR || w.hr || 0;
+      var pace = +w.pace || 0;                       // min/mi
+      var age = (now - new Date(w.date+'T12:00:00'))/86400000;
+      if(age < 0 || age > 21) return;
+      if(!(w.dist >= 2) || hr < 105 || hr > 195) return;
+      if(pace < 5 || pace > 13) return;              // watch-mangled treadmill paces land outside this
+      var pctVO2 = (hr/maxHR - 0.26) / 0.74;         // Swain conversion
+      if(pctVO2 < 0.65 || pctVO2 > 1.0) return;      // below ~65% the conversion is too noisy to trust
+      var v = 1609.34 / pace;                        // m/min
+      var vo2 = -4.60 + 0.182258*v + 0.000104*v*v;
+      var iv = vo2 / pctVO2;
+      if(iv > 30 && iv < 85) implied.push(iv);
+    });
+    if(implied.length < 2) return null;              // one run is noise, not fitness
+    implied.sort(function(a,b){return a-b;});
+    // conservative median: lower-middle on even counts — under-prescribing
+    // pace by a hair is recoverable, over-prescribing costs a session
+    var med = implied[Math.ceil(implied.length/2) - 1];
+    return { vdot: Math.round(med*10)/10, n: implied.length };
+  }catch(e){ return null; }
+}
 function getTrainingPaces(prs){
   var paces={};
 
@@ -11076,6 +11706,26 @@ function getTrainingPaces(prs){
     }
   }
 
+  // Blend in current capability: when recent pace-at-HR says the athlete
+  // is fitter on paper than in practice, prescribe from the effective
+  // number (never punish a good patch — the PR VDOT stays the ceiling
+  // until a race raises it). Recent runs beat the plan fallback too.
+  var eff = getEffectiveVdot();
+  if(eff){
+    if(vdot && eff.vdot < vdot - 1){
+      paces._prVdot = Math.round(vdot*10)/10;
+      // clamp: recent-run noise may not downgrade more than ~22% below PR
+      // fitness — beyond that the data is suspect, not the athlete
+      vdot = Math.max(eff.vdot, Math.round(vdot*0.78*10)/10);
+      sourceEv = 'recent runs (' + eff.n + ')';
+      paces._source = 'effective';
+    } else if(!vdot){
+      vdot = eff.vdot; sourceEv = 'recent runs (' + eff.n + ')';
+      paces._source = 'effective';
+    }
+    paces._effVdot = eff.vdot;
+  }
+
   if(vdot){
     // Jack Daniels %VO2max zones:
     // Easy 65-79%, Marathon 79-84%, Threshold 88-92%, VO2max 95-100%, Reps 105-110%
@@ -11086,7 +11736,7 @@ function getTrainingPaces(prs){
     paces.vo2max    = vdotToPace(vdot, 1.00);   // 100% — VO2max intervals
     paces.race      = vdotToPace(vdot, 0.98);   // ~98% — current mile race pace
     paces.interval  = vdotToPace(vdot, 1.05);   // 105% — speed reps
-    paces._source   = 'vdot';
+    paces._source   = paces._source || 'vdot';
     paces._sourceEv = sourceEv;
     return paces;
   }
@@ -13469,7 +14119,7 @@ function checkAllConnectionStates(){
 // ════════════════════════════════════════════
 const WHOOP_AUTH_URL     = 'https://api.prod.whoop.com/oauth/oauth2/auth';
 const WHOOP_TOKEN_URL    = 'https://api.prod.whoop.com/oauth/oauth2/token';
-const WHOOP_API_BASE     = 'https://api.prod.whoop.com/developer/v1';
+const WHOOP_API_BASE     = 'https://api.prod.whoop.com/developer/v2';
 const WHOOP_SCOPES       = 'read:recovery read:sleep read:workout read:profile read:cycles offline';
 
 function whoopConnectServer(){
@@ -14410,16 +15060,45 @@ async function whoopDirectFetchAll(){
   await Promise.all([
     whoopDirectFetchRecovery(token),
     whoopDirectFetchSleep(token),
-    whoopDirectFetchWorkouts(token)
+    whoopDirectFetchWorkouts(token),
+    whoopDirectFetchCycle(token)
   ]);
   try{renderDash();}catch(e){}
+}
+
+// Cycle = WHOOP's daily strain (the number on the home screen, separate from
+// Recovery/Sleep/Workout). The overtraining card (renderOvertrainingCard)
+// already reads D.whoopData.strain to give real-time "back off today" /
+// "well balanced" guidance -- it was only ever getting that value from the
+// optional legacy server, so on direct-OAuth-only setups strain silently
+// stayed null and the card ran without 25 points of its own scoring logic.
+async function whoopDirectFetchCycle(token){
+  if(!token) token = await whoopGetDirectToken();
+  if(!token) return;
+  try{
+    const resp = await fetch(WHOOP_API+'/developer/v2/cycle?limit=1', {
+      headers:{'Authorization':'Bearer '+token}
+    });
+    if(!resp.ok) return;
+    const data = await resp.json();
+    const cyc = (data.records||[])[0];
+    if(!cyc || !cyc.score) return;
+    if(!D.whoopData) D.whoopData = {};
+    D.whoopData.strain = cyc.score.strain != null ? +cyc.score.strain.toFixed(1) : D.whoopData.strain;
+    D.whoopData.dayCalories = cyc.score.kilojoule ? Math.round(cyc.score.kilojoule/4.184) : D.whoopData.dayCalories;
+    D.whoopData.dayAvgHR = cyc.score.average_heart_rate || D.whoopData.dayAvgHR;
+    save();
+    const el = document.getElementById('whoopStrain');
+    if(el && D.whoopData.strain != null) el.textContent = D.whoopData.strain;
+    try{ renderOvertrainingCard(); }catch(e){}
+  }catch(e){ console.error('[WHOOP DIRECT] Cycle error:', e); }
 }
 
 async function whoopDirectFetchRecovery(token){
   if(!token) token = await whoopGetDirectToken();
   if(!token) return;
   try{
-    const resp = await fetch(WHOOP_API+'/developer/v1/recovery?limit=30', {
+    const resp = await fetch(WHOOP_API+'/developer/v2/recovery?limit=30', {
       headers:{'Authorization':'Bearer '+token}
     });
     if(!resp.ok) return;
@@ -14430,6 +15109,10 @@ async function whoopDirectFetchRecovery(token){
       if(!date) return;
       const entry = {date:date, recovery:Math.round(r.score?.recovery_score||0),
         hrv:Math.round(r.score?.hrv_rmssd_milli||0), rhr:Math.round(r.score?.resting_heart_rate||0)};
+      // Only WHOOP 4.0+ reports these — leave unset rather than write a
+      // fake 0 that would corrupt the rolling-average health check below.
+      if(r.score?.spo2_percentage != null) entry.spo2 = +r.score.spo2_percentage.toFixed(1);
+      if(r.score?.skin_temp_celsius != null) entry.skinTemp = +r.score.skin_temp_celsius.toFixed(1);
       const ex = D.whoopRecovery.find(x=>x.date===date);
       if(ex) Object.assign(ex, entry); else D.whoopRecovery.push(entry);
     });
@@ -14439,8 +15122,14 @@ async function whoopDirectFetchRecovery(token){
     if(todayRec){
       if(!D.whoopData) D.whoopData = {};
       D.whoopData.recovery=todayRec.recovery; D.whoopData.hrv=todayRec.hrv; D.whoopData.rhr=todayRec.rhr;
-      if(!D.logs) D.logs={}; if(!D.logs[today]) D.logs[today]={};
-      D.logs[today].hrv=todayRec.hrv; D.logs[today].recovery=todayRec.recovery;
+      // D.logs is an ARRAY (find/push), not a date-keyed object — the old
+      // D.logs[today]={} form silently wrote to an inaccessible property
+      // instead of a real log entry, so this data never reached the rest
+      // of the app (which always reads via D.logs.find(e=>e.date===...)).
+      if(!D.logs) D.logs=[];
+      var _logEntry = D.logs.find(function(e){return e.date===today;});
+      if(!_logEntry){ _logEntry={date:today}; D.logs.push(_logEntry); }
+      _logEntry.hrv=todayRec.hrv; _logEntry.recovery=todayRec.recovery;
     }
     save();
     showSyncToast('\u2713 '+(data.records||[]).length+' WHOOP recovery days synced','green');
@@ -14451,7 +15140,7 @@ async function whoopDirectFetchSleep(token){
   if(!token) token = await whoopGetDirectToken();
   if(!token) return;
   try{
-    const resp = await fetch(WHOOP_API+'/developer/v1/activity/sleep?limit=30', {
+    const resp = await fetch(WHOOP_API+'/developer/v2/activity/sleep?limit=30', {
       headers:{'Authorization':'Bearer '+token}
     });
     if(!resp.ok) return;
@@ -14461,19 +15150,64 @@ async function whoopDirectFetchSleep(token){
       if(!date) return;
       const totalMs = s.score?.stage_summary?.total_in_bed_time_milli||0;
       const sleepHrs = +(totalMs/3600000).toFixed(1);
-      if(!D.logs) D.logs={}; if(!D.logs[date]) D.logs[date]={};
-      D.logs[date].sleep=sleepHrs;
-      if(s.score?.sleep_performance_percentage) D.logs[date].sleepScore=s.score.sleep_performance_percentage;
+      // Same array-vs-object fix as recovery above.
+      if(!D.logs) D.logs=[];
+      var _logEntry = D.logs.find(function(e){return e.date===date;});
+      if(!_logEntry){ _logEntry={date:date}; D.logs.push(_logEntry); }
+      _logEntry.sleep=sleepHrs;
+      if(s.score?.sleep_performance_percentage) _logEntry.sleepScore=s.score.sleep_performance_percentage;
+      // Respiratory rate lives on Sleep, not Recovery, but conceptually it's
+      // one of the same "daily vitals" — merge it into the same whoopRecovery
+      // entry for the date so the health check below has one place to read.
+      if(s.score?.respiratory_rate != null){
+        if(!D.whoopRecovery) D.whoopRecovery = [];
+        var _wr = D.whoopRecovery.find(function(x){return x.date===date;});
+        if(!_wr){ _wr = {date:date}; D.whoopRecovery.push(_wr); D.whoopRecovery.sort(function(a,b){return a.date.localeCompare(b.date);}); }
+        _wr.respRate = +s.score.respiratory_rate.toFixed(1);
+      }
     });
     save();
   }catch(e){ console.error('[WHOOP DIRECT] Sleep error:', e); }
+}
+
+// Approximates WHOOP's own "Health Monitor — X/Y within range" using the
+// athlete's own logged history as the baseline, the same way WHOOP compares
+// today against your personal rolling average rather than a population norm.
+// RHR/respiratory-rate are "lower is better" (in-range = at or below average);
+// HRV is "higher is better" (in-range = at or above average) — matches how
+// WHOOP itself colors these (green up-arrow on HRV gains, RHR drops).
+var HEALTH_CHECK_METRICS = [
+  {key:'rhr',      label:'Resting HR',      lowerIsBetter:true,  band:0.08},
+  {key:'hrv',      label:'HRV',             lowerIsBetter:false, band:0.12},
+  {key:'respRate', label:'Respiratory Rate',lowerIsBetter:true,  band:0.08},
+  {key:'spo2',     label:'SpO2',            lowerIsBetter:false, band:0.03},
+  {key:'skinTemp', label:'Skin Temp',       lowerIsBetter:true,  band:0.02},
+];
+function computeHealthCheck(){
+  var hist = (D.whoopRecovery||[]).slice();
+  var today = td();
+  var todayEntry = hist.find(function(x){return x.date===today;});
+  if(!todayEntry) return null;
+  var baseline = hist.filter(function(x){return x.date!==today;}).slice(-30);
+  var results = [];
+  HEALTH_CHECK_METRICS.forEach(function(m){
+    var todayVal = todayEntry[m.key];
+    if(todayVal == null) return; // metric not available on this device/plan
+    var samples = baseline.map(function(x){return x[m.key];}).filter(function(v){return v!=null;});
+    if(samples.length < 3) return; // not enough history to call a baseline yet
+    var avg = samples.reduce(function(a,b){return a+b;},0) / samples.length;
+    var diffPct = (todayVal - avg) / avg;
+    var inRange = m.lowerIsBetter ? diffPct <= m.band : diffPct >= -m.band;
+    results.push({key:m.key, label:m.label, value:todayVal, avg:+avg.toFixed(1), diffPct:diffPct, inRange:inRange});
+  });
+  return results;
 }
 
 async function whoopDirectFetchWorkouts(token){
   if(!token) token = await whoopGetDirectToken();
   if(!token) return;
   try{
-    const resp = await fetch(WHOOP_API+'/developer/v1/activity/workout?limit=50', {
+    const resp = await fetch(WHOOP_API+'/developer/v2/activity/workout?limit=50', {
       headers:{'Authorization':'Bearer '+token}
     });
     if(!resp.ok) return;
@@ -14481,26 +15215,50 @@ async function whoopDirectFetchWorkouts(token){
     const wos = (data.records||[]).map(w=>{
       const date = w.created_at ? w.created_at.slice(0,10) : null;
       if(!date) return null;
+      // V2 identifies sport by `sport_name` (a string, e.g. "running") — the old
+      // `sport_id` numeric lookup is being phased out, so prefer the name field
+      // and fall back to the id map only for pre-migration cached data.
+      const sportKey = w.sport_name || w.sport_id;
+      const zd = w.score?.zone_durations || {};
+      // _normaliseWorkout() reads `avgHR`/`calories` specifically, not `hr`/`cal` —
+      // those got silently dropped on merge before this matched the expected names.
       return {date:date, source:'whoop', whoopId:w.id,
-        name:whoopSportName(w.sport_id), type:whoopSportType(w.sport_id),
-        dur:Math.round((w.score?.zone_duration?.zone_zero_milli||0+w.score?.zone_duration?.zone_one_milli||0+w.score?.zone_duration?.zone_two_milli||0+w.score?.zone_duration?.zone_three_milli||0+w.score?.zone_duration?.zone_four_milli||0+w.score?.zone_duration?.zone_five_milli||0)/60000)||0,
-        strain:w.score?.strain||0, cal:Math.round((w.score?.kilojoule||0)/4.184),
-        hr:Math.round(w.score?.average_heart_rate||0), maxHR:Math.round(w.score?.max_heart_rate||0),
+        name:whoopSportName(sportKey), type:whoopSportType(sportKey),
+        dur:Math.round(((zd.zone_zero_milli||0)+(zd.zone_one_milli||0)+(zd.zone_two_milli||0)+(zd.zone_three_milli||0)+(zd.zone_four_milli||0)+(zd.zone_five_milli||0))/60000),
+        strain:w.score?.strain||0, calories:Math.round((w.score?.kilojoule||0)/4.184),
+        avgHR:Math.round(w.score?.average_heart_rate||0), maxHR:Math.round(w.score?.max_heart_rate||0),
         dist:w.score?.distance_meter?+(w.score.distance_meter/1609.34).toFixed(2):0};
     }).filter(Boolean);
     if(wos.length>0){ mergeServerWorkouts(wos); save(); }
   }catch(e){ console.error('[WHOOP DIRECT] Workouts error:', e); }
 }
 
-function whoopSportName(id){
+// Accepts either the V2 sport_name string ("running") or a legacy numeric
+// sport_id, since cached pre-migration workout data may still carry the id.
+function whoopSportName(key){
+  if(typeof key === 'string') return key.charAt(0).toUpperCase()+key.slice(1);
   const m={0:'Activity',1:'Running',63:'Running',16:'Cycling',48:'Cycling',71:'Weightlifting',43:'Yoga',44:'Swim',
     52:'CrossFit',55:'HIIT',64:'Walking',82:'Rowing',96:'Pilates'};
-  return m[id]||'Workout';
+  return m[key]||'Workout';
 }
-function whoopSportType(id){
+function whoopSportType(key){
+  if(typeof key === 'string'){
+    const s=key.toLowerCase();
+    if(s.indexOf('run')>=0) return 'Run';
+    if(s.indexOf('cycl')>=0||s.indexOf('bik')>=0) return 'Ride';
+    if(s.indexOf('swim')>=0) return 'Swim';
+    if(s.indexOf('walk')>=0) return 'Walk';
+    if(s.indexOf('row')>=0) return 'Row';
+    if(s.indexOf('weight')>=0||s.indexOf('strength')>=0||s.indexOf('lift')>=0) return 'Strength';
+    if(s.indexOf('yoga')>=0) return 'Yoga';
+    if(s.indexOf('crossfit')>=0) return 'CrossFit';
+    if(s.indexOf('hiit')>=0) return 'HIIT';
+    if(s.indexOf('pilates')>=0) return 'Pilates';
+    return 'Workout';
+  }
   const m={0:'Workout',1:'Run',63:'Run',16:'Ride',48:'Ride',71:'Strength',43:'Yoga',44:'Swim',
     52:'CrossFit',55:'HIIT',64:'Walk',82:'Row',96:'Pilates'};
-  return m[id]||'Workout';
+  return m[key]||'Workout';
 }
 
 function updateWhoopDirectUI(){
@@ -19084,7 +19842,6 @@ async function _logRunConfirm(){
   var eff  = (document.getElementById('lrEffort')||{}).value || '5';
   if(!date){ showSyncToast('Pick a date','red'); return; }
   if(!mins || parseInt(mins) < 1){ showSyncToast('How many minutes did you run?','red'); return; }
-  var m = document.getElementById('logRunModal'); if(m) m.remove();
   await logManualWorkout(date, mins, eff, dist, 'run');
   try{ renderTrainingSummary(); }catch(e){}
   // Fresh placement with the new mileage included
@@ -19092,6 +19849,32 @@ async function _logRunConfirm(){
     localStorage.removeItem('gedyon_autorecal_shown'); // allow the modal to show for this
     setTimeout(autoFitnessCheck, 400);
   }
+  // Real-time vs-plan comparison, right in the modal — reuses the exact same
+  // scoring/rendering scoreWorkout() already builds for screenshot imports,
+  // just captured here instead of requiring a trip to another tab.
+  try{
+    var plan = getDayPlan(date);
+    var wo = { dist: parseFloat(dist)||0, dur: parseInt(mins)||0, duration: parseInt(mins)||0, hr:0, source:'manual', type:'run' };
+    var hadExecCard = !!document.getElementById('execCard');
+    var tmpExec = null;
+    if(!hadExecCard){ tmpExec = document.createElement('div'); tmpExec.id='execCard'; tmpExec.style.display='none'; document.body.appendChild(tmpExec); }
+    var dA=document.createElement('div'), dB=document.createElement('div'), dL=document.createElement('div');
+    await scoreWorkout(wo, date, plan, dA, dB, dL);
+    var resultHtml = document.getElementById('execCard').innerHTML;
+    if(tmpExec) tmpExec.remove();
+    _showLogRunResult(resultHtml);
+  }catch(e){
+    console.warn('[LogRun] scoring failed', e);
+    var m = document.getElementById('logRunModal'); if(m) m.remove();
+  }
+}
+
+function _showLogRunResult(execHtml){
+  var sheet = document.querySelector('#logRunModal > div');
+  if(!sheet){ var m=document.getElementById('logRunModal'); if(m) m.remove(); return; }
+  sheet.innerHTML = '<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:24px;letter-spacing:2px;color:#00E676;margin-bottom:14px;">✅ RUN LOGGED</div>'
+    + execHtml
+    + '<button onclick="document.getElementById(\'logRunModal\').remove();" style="width:100%;padding:14px;background:#00C853;color:#00210f;font-family:Impact,Arial Narrow,sans-serif;font-size:18px;letter-spacing:3px;border:none;border-radius:14px;cursor:pointer;margin-top:14px;">DONE</button>';
 }
 
 // ── SHARE WEEK — canvas training card + native share sheet ──────────
@@ -19170,11 +19953,47 @@ async function shareTrainingWeek(){
 // Every run judged against its target; every week against the ramp;
 // the whole arc against April 4, 2028. No vibes — evidence.
 var RAMP_ANCHOR = '2026-07-20'; // Monday of Baseline Test Week; ramp = 15mi +2/wk, flat every 3rd
+// Volume bump (Aug 20/26): weight is dropping and the athlete asked for more
+// volume. Rather than retroactively inflate past weeks' targets (which would
+// misrepresent adherence history in missionAssess's 4-week lookback), the
+// increment itself steps up at a fixed ramp-week boundary — everything before
+// it stays +2/wk exactly as logged, everything from ramp-week 5 (Mon Aug 24)
+// on runs +3/wk. Flat-every-3rd-week and the 35mi safety cap are unchanged.
+var RAMP_RATE_BUMP_WEEK = 4; // ramp-week index (0-based) after which +2 → +3
 function _rampTargetForWeek(offsetWeeks){
-  // +2/wk with every 3rd week flat, capped at 35 (end of Base Build merge)
   var add = 0;
-  for(var i=1;i<=offsetWeeks;i++){ if(i%3!==0) add += 2; }
+  for(var i=1;i<=offsetWeeks;i++){
+    if(i%3===0) continue; // flat/deload week — no increment
+    add += (i <= RAMP_RATE_BUMP_WEEK) ? 2 : 3;
+  }
   return Math.min(35, 15 + add);
+}
+
+// ── ACUTE:CHRONIC WORKLOAD RATIO ────────────────────────────────────
+// 7-day acute mileage vs the trailing 28-day weekly-equivalent average.
+// Literature (Gabbett; endurance-runner cohort studies) puts 0.8-1.3 as
+// the low-injury-risk band; >1.3-1.5 elevated, >1.5 high-risk spike.
+// <0.8 isn't a risk zone itself — it flags detraining, not injury.
+function computeACWR(){
+  var todayMs = parseLocalDate(td()).getTime();
+  function milesInWindow(days){
+    var startMs = todayMs - (days-1)*86400000;
+    return (D.workouts||[]).filter(function(w){
+      if(!w.date || !(w.dist>0)) return false;
+      var ms = parseLocalDate(w.date).getTime();
+      return ms>=startMs && ms<=todayMs;
+    }).reduce(function(s,w){return s+(w.dist||0);},0);
+  }
+  var acute7 = milesInWindow(7);
+  var chronic28Avg = milesInWindow(28)/4;
+  var ratio = chronic28Avg > 0 ? acute7/chronic28Avg : null;
+  var zone = ratio==null ? 'no-data' : ratio>1.5 ? 'high-risk' : ratio>1.3 ? 'elevated' : ratio>=0.8 ? 'optimal' : 'undertrained';
+  return {
+    acute7: Math.round(acute7*10)/10,
+    chronic28Avg: Math.round(chronic28Avg*10)/10,
+    ratio: ratio==null ? null : Math.round(ratio*100)/100,
+    zone: zone,
+  };
 }
 
 function missionAssess(){
@@ -19233,10 +20052,12 @@ function missionAssess(){
   var vdotNow = null; try{ var p = getTrainingPaces(getPRs()); if(p && p.vdot) vdotNow = p.vdot; }catch(e){}
   var weeksLeft = Math.max(1, Math.ceil((parseLocalDate('2028-04-04').getTime()-todayMs)/(7*86400000)));
 
+  var acwr = null; try{ acwr = computeACWR(); }catch(e){}
+
   return { rampWk: rampWk, target: target, actualMi: actualMi, pct: pct,
            expectedByNow: expectedByNow, pctOfExpected: pctOfExpected, weekVerdict: weekVerdict,
            adherence: adherence, hitWeeks: hitWeeks, vdotNow: vdotNow, vdotGoal: 79, weeksLeft: weeksLeft,
-           runsThisWeek: weekRuns.length };
+           runsThisWeek: weekRuns.length, acwr: acwr };
 }
 
 // Per-run verdict: judge a run against its planned day (grade engine) or,
@@ -19351,6 +20172,11 @@ function showFitnessSummary(){
     html += row('This week (so far)', m.actualMi + ' of ' + m.target + ' mi target', vCol);
     html += row('Expected by today', m.expectedByNow + ' mi → you\'re at ' + m.pctOfExpected + '%', vCol);
     html += row('Last 4 weeks hit', m.hitWeeks + ' of 4 (≥85% of ramp)', m.hitWeeks>=3?'#00E676':m.hitWeeks>=2?'#FFB84D':'#FF5252');
+    if(m.acwr && m.acwr.ratio != null){
+      var acwrCol = m.acwr.zone==='high-risk' ? '#FF5252' : m.acwr.zone==='elevated' ? '#FFB84D' : m.acwr.zone==='undertrained' ? 'var(--grey)' : '#00E676';
+      var acwrLabel = m.acwr.zone==='high-risk' ? 'SPIKE — ease off' : m.acwr.zone==='elevated' ? 'watch it' : m.acwr.zone==='undertrained' ? 'room to build' : 'safe zone';
+      html += row('Load ratio (7d vs 28d avg)', m.acwr.ratio + ' — ' + acwrLabel, acwrCol);
+    }
     if(m.vdotNow) html += row('Engine vs mission', 'VDOT ' + m.vdotNow + ' now → 79 needed · ' + m.weeksLeft + ' wks left');
     // Per-run verdicts, last 7 runs with data
     var recent = (D.workouts||[]).filter(function(w){return w.date && w.dist>0;})
@@ -19433,6 +20259,416 @@ function showFitnessSummary(){
   modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
   document.body.appendChild(modal);
 }
+
+// ─────────────────────────────────────────────────────────────
+//  PRINTABLE MONTH — calendar overview + full daily session
+//  detail for any month. Reuses the same getDayPlan()/getWk()/
+//  formatSteps() the live app uses, so paces stay VDOT-calibrated.
+//  Rendered into #printMonthArea and isolated for print via the
+//  visibility trick defined in <style> (@media print).
+// ─────────────────────────────────────────────────────────────
+var _pmState = { y: null, m: null };
+
+function _pmMonthLabel(y, m){ return new Date(y, m, 1).toLocaleString('default', {month:'long'}) + ' ' + y; }
+
+function _pmMonthDays(y, m){
+  var days = [];
+  var last = new Date(y, m+1, 0).getDate();
+  for(var d = 1; d <= last; d++){
+    var dt = new Date(y, m, d, 12, 0, 0);
+    days.push({ date: dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0'), dow: dt.getDay(), num: d });
+  }
+  return days;
+}
+
+function openPrintMonthModal(){
+  var ex = document.getElementById('printMonthModal'); if(ex) ex.remove();
+  var now = new Date();
+  _pmState.y = now.getFullYear(); _pmState.m = now.getMonth();
+
+  var modal = document.createElement('div');
+  modal.id = 'printMonthModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:99995;background:rgba(0,0,0,0.88);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);padding:0 0 env(safe-area-inset-bottom,0px);';
+  modal.innerHTML = '<div style="width:100%;max-width:480px;background:#0D0D18;border-radius:24px 24px 0 0;border-top:1px solid rgba(255,255,255,.12);max-height:92vh;overflow-y:auto;padding:0 0 24px;">'
+    + '<div style="display:flex;justify-content:center;padding:12px 0 4px;"><div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);"></div></div>'
+    + '<div style="padding:4px 20px 16px;">'
+    + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:20px;letter-spacing:2px;color:var(--white);">PRINT MONTHLY PLAN</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);margin-top:2px;">Calendar overview + full daily session detail</div>'
+    + '</div>'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px 16px;">'
+    + '<button onclick="_pmShiftMonth(-1)" style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--white);font-size:16px;cursor:pointer;">‹</button>'
+    + '<div id="pmMonthLabel" style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:22px;letter-spacing:2px;color:var(--blue);"></div>'
+    + '<button onclick="_pmShiftMonth(1)" style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--white);font-size:16px;cursor:pointer;">›</button>'
+    + '</div>'
+    + '<div id="pmSummary" style="padding:0 20px 16px;font-family:\'SF Mono\',monospace;font-size:11px;color:var(--off);line-height:1.6;"></div>'
+    + '<div style="padding:0 20px;display:flex;gap:10px;">'
+    + '<button onclick="document.getElementById(\'printMonthModal\').remove();" style="flex:1;padding:13px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:var(--off);font-family:Impact,\'Arial Narrow\',sans-serif;font-size:14px;letter-spacing:2px;cursor:pointer;">CANCEL</button>'
+    + '<button onclick="printSelectedMonth()" style="flex:2;padding:13px;background:rgba(74,158,255,.14);border:1px solid rgba(74,158,255,.4);border-radius:12px;color:var(--blue);font-family:Impact,\'Arial Narrow\',sans-serif;font-size:14px;letter-spacing:2px;cursor:pointer;">🖨 PRINT</button>'
+    + '</div></div>';
+  document.body.appendChild(modal);
+  _pmRefreshLabel();
+}
+
+function _pmShiftMonth(delta){
+  var d = new Date(_pmState.y, _pmState.m + delta, 1);
+  _pmState.y = d.getFullYear(); _pmState.m = d.getMonth();
+  _pmRefreshLabel();
+}
+
+// For the CURRENT month, scope to today onward — past days are done,
+// no reason to print/preview them. Other months still show in full.
+function _pmScopedDays(y, m){
+  var allDays = _pmMonthDays(y, m);
+  var now = new Date();
+  var isCurrentMonth = (y === now.getFullYear() && m === now.getMonth());
+  if(!isCurrentMonth) return { days: allDays, truncated: false };
+  var today = now.getDate();
+  return { days: allDays.filter(function(d){ return d.num >= today; }), truncated: true };
+}
+
+function _pmRefreshLabel(){
+  var lbl = document.getElementById('pmMonthLabel');
+  if(lbl) lbl.textContent = _pmMonthLabel(_pmState.y, _pmState.m).toUpperCase() + (_pmScopedDays(_pmState.y, _pmState.m).truncated ? ' (TODAY →)' : '');
+  var sum = document.getElementById('pmSummary');
+  if(!sum) return;
+  try{
+    var days = _pmScopedDays(_pmState.y, _pmState.m).days;
+    var totalMi = 0, hardDays = 0;
+    days.forEach(function(d){
+      var plan = getDayPlan(d.date);
+      totalMi += plan.mi || 0;
+      if(plan.type === 'threshold' || plan.type === 'hill') hardDays++;
+    });
+    var wkFirst = getWk(days[0].date), wkLast = getWk(days[days.length-1].date);
+    var phFirst = getPhase(wkFirst);
+    sum.textContent = 'Weeks ' + wkFirst + '–' + wkLast + ' · ' + phFirst.name + ' · ~' + totalMi.toFixed(0) + 'mi planned · ' + hardDays + ' hard session' + (hardDays !== 1 ? 's' : '');
+  }catch(e){ sum.textContent = ''; }
+}
+
+// Shared by Print Month + Calendar view: the numeric targets a runner
+// actually checks mid-session (HR ceiling, lactate band, rep/rest
+// scheme) — previously only in the `sets` field and never displayed.
+function _sessionTargets(plan){
+  var parts = [];
+  if(plan.hr && plan.hr.length === 2) parts.push('HR ' + plan.hr[0] + '-' + plan.hr[1] + ' bpm');
+  if(plan.lac && plan.lac.length === 2) parts.push('Lactate ' + plan.lac[0] + '-' + plan.lac[1] + ' mmol/L');
+  if(plan.sets) parts.push(plan.sets);
+  return parts.join(' · ');
+}
+
+// Shared by Print Month + the multi-week execution block. Chunks any
+// day list into Sun-Sat rows (works for partial ranges too — leading/
+// trailing blanks key off the actual first/last weekday, not day-1-
+// of-month) and renders the compact overview grid.
+function _buildCalGridHtml(days){
+  var typeCol = { rest:'#888', easy:'#2E8B57', long:'#1565C0', threshold:'#B8862F', hill:'#B23B3B' };
+  var weeks = [];
+  var week = new Array(days[0].dow).fill(null);
+  days.forEach(function(d){
+    week.push(d);
+    if(d.dow === 6){ weeks.push(week); week = []; }
+  });
+  if(week.length){ while(week.length < 7) week.push(null); weeks.push(week); }
+
+  var calRows = weeks.map(function(w){
+    return '<tr>' + w.map(function(d){
+      if(!d) return '<td class="pm-blank"></td>';
+      var plan = getDayPlan(d.date);
+      var col = typeCol[plan.type] || '#666';
+      return '<td>'
+        + '<div class="pm-date">' + d.num + '</div>'
+        + '<div style="color:' + col + ';font-weight:700;font-size:9px;letter-spacing:.4px;">' + plan.type.toUpperCase() + '</div>'
+        + '<div style="font-size:10px;">' + (plan.mi||0) + 'mi</div>'
+        + '<div style="font-size:8.5px;color:#555;line-height:1.3;">' + (plan.name||'').slice(0,28) + '</div>'
+        + '</td>';
+    }).join('') + '</tr>';
+  }).join('');
+  return '<table class="pm-cal"><thead><tr>'
+    + ['SUN','MON','TUE','WED','THU','FRI','SAT'].map(function(x){ return '<th>'+x+'</th>'; }).join('')
+    + '</tr></thead><tbody>' + calRows + '</tbody></table>';
+}
+
+// Full structure/paces + numeric targets, same calc the live app uses —
+// this is the "not missing a single detail" table.
+function _buildDailyListHtml(days){
+  var listRows = days.map(function(d){
+    var plan = getDayPlan(d.date);
+    var wk = getWk(d.date);
+    var dayName = ['SUN','MON','TUE','WED','THU','FRI','SAT'][d.dow];
+    return '<tr>'
+      + '<td style="white-space:nowrap;font-weight:700;">' + dayName + ' ' + d.date + '</td>'
+      + '<td style="white-space:nowrap;">WK' + wk + '</td>'
+      + '<td style="white-space:nowrap;font-weight:700;">' + (plan.name||'') + '</td>'
+      + '<td style="white-space:nowrap;">' + (plan.mi||0) + 'mi</td>'
+      + '<td>' + (typeof formatSteps === 'function' ? formatSteps(plan.steps, plan.mi) : (plan.steps||'')) + '</td>'
+      + '<td>' + _sessionTargets(plan) + '</td>'
+      + '</tr>';
+  }).join('');
+  return '<table class="pm-daylist"><thead><tr><th>Day</th><th>Wk</th><th>Session</th><th>Mi</th><th>Structure — warm-up through cool-down</th><th>Targets</th></tr></thead><tbody>' + listRows + '</tbody></table>';
+}
+
+function printSelectedMonth(){
+  var y = _pmState.y, m = _pmState.m;
+  var scoped = _pmScopedDays(y, m);
+  var days = scoped.days;
+
+  var area = document.getElementById('printMonthArea');
+  if(!area){ area = document.createElement('div'); area.id = 'printMonthArea'; document.body.appendChild(area); }
+  area.innerHTML = '<div style="padding:24px;">'
+    + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:26px;letter-spacing:2px;">GEDYON — ' + _pmMonthLabel(y,m).toUpperCase() + (scoped.truncated ? ' (TODAY → END OF MONTH)' : '') + ' TRAINING PLAN</div>'
+    + '<div style="font-size:11px;color:#666;margin-bottom:14px;">Road to the 2028 Olympic Trials · printed ' + (typeof td === 'function' ? td() : '') + '</div>'
+    + _buildCalGridHtml(days)
+    + '<div class="pm-page-break"></div>'
+    + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:20px;letter-spacing:2px;margin-top:10px;">DAILY SESSION DETAIL</div>'
+    + _buildDailyListHtml(days)
+    + '</div>';
+
+  var modal = document.getElementById('printMonthModal'); if(modal) modal.remove();
+  setTimeout(function(){ window.print(); }, 60);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  MULTI-WEEK EXECUTION BLOCK — the full print, no gaps: every day
+//  from today through N weeks out, month by month, each with its
+//  overview grid + the complete daily detail table (paces, HR,
+//  lactate, rep/rest — everything _buildDailyListHtml already
+//  surfaces). Built for "don't miss a single execution detail."
+// ─────────────────────────────────────────────────────────────
+function _rangeDays(startDateStr, numDays){
+  var start = parseLocalDate(startDateStr);
+  var days = [];
+  for(var i = 0; i < numDays; i++){
+    var dt = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i, 12, 0, 0);
+    days.push({ date: dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0'), dow: dt.getDay(), num: dt.getDate() });
+  }
+  return days;
+}
+
+function _groupDaysByMonth(days){
+  var order = [], groups = {};
+  days.forEach(function(d){
+    var dt = parseLocalDate(d.date);
+    var key = dt.getFullYear() + '-' + dt.getMonth();
+    if(!groups[key]){ groups[key] = { y: dt.getFullYear(), m: dt.getMonth(), days: [] }; order.push(key); }
+    groups[key].days.push(d);
+  });
+  return order.map(function(k){ return groups[k]; });
+}
+
+function printExecutionBlock(weeks){
+  var start = td();
+  var days = _rangeDays(start, weeks * 7);
+  var months = _groupDaysByMonth(days);
+
+  var totalMi = 0, liftDays = 0, hardDays = 0;
+  days.forEach(function(d){
+    var plan = getDayPlan(d.date);
+    totalMi += plan.mi || 0;
+    if(plan.lift) liftDays++;
+    if(plan.type === 'threshold' || plan.type === 'hill') hardDays++;
+  });
+  var wkFirst = getWk(days[0].date), wkLast = getWk(days[days.length-1].date);
+  var phFirst = getPhase(wkFirst), phLast = getPhase(wkLast);
+  var phaseSpan = phFirst.name === phLast.name ? phFirst.name : (phFirst.name + ' → ' + phLast.name);
+
+  var sections = months.map(function(grp, i){
+    return (i > 0 ? '<div class="pm-page-break"></div>' : '')
+      + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:20px;letter-spacing:2px;margin-top:' + (i>0?'0':'10') + 'px;">' + _pmMonthLabel(grp.y, grp.m).toUpperCase() + '</div>'
+      + _buildCalGridHtml(grp.days)
+      + '<div class="pm-page-break"></div>'
+      + _buildDailyListHtml(grp.days);
+  }).join('');
+
+  var area = document.getElementById('printMonthArea');
+  if(!area){ area = document.createElement('div'); area.id = 'printMonthArea'; document.body.appendChild(area); }
+  area.innerHTML = '<div style="padding:24px;">'
+    + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:26px;letter-spacing:2px;">GEDYON — ' + weeks + '-WEEK EXECUTION BLOCK</div>'
+    + '<div style="font-size:11px;color:#666;margin-bottom:4px;">Road to the 2028 Olympic Trials · printed ' + start + '</div>'
+    + '<div style="font-size:11px;color:#333;margin-bottom:14px;line-height:1.6;">'
+      + start + ' → ' + days[days.length-1].date + ' · Weeks ' + wkFirst + '–' + wkLast + ' · ' + phaseSpan + '<br>'
+      + '~' + Math.round(totalMi) + 'mi total · ' + hardDays + ' hard sessions · ' + liftDays + ' lift/plyo sessions'
+    + '</div>'
+    + sections
+    + '</div>';
+
+  var modal = document.getElementById('printMonthModal'); if(modal) modal.remove();
+  setTimeout(function(){ window.print(); }, 60);
+}
+
+window.openPrintMonthModal = openPrintMonthModal;
+window.printSelectedMonth = printSelectedMonth;
+window._pmShiftMonth = _pmShiftMonth;
+window.printExecutionBlock = printExecutionBlock;
+
+// ─────────────────────────────────────────────────────────────
+//  CALENDAR VIEW — on-screen month browser (companion to Print
+//  Month's export). Tap any day to see its full session detail
+//  inline, no navigation away from the modal. Shares the
+//  _pmMonthDays()/_pmMonthLabel() helpers defined above.
+// ─────────────────────────────────────────────────────────────
+var _calState = { y: null, m: null, selected: null };
+
+function openCalendarModal(){
+  var ex = document.getElementById('calModal'); if(ex) ex.remove();
+  var now = new Date();
+  _calState.y = now.getFullYear(); _calState.m = now.getMonth(); _calState.selected = td();
+
+  var modal = document.createElement('div');
+  modal.id = 'calModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:99995;background:rgba(0,0,0,0.88);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);padding:0 0 env(safe-area-inset-bottom,0px);';
+  modal.innerHTML = '<div style="width:100%;max-width:480px;background:#0D0D18;border-radius:24px 24px 0 0;border-top:1px solid rgba(255,255,255,.12);max-height:92vh;overflow-y:auto;padding:0 0 24px;">'
+    + '<div style="display:flex;justify-content:center;padding:12px 0 4px;"><div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.2);"></div></div>'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 20px 12px;">'
+    + '<button onclick="_calShiftMonth(-1)" style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--white);font-size:16px;cursor:pointer;">‹</button>'
+    + '<div id="calMonthLabel" style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:20px;letter-spacing:2px;color:var(--green);"></div>'
+    + '<button onclick="_calShiftMonth(1)" style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--white);font-size:16px;cursor:pointer;">›</button>'
+    + '</div>'
+    + '<div id="calGrid" style="padding:0 14px;"></div>'
+    + '<div id="calDayDetail" style="padding:14px 20px 0;"></div>'
+    + '<div style="padding:16px 20px 0;">'
+    + '<button onclick="document.getElementById(\'calModal\').remove();" style="width:100%;padding:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:var(--grey);font-family:\'SF Mono\',monospace;font-size:12px;cursor:pointer;">CLOSE</button>'
+    + '</div></div>';
+  document.body.appendChild(modal);
+  _renderCalGrid();
+  _calSelectDay(_calState.selected);
+}
+
+function _calShiftMonth(delta){
+  var d = new Date(_calState.y, _calState.m + delta, 1);
+  _calState.y = d.getFullYear(); _calState.m = d.getMonth();
+  _calState.selected = null;
+  var detail = document.getElementById('calDayDetail'); if(detail) detail.innerHTML = '';
+  _renderCalGrid();
+}
+
+function _renderCalGrid(){
+  var lbl = document.getElementById('calMonthLabel');
+  if(lbl) lbl.textContent = _pmMonthLabel(_calState.y, _calState.m).toUpperCase();
+  var grid = document.getElementById('calGrid');
+  if(!grid) return;
+  var colMap = {rest:'var(--grey)',easy:'var(--green)',long:'var(--blue)',threshold:'var(--red)'};
+  var days = _pmMonthDays(_calState.y, _calState.m);
+  var today = td();
+
+  var cells = ['SUN','MON','TUE','WED','THU','FRI','SAT'].map(function(x){
+    return '<div style="text-align:center;font-family:\'SF Mono\',monospace;font-size:9px;color:var(--grey);letter-spacing:1px;padding-bottom:6px;">'+x+'</div>';
+  }).join('');
+  for(var i=0;i<days[0].dow;i++) cells += '<div></div>';
+  days.forEach(function(d){
+    var plan = getDayPlan(d.date);
+    var col = colMap[plan.type] || 'var(--gold)';
+    var isToday = d.date === today;
+    var isSel = d.date === _calState.selected;
+    cells += '<div onclick="_calSelectDay(\''+d.date+'\')" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:10px;cursor:pointer;background:'+(isSel?'rgba(90,212,141,.14)':'rgba(255,255,255,.03)')+';border:1px solid '+(isSel?'var(--green)':isToday?'rgba(255,255,255,.3)':'transparent')+';">'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;font-weight:700;color:'+(isToday?'#fff':'var(--off)')+';">'+d.num+'</div>'
+      + '<div style="width:5px;height:5px;border-radius:50%;background:'+col+';"></div>'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:8px;color:var(--grey);">'+(plan.mi||0)+'</div>'
+      + '</div>';
+  });
+  grid.innerHTML = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">'+cells+'</div>';
+}
+
+function _calSelectDay(date){
+  _calState.selected = date;
+  _renderCalGrid();
+  var plan = getDayPlan(date);
+  var wk = getWk(date), ph = getPhase(wk);
+  var colMap = {rest:'var(--grey)',easy:'var(--green)',long:'var(--blue)',threshold:'var(--red)'};
+  var col = colMap[plan.type] || 'var(--gold)';
+  var detail = document.getElementById('calDayDetail');
+  if(!detail) return;
+  detail.innerHTML = '<div style="border-top:1px solid rgba(255,255,255,.08);padding-top:14px;">'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
+    + '<div style="width:4px;height:20px;border-radius:2px;background:'+col+';flex-shrink:0;"></div>'
+    + '<div><div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:1px;">'+date+' · WEEK '+wk+' · '+ph.name.toUpperCase()+'</div>'
+    + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:17px;letter-spacing:1px;color:#fff;">'+(plan.name||'')+'</div></div>'
+    + '</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:'+col+';font-weight:700;margin-bottom:8px;">'+(plan.mi||0)+'mi · '+(plan.zone||'—')+'</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:1px;margin-bottom:4px;">WARM-UP → MAIN SET → COOL-DOWN</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:var(--off);line-height:1.7;margin-bottom:10px;">'+(typeof formatSteps === 'function' ? formatSteps(plan.steps, plan.mi) : (plan.steps||''))+'</div>'
+    + (_sessionTargets(plan) ? '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--grey);letter-spacing:1px;margin-bottom:4px;">TARGETS</div>'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:'+col+';line-height:1.6;">'+_sessionTargets(plan)+'</div>' : '')
+    + '</div>';
+}
+
+window.openCalendarModal = openCalendarModal;
+window._calShiftMonth = _calShiftMonth;
+window._calSelectDay = _calSelectDay;
+
+// ─────────────────────────────────────────────────────────────
+//  ROADMAP TO SPEED — answers "why does base come first, when
+//  does the fast stuff start" with real calendar dates instead of
+//  abstract phase numbers. Speed is already there (VDOT 77+ from
+//  junior 800m history, per the athlete ceiling profile) — this
+//  shows exactly when it gets EXPRESSED at race distance, not
+//  whether it will. Dates are computed live off D.settings.start
+//  and RAMP_ANCHOR, so this stays correct through recalibrations.
+// ─────────────────────────────────────────────────────────────
+function _dateAtWeek(wk){
+  var start = parseLocalDate(D.settings.start);
+  var d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + (wk-1)*7, 12, 0, 0);
+  return d.toISOString().split('T')[0];
+}
+function _fmtDateLong(ds){
+  var d = parseLocalDate(ds);
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+function _lactateMeterDate(){
+  try{
+    var anchorMs = parseLocalDate(RAMP_ANCHOR).getTime();
+    for(var w = 0; w <= 60; w++){
+      if(_rampTargetForWeek(w) >= 30){
+        return new Date(anchorMs + w*7*86400000).toISOString().split('T')[0];
+      }
+    }
+  }catch(e){}
+  return null;
+}
+
+function showRoadmapModal(){
+  var ex = document.getElementById('roadmapModal'); if(ex) ex.remove();
+  var todayWk = getWk(td());
+  var lactateDate = _lactateMeterDate();
+
+  var stops = [
+    { wk:1,  name:'FOUNDATION', tag:'Speed dormant, on purpose', desc:'Build the frequency habit — 5-6 easy days/week. Speed is maintained with strides/hills, never prescribed as a priority; the aerobic engine is the actual limiter, not the legs.' },
+    { wk:13, name:'BASE BUILD · LYDIARD', tag:'Ramp climbs, first threshold touches', desc:'Weekly volume ramps toward ~26mi/wk. Hill repeats for power. Sub-threshold controlled workouts — talk-test guided, never over the edge. This is where the tank gets built.' },
+    { wk:null, dateOverride: lactateDate, name:'LACTATE-GUIDED WORK BEGINS', tag:'~30mi/wk milestone', desc:'A lactate meter turns "controlled" into measured: workouts guided at 2.0-3.0 mmol instead of feel alone. Still inside Base Build — this is instrumentation catching up to fitness, not a phase change.' },
+    { wk:33, name:'THRESHOLD CONSTRUCTION · NORWEGIAN', tag:'Threshold becomes the spine', desc:'Threshold volume takes over as the main training stimulus. Doubles introduced once volume supports them — full lactate-guided double-threshold pattern. This is the Ingebrigtsen-style engine phase.' },
+    { wk:61, name:'KERR-MACKEY SPECIFIC', tag:'Race-pace, kick, altitude', desc:'Race-pace segments and kick development move to the center. This is where the mid-race surge work (the weaponized 53s closing lap) and the bicarb race protocol come in. Speed gets EXPRESSED here — not developed, expressed.' },
+    { wk:85, name:'CHAMPIONSHIP SHARPENING', tag:'Peak specificity', desc:'Full race-simulation work, taper-adjacent sharpening. Everything built in the previous 84 weeks gets converted into race fitness.' },
+    { wk:101, name:'TRIALS TAPER', tag:'Show up fresh, show up fast', desc:'Volume drops, intensity holds. The only job left is arriving at the start line healthy with the engine and the speed both intact.' },
+  ];
+
+  var rows = stops.map(function(s){
+    var wk = s.wk || (s.dateOverride ? getWk(s.dateOverride) : null);
+    var dateStr = s.dateOverride || (s.wk ? _dateAtWeek(s.wk) : null);
+    var isCurrent = wk != null && todayWk >= wk && (stops[stops.indexOf(s)+1] ? todayWk < (stops[stops.indexOf(s)+1].wk || getWk(stops[stops.indexOf(s)+1].dateOverride)) : true);
+    var col = isCurrent ? 'var(--gold)' : 'var(--off)';
+    return '<div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);">'
+      + '<div style="width:8px;flex-shrink:0;padding-top:4px;"><div style="width:8px;height:8px;border-radius:50%;background:'+(isCurrent?'var(--gold)':'rgba(255,255,255,.2)')+';'+(isCurrent?'box-shadow:0 0 8px var(--gold);':'')+'"></div></div>'
+      + '<div style="flex:1;">'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:'+col+';letter-spacing:1px;">'+(dateStr?_fmtDateLong(dateStr):'')+(wk?' · WEEK '+wk:'')+(isCurrent?' · YOU ARE HERE':'')+'</div>'
+      + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:16px;letter-spacing:1px;color:'+(isCurrent?'#fff':'var(--off)')+';margin-top:2px;">'+s.name+'</div>'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:10px;color:var(--red);letter-spacing:.5px;margin-top:1px;">'+s.tag+'</div>'
+      + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);line-height:1.6;margin-top:5px;">'+s.desc+'</div>'
+      + '</div></div>';
+  }).join('');
+
+  var modal = document.createElement('div');
+  modal.id = 'roadmapModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:99995;background:rgba(0,0,0,0.9);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);padding:0 0 env(safe-area-inset-bottom,0px);';
+  modal.innerHTML = '<div style="width:100%;max-width:480px;max-height:88vh;overflow-y:auto;background:#150C0C;border-radius:24px 24px 0 0;border-top:1px solid rgba(232,88,88,.3);padding:24px 20px calc(28px + env(safe-area-inset-bottom,0px));">'
+    + '<div style="font-family:Impact,\'Arial Narrow\',sans-serif;font-size:24px;letter-spacing:2px;color:var(--red);">🚀 ROADMAP TO SPEED</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);margin-bottom:6px;">Real dates, not phase numbers — trials Apr 4, 2028</div>'
+    + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--off);line-height:1.7;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:10px;margin-bottom:14px;">Speed isn\'t the question — VDOT 77+ is already banked from junior history. This is when the engine gets built to hold it for a full race, not whether it will.</div>'
+    + rows
+    + '<button onclick="document.getElementById(\'roadmapModal\').remove();" style="width:100%;padding:12px;margin-top:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:var(--grey);font-family:\'SF Mono\',monospace;font-size:12px;cursor:pointer;">CLOSE</button>'
+    + '</div>';
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+window.showRoadmapModal = showRoadmapModal;
 
 window.showLogRunModal = showLogRunModal;
 window.shareTrainingWeek = shareTrainingWeek;
@@ -20237,7 +21473,7 @@ async function runDiagnostic() {
   if(whoopDirectTok){
     try {
       const r = await Promise.race([
-        fetch('https://api.prod.whoop.com/developer/v1/recovery?limit=1', { headers: { Authorization: 'Bearer ' + whoopDirectTok } }),
+        fetch('https://api.prod.whoop.com/developer/v2/recovery?limit=1', { headers: { Authorization: 'Bearer ' + whoopDirectTok } }),
         new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), 6000))
       ]);
       if(r.ok){
@@ -21172,35 +22408,20 @@ function buildKodaContext() {
       // ── AEROBIC EFFICIENCY TREND (cardiac drift tracking) ─────────────
       // As base builds, the same pace should produce lower HR over weeks.
       // KODA uses this to confirm adaptation is happening — or flag stagnation.
+      // Shared with the visible "AM I RESPONDING?" card (computeAerobicResponse)
+      // so the chat and the UI never disagree on the same numbers.
       try {
-        var _runWos = (D.workouts||[])
-          .filter(function(w){ return w.avgHR > 100 && w.pace > 0 && w.dist >= 2; })
-          .sort(function(a,b){ return a.date > b.date ? -1 : 1 });
-        if (_runWos.length >= 3) {
-          // Compare most recent 3 runs vs 3 runs from 3-4 weeks ago
-          var _recent3  = _runWos.slice(0, 3);
-          var _older    = _runWos.filter(function(w){
-            var age = (new Date() - new Date(w.date+'T12:00:00'))/86400000;
-            return age >= 21 && age <= 42;
-          }).slice(0, 3);
-          var _recAvgHR   = _recent3.reduce(function(s,w){return s+w.avgHR;},0)/_recent3.length;
-          var _recAvgPace = _recent3.reduce(function(s,w){return s+w.pace;},0)/_recent3.length;
+        var _ar = computeAerobicResponse();
+        if (_ar) {
           lines.push('\nAEROBIC EFFICIENCY (cardiac drift):');
-          lines.push('  Recent 3 runs avg: ' + Math.round(_recAvgHR) + ' bpm @ ' + Math.round(_recAvgPace*10)/10 + ' min/mi pace');
-          if (_older.length >= 2) {
-            var _oldAvgHR   = _older.reduce(function(s,w){return s+w.avgHR;},0)/_older.length;
-            var _oldAvgPace = _older.reduce(function(s,w){return s+w.pace;},0)/_older.length;
-            var _hrDelta = Math.round(_recAvgHR - _oldAvgHR);
-            var _paceDelta = Math.round((_recAvgPace - _oldAvgPace)*10)/10;
-            lines.push('  3–4 weeks ago avg: ' + Math.round(_oldAvgHR) + ' bpm @ ' + Math.round(_oldAvgPace*10)/10 + ' min/mi pace');
-            lines.push('  HR change: ' + (_hrDelta > 0 ? '+' : '') + _hrDelta + ' bpm | Pace change: ' + (_paceDelta > 0 ? '+' : '') + _paceDelta + ' min/mi');
-            if (_hrDelta < -5 && Math.abs(_paceDelta) < 0.5) {
-              lines.push('  STATUS: AEROBIC ADAPTATION CONFIRMED — same pace, lower HR. Base is building.');
-            } else if (_hrDelta > 5 && _paceDelta > 0.3) {
-              lines.push('  STATUS: CARDIAC STRESS — HR rising with slower pace. Flag for recovery.');
-            } else {
-              lines.push('  STATUS: NEUTRAL — too early to confirm adaptation trend. Continue tracking.');
-            }
+          lines.push('  Recent ' + _ar.sampleSize + ' runs avg: ' + _ar.recAvgHR + ' bpm @ ' + _ar.recAvgPace + ' min/mi pace');
+          if (_ar.oldAvgHR != null) {
+            lines.push('  3–4 weeks ago avg: ' + _ar.oldAvgHR + ' bpm @ ' + _ar.oldAvgPace + ' min/mi pace');
+            lines.push('  HR change: ' + (_ar.hrDelta > 0 ? '+' : '') + _ar.hrDelta + ' bpm | Pace change: ' + (_ar.paceDelta > 0 ? '+' : '') + _ar.paceDelta + ' min/mi');
+            var _arStatusText = { adapting: 'AEROBIC ADAPTATION CONFIRMED — same pace, lower HR. Base is building.',
+              stress: 'CARDIAC STRESS — HR rising with slower pace. Flag for recovery.',
+              neutral: 'NEUTRAL — too early to confirm adaptation trend. Continue tracking.' }[_ar.status];
+            lines.push('  STATUS: ' + _arStatusText);
           } else {
             lines.push('  STATUS: Baseline building — need 2+ weeks of data to show trend.');
           }
@@ -21213,7 +22434,7 @@ function buildKodaContext() {
       lines.push('\nRACE TACTICAL PROFILE (Elias Gedyon — Mile/1500m specialist):');
       lines.push('  PRIMARY WEAKNESS: Laps 2–3 of the mile/1500m — loses gear-change ability and fades mid-race');
       lines.push('  CLOSING SPEED GOAL: Sub-48 second last lap (4:00/mi closing pace) — this closer is the weapon');
-      lines.push('  STRENGTH TRAINING: Hill repeats (Canova method) PLUS gym strength 2x/week — athlete explicitly requested weights be added (July 2026). Program runner-specific lifting: heavy-low-rep (squat/deadlift/lunge patterns), core, plyometrics in later phases. Keep it complementary to running, never competing with quality run days.');
+      lines.push('  STRENGTH TRAINING: Hill repeats (Canova method) PLUS gym strength 2x/week — athlete explicitly requested weights be added (July 2026), now mechanically in the plan (Mon weight room + Sun plyo/bodyweight, added Aug 2026 after real-world data showed his lowest recorded weight, 176, came during weeks combining lifting + running). Corrected to match the real Kerr/Mackey program, not a generic strength template: light-weight, high-rep, rudimentary (squat/hip thrust/lat pulldown/bench, posture over load), 30-40min max — Mackey\'s own words are "nothing special." Plyo/bodyweight sits the day AFTER the long run, same as Kerr\'s actual routine. Never heavy-low-rep, never bodybuilding volume, never competing with quality run days.');
       lines.push('  SPEED WORK PREFERENCE: Fartlek/speed play — unstructured surges feel natural, respond well to it');
       lines.push('  BODY TYPE GOAL: Stay lean and aerodynamic — cut through wind, explosive push-off, quick gear changes');
       lines.push('  KEY ADAPTATION NEEDED: Mid-race surge capacity — must be able to ACCELERATE when already at threshold');
@@ -21221,7 +22442,7 @@ function buildKodaContext() {
       lines.push('  MODEL: Josh Kerr / Danny Mackey (Brooks Beasts) philosophy adapted to this athlete — QUALITY over raw volume, the weight room as a pillar (not accessory), race-specific sharpening, a weaponized kick, and recovery data steering every week. Moderate peak mileage (~55-60) done consistently beats 80 done sporadically.');
       lines.push('  THE ARC: Phase 2 BASE BUILD (Lydiard, wks 13-32): 80/20 polarized, ramp ~15→35 mi/wk (+2/wk, every 3rd week flat), strides 2x/wk, one controlled workout, one hill day, lifting 2x. Phase 3 THRESHOLD CONSTRUCTION (Norwegian, wks 33-60): threshold volume becomes the spine, doubles introduced when volume supports them. Phase 4 KERR-MACKEY SPECIFIC (wks 61-84): race-pace segments, kick development, altitude blocks. Phase 5 CHAMPIONSHIP SHARPENING. Phase 6 TAPER.');
       lines.push('  CURRENT ARC POSITION: early Phase 2 BASE BUILD. Prescriptions must respect the comeback ramp, NOT the phase\'s printed average — he merges onto full base mileage over ~6-8 weeks from ~15 mi/wk.');
-      lines.push('  PILLARS (always on): (1) Lifting 2x/wk — heavy-low-rep squat/DL/lunge patterns + core, plyos in later phases; stiffness and economy, never hypertrophy; after quality days, never before track. (2) Recovery discipline — Kerr-style sleep priority (9h target); HRV/readiness decides hard days, moving them is coaching not failure. (3) Speed touch year-round — strides and fartlek keep the 4:01 legs awake for free. (4) Hills for power (Canova) alongside the gym.');
+      lines.push('  PILLARS (always on): (1) Lifting 2x/wk — Mon weight room, the ACTUAL Brooks Beasts TC circuit (athlete-supplied, 2026 USATF Champs/London DL camp, Albuquerque): Block 1 isometric calf raises + T-spine push-ups + cat-cow, Block 2 KB swings + med-ball slams + side plank hip drop, Block 3 barbell RDL + DB bench + pull-ups + anti-rotation press-outs — same movements/set-rep scheme as Kerr\'s session, loads scaled down from his camp working weights (44lb KB, 155lb RDL, 80-90lb DB bench) for a reintroduction, building toward them over months, not this week. Plus Sun plyo/bodyweight (day after the long run, per Kerr\'s real routine). Stiffness and economy, never hypertrophy. (2) Recovery discipline — Kerr-style sleep priority (9h target); HRV/readiness decides hard days, moving them is coaching not failure. (3) Speed touch year-round — strides and fartlek keep the 4:01 legs awake for free. (4) Hills for power (Canova) alongside the gym — hills and lifting are both/and, not either/or.');
       lines.push('  TARGET (athlete-stated July 2026): 3:40 mile / ~3:24-3:25 1500m — 55s lap cruise with a 53s closing kick. This IS the 2028 Trials-final pace for the 1500 (his primary event), so the goal equals the mission, not beyond it. Requires VDOT ~79. Frame all pace math against 55s laps; the "keep the 29, fix the 73" project targets making 55 feel like breathing so the 53 kick is available at the bell. Economy (weight room) is non-negotiable at this pace — zero wasted motion allowed.');
       lines.push('  MODERN STACK ROADMAP (athlete-directed July 2026 — "build my own chessboard"): The system adopts the 2024-26 record-breaker stack, gated by data: (1) NOW — weekly workout is sub-threshold CONTROLLED (talk-test as poor-man\'s lactate control, never over the edge) + 1-2 deliberate heat runs/wk (Colorado summer = free plasma-volume expansion, 4-15% in 2 wks — treat heat as a training input, not an obstacle); (2) at ~30mpw (~Oct) — athlete buys a lactate meter (Lactate Plus ~$300), workouts become lactate-guided at 2.0-3.0 mmol, KODA logs mmol readings as the primary quality-session metric (Bakken method: internal load over external); (3) at doubles (~Nov) — full lactate-guided double-threshold pattern; (4) 2027 — bicarb race protocol, super spikes, race-pace specificity. PHILOSOPHY: the new chessboard is superior MEASUREMENT of one athlete, not magic workouts — this athlete instruments himself (AI coach + WHOOP + altitude residence + heat + lactate-to-come) better than tradition allows. Encourage the innovator identity while enforcing the boring 80%.');
       lines.push('  EFFORT CALIBRATION (July 24 2026, athlete-verified): During the 40-min 7:42/mi run the Watch claimed avg HR 163 / peak 187 (his set "max") — but he could speak 3-4 word phrases and even sing along, breathing easy. Impossible at 87-92% of true max. CONCLUSIONS: (1) his real HRmax is likely 195-205, the 187 setting is a formula guess — schedule a proper max/LTHR discovery test in 4-6 weeks or from his first race; (2) wrist optical HR shows cadence-lock inflation on climbs; (3) PRIMARY EFFORT INSTRUMENT = the talk test: sing=easy, full sentences=easy-steady, 3-4 words=steady/threshold, words impossible=hard. HR numbers are guardrails only until a measured max exists. His 7:42 forty-minute run was STEADY effort by body-truth, not redline.');
@@ -21338,6 +22559,23 @@ function buildKodaContext() {
           lines.push('  ' + s.session_date + ' ' + (s.session_type||'') + ': ' + pct + (s.feel_rpe ? ', RPE ' + s.feel_rpe : '') + (s.debrief_lesson ? ' — ' + s.debrief_lesson : ''));
         });
       }
+    }
+  } catch(e) {}
+  // COACH REVIEW QUEUE: changeset decisions — approved changes are mandates,
+  // pending ones must NOT be acted on (approval-gated by design)
+  try {
+    var _cs = window._kodaChangesets || [];
+    var _pend = [], _dec = [];
+    _cs.forEach(function(c){
+      (c.changeset || []).forEach(function(it){
+        if (c.status === 'pending') _pend.push(it.what);
+        else if (it.decision) _dec.push('[' + it.decision.toUpperCase() + ' ' + (c.decided_at||'').slice(0,10) + '] ' + it.what);
+      });
+    });
+    if (_pend.length || _dec.length) {
+      lines.push('\n=== COACH REVIEW QUEUE (changeset approvals) ===');
+      if (_dec.length) lines.push('DECIDED (apply APPROVED items to prescriptions; drop REJECTED ones):\n  ' + _dec.slice(0,8).join('\n  '));
+      if (_pend.length) lines.push('PENDING APPROVAL (do NOT apply yet — you may remind him to review):\n  ' + _pend.slice(0,8).join('\n  '));
     }
   } catch(e) {}
   return lines.join('\n');
@@ -22248,8 +23486,8 @@ function startLiveWorkout() {
           var avgPace = _liveWo.paces.reduce(function(a,b){return a+b;},0)/_liveWo.paces.length;
           var paceEl = document.getElementById('lw-pace');
           var avgEl = document.getElementById('lw-avg');
-          if (paceEl) paceEl.textContent = _fmtPace(curPace);
-          if (avgEl) avgEl.textContent = _fmtPace(avgPace);
+          if (paceEl) paceEl.textContent = _fmtPaceMin(curPace);
+          if (avgEl) avgEl.textContent = _fmtPaceMin(avgPace);
         }
       }
     }
@@ -22288,7 +23526,7 @@ function stopLiveWorkout() {
       name: 'LIVE RUN',
       dist: Math.round(dist * 100) / 100,
       time: Math.round(durationMin),
-      pace: avgPace ? _fmtPace(avgPace) : null,
+      pace: avgPace ? _fmtPaceMin(avgPace) : null,
       src: 'LIVE_GPS',
       grade: null
     };
@@ -22307,7 +23545,7 @@ function stopLiveWorkout() {
 
   // KODA post-workout summary
   if (dist > 0.05) {
-    var summary = 'I just completed a live GPS run: ' + dist.toFixed(2) + ' miles in ' + Math.round(durationMin) + ' minutes' + (avgPace ? ' at avg ' + _fmtPace(avgPace) + '/mi pace' : '') + '. Analyze this effort and tell me how to recover.';
+    var summary = 'I just completed a live GPS run: ' + dist.toFixed(2) + ' miles in ' + Math.round(durationMin) + ' minutes' + (avgPace ? ' at avg ' + _fmtPaceMin(avgPace) + '/mi pace' : '') + '. Analyze this effort and tell me how to recover.';
     setTimeout(function(){ if(typeof kodaQuick==='function') kodaQuick(summary); }, 800);
   }
 }
@@ -22338,7 +23576,11 @@ function _geoDistMiles(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
-function _fmtPace(minPerMile) {
+// NOTE: distinct from _fmtPace(sec) above (line ~19553) — that one takes
+// seconds/mile (VDOT paces), this one takes decimal minutes/mile (live
+// GPS tracking). Renamed to stop the second definition silently shadowing
+// the first, which broke every seconds-based pace display in the app.
+function _fmtPaceMin(minPerMile) {
   var m = Math.floor(minPerMile);
   var s = Math.round((minPerMile-m)*60);
   return m+':'+String(s).padStart(2,'0');
@@ -23316,6 +24558,9 @@ async function kodaInit() {
       if (!lc.error && lc.data) window._kodaLearnCtx = lc.data;
     }
   } catch(e) { console.warn('[KodaLearn] context:', e && e.message); }
+  // COACH REVIEW: pull the changeset queue so pending proposals surface as a
+  // banner and decisions (approved/rejected) reach KODA's context below
+  try { await kodaFetchChangesets(); } catch(e) {}
   const ctx = buildKodaContext();
 
   // Detect recent race — if athlete just raced, open with that
@@ -23422,6 +24667,92 @@ async function kodaFetchMorningMessage() {
   return data.message;
 }
 
+// ── COACH REVIEW QUEUE (koda_changesets approval UI) ─────────────────────
+// The weekly agent parks consequential proposals (VDOT moves, phase
+// transitions) in koda_changesets with status 'pending'. Nothing is ever
+// auto-applied: Eli approves/rejects here, and decisions flow back into
+// KODA's context so the live coach acts on approved changes only.
+async function kodaFetchChangesets() {
+  if (typeof sbClient === 'undefined' || !sbClient || typeof currentUser === 'undefined' || !currentUser) return;
+  try {
+    const { data, error } = await sbClient.from('koda_changesets')
+      .select('id, week_of, changeset, report, status, decided_at')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false }).limit(12);
+    if (error) { console.warn('[KodaReview] fetch:', error.message); return; }
+    window._kodaChangesets = data || [];
+    kodaUpdateReviewBanner();
+  } catch(e) { console.warn('[KodaReview]', e && e.message); }
+}
+
+function kodaUpdateReviewBanner() {
+  const banner = document.getElementById('koda-review-banner');
+  if (!banner) return;
+  const pending = (window._kodaChangesets || []).filter(c => c.status === 'pending');
+  const nItems = pending.reduce((n, c) => n + ((c.changeset || []).length), 0);
+  const onKodaTab = document.getElementById('koda-chips') && document.getElementById('koda-chips').style.display !== 'none';
+  if (!pending.length || !nItems) { banner.style.display = 'none'; return; }
+  const txt = document.getElementById('koda-review-banner-text');
+  if (txt) txt.textContent = nItems + ' proposed change' + (nItems === 1 ? '' : 's') + ' awaiting your call';
+  banner.style.display = onKodaTab ? 'flex' : 'none';
+}
+
+function openKodaReviewModal() {
+  const pending = (window._kodaChangesets || []).filter(c => c.status === 'pending');
+  const body = document.getElementById('kodaReviewBody');
+  if (!body) return;
+  if (!pending.length) { body.innerHTML = '<div style="color:var(--grey);font-size:13px;">Nothing pending — the weekly agent will file new proposals here.</div>'; }
+  else {
+    body.innerHTML = pending.map(cs => {
+      const items = (cs.changeset || []).map((it, i) =>
+        '<label style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;cursor:pointer;">'
+        + '<input type="checkbox" checked data-cs="' + cs.id + '" data-item="' + i + '" style="margin-top:3px;accent-color:var(--gold);">'
+        + '<div style="flex:1;min-width:0;">'
+        + '<div style="font-size:13px;color:#eee;font-weight:600;">' + kodaEsc(it.what || '') + '</div>'
+        + '<div style="font-size:12px;color:#999;margin-top:3px;">' + kodaEsc(it.why || '') + '</div>'
+        + '<div style="font-family:\'SF Mono\',Consolas,monospace;font-size:10px;color:#666;margin-top:5px;letter-spacing:.5px;">'
+        + 'confidence: ' + kodaEsc(it.confidence || '—') + ' · risk: ' + kodaEsc(it.risk || '—') + ' · reversibility: ' + kodaEsc(it.reversibility || '—') + '</div>'
+        + '</div></label>').join('');
+      return '<div data-csblock="' + cs.id + '" style="margin-bottom:18px;">'
+        + '<div style="font-family:\'SF Mono\',Consolas,monospace;font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:6px;">WEEK OF ' + kodaEsc(cs.week_of || '') + '</div>'
+        + (cs.report ? '<div style="font-size:12px;color:#aaa;line-height:1.5;margin-bottom:10px;white-space:pre-wrap;">' + kodaEsc(cs.report) + '</div>' : '')
+        + '<div style="display:flex;flex-direction:column;gap:8px;">' + items + '</div>'
+        + '<div style="display:flex;gap:8px;margin-top:10px;">'
+        + '<button onclick="kodaDecideChangeset(' + cs.id + ',true)" style="flex:1;padding:10px;background:rgba(0,230,118,0.12);border:1px solid rgba(0,230,118,0.4);border-radius:10px;color:#00E676;font-family:\'SF Mono\',Consolas,monospace;font-size:11px;letter-spacing:1px;cursor:pointer;">APPROVE CHECKED</button>'
+        + '<button onclick="kodaDecideChangeset(' + cs.id + ',false)" style="flex:1;padding:10px;background:rgba(255,61,87,0.10);border:1px solid rgba(255,61,87,0.35);border-radius:10px;color:#FF3D57;font-family:\'SF Mono\',Consolas,monospace;font-size:11px;letter-spacing:1px;cursor:pointer;">REJECT ALL</button>'
+        + '</div></div>';
+    }).join('');
+  }
+  document.getElementById('kodaReviewModal').style.display = 'block';
+}
+
+function closeKodaReviewModal() { document.getElementById('kodaReviewModal').style.display = 'none'; }
+
+function kodaEsc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// rejectAll=false → status from checkboxes: all checked = approved,
+// none = rejected, mix = partial. Each item gets a durable `decision` field.
+async function kodaDecideChangeset(id, approve) {
+  const cs = (window._kodaChangesets || []).find(c => c.id === id);
+  if (!cs || !sbClient) return;
+  const boxes = Array.from(document.querySelectorAll('input[data-cs="' + id + '"]'));
+  const decided = (cs.changeset || []).map((it, i) => {
+    const box = boxes.find(b => +b.dataset.item === i);
+    const ok = approve && (!box || box.checked);
+    return Object.assign({}, it, { decision: ok ? 'approved' : 'rejected' });
+  });
+  const nOk = decided.filter(it => it.decision === 'approved').length;
+  const status = nOk === 0 ? 'rejected' : (nOk === decided.length ? 'approved' : 'partial');
+  const { error } = await sbClient.from('koda_changesets')
+    .update({ status, decided_at: new Date().toISOString(), changeset: decided })
+    .eq('id', id);
+  if (error) { console.warn('[KodaReview] decide:', error.message); return; }
+  cs.status = status; cs.changeset = decided; cs.decided_at = new Date().toISOString();
+  const block = document.querySelector('[data-csblock="' + id + '"]');
+  if (block) block.innerHTML = '<div style="padding:12px;text-align:center;font-family:\'SF Mono\',Consolas,monospace;font-size:11px;letter-spacing:2px;color:' + (status === 'rejected' ? '#FF3D57' : '#00E676') + ';">' + status.toUpperCase() + ' — KODA WILL ' + (nOk ? 'APPLY THE APPROVED CHANGES' : 'HOLD COURSE') + '</div>';
+  kodaUpdateReviewBanner();
+}
+
 function kodaQuick(prompt) {
   const chips = document.getElementById('koda-chips');
   if (chips) chips.style.display = 'none';
@@ -23460,6 +24791,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
+
+  <!-- COACH REVIEW MODAL (koda_changesets approval) -->
+  <div id="kodaReviewModal" style="display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);overflow-y:auto;padding:20px;" onclick="if(event.target===this)closeKodaReviewModal()">
+    <div style="max-width:480px;margin:20px auto;background:#0D0D14;border:1px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden;max-height:90vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+        <div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--gold);letter-spacing:2px;">COACH REVIEW QUEUE</div>
+        <button onclick="closeKodaReviewModal()" style="background:none;border:none;color:var(--grey);font-size:18px;cursor:pointer;padding:0 4px;line-height:1;">&times;</button>
+      </div>
+      <div id="kodaReviewBody" style="padding:16px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;"></div>
+    </div>
+  </div>
 
   <!-- DAY DETAIL MODAL -->
   <div id="dayModal" style="display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);overflow-y:auto;padding:20px;" onclick="if(event.target===this)closeDayModal()">
