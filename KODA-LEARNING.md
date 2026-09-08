@@ -29,8 +29,11 @@ session start, live health data is computed fresh — never baked into prompts.
 
 - "FORGE agent" = our KODA chat (the live coach); it is read-only + the one RPC.
 - Added `koda_changesets` (the blueprint described the approval queue but had
-  no table for it). Approval UI is a future session — until then changesets
-  accumulate as pending, harming nothing.
+  no table for it). The approval UI now lives in the KODA tab: a COACH REVIEW
+  banner appears when proposals are pending; the modal shows each item
+  (what/why/confidence/risk/reversibility) with per-item checkboxes, and
+  decisions write back as approved/rejected/partial. Approved items reach
+  KODA's context as mandates; pending ones are flagged do-not-apply.
 - HRV source is WHOOP RMSSD or HealthKit SDNN depending on device; the lnRMSSD
   math treats whichever arrives as the athlete's own baseline (self-consistent,
   but don't mix sources in one band — rows are keyed by source).
