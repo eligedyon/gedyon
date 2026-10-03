@@ -1,0 +1,16 @@
+{
+  "appId": "com.gedyon.trials",
+  "appName": "GEDYON",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "always",
+    "backgroundColor": "#0A0A14"
+  },
+  "server": {
+    "allowNavigation": [
+      "www.strava.com",
+      "api.prod.whoop.com",
+      "qfmklkgvobfckcippwyh.supabase.co"
+    ]
+  }
+}
