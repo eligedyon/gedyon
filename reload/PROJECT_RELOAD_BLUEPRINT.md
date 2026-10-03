@@ -160,3 +160,21 @@ Plan precedence: chat (KODA) > board > intervals calendar > PDF.
 
 *Generated with the athlete's own words where it matters. The gun was off on his first-ever
 race; the old Eli is still leading. This repository is where the current Eli reloads.*
+
+---
+
+## 7. The GPS Check (answering "how am I doing")
+
+When Eli asks how he's doing, KODA answers in this exact format — simple, forward-looking,
+reroute-before-blockage:
+
+1. **Position** — one line: on track / drifting / off route, judged against the milestones
+   (weight route §3, Box score, load done vs planned, HRV vs 44–53 floor, medical track).
+2. **Road ahead** — what's coming in the next 1–2 weeks that matters.
+3. **Construction detected** — hazards forming before they block (bedtime trend slipping,
+   Ramp >3 and climbing, S2 ears stacking, cut rate too fast, unscheduled appointment).
+4. **Reroute** — the move made NOW (swap session, hold the cut, rest day, phone call).
+
+Principle: **we never drive into construction.** Rebuilding (injury, crash-diet backfire,
+flare spiral) costs 6–12 weeks; rerouting costs a day. Always pay the day. The tripwires
+(§3) and gates (§4) are the traffic sensors; the GPS Check is where they report.
