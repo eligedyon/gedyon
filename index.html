@@ -2804,7 +2804,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
       <label class="setup-label">EMAIL</label>
       <input id="authEmail" type="email" class="setup-input" placeholder="you@email.com" autocomplete="email">
       <label class="setup-label" style="margin-top:16px;">PASSWORD</label>
-      <input id="authPass" type="password" class="setup-input" placeholder="••••••••" autocomplete="current-password">
+      <input id="authPass" type="password" class="setup-input" placeholder="Your password" autocomplete="current-password">
       <button onclick="authSignIn()" style="width:100%;padding:14px;background:var(--accent,#C9A84C);color:#000;font-family:Impact,Arial Narrow,sans-serif;font-size:18px;letter-spacing:3px;border:none;border-radius:8px;cursor:pointer;margin-top:20px;">SIGN IN</button>
       <div id="authError" style="color:#FF3D57;font-family:'SF Mono',monospace;font-size:11px;text-align:center;margin-top:12px;display:none;"></div>
       <div style="text-align:center;margin-top:16px;">
@@ -2917,7 +2917,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
 <div id="app">
   <div class="topbar">
     <div><div class="tb-name">GEDYON</div><div class="tb-sub" id="tbSub">AI-POWERED TRAINING</div></div>
-    <div style="display:flex;gap:7px;align-items:center;margin-right:10px;">
+    <div id="themeDots" role="menu" aria-label="Color theme">
   <!-- THEME DNA DOTS — add/remove dots to match themes -->
   <button class="th-dot" data-theme="void" data-glow="rgba(255,255,255,0.8)" onclick="setTheme('void')" title="FRZN" style="width:16px;height:16px;border-radius:50%;border:none;cursor:pointer;transition:all .2s;background:#fff;opacity:0.7;"></button>
   <button class="th-dot" data-theme="ember" data-glow="rgba(232,184,120,0.8)" onclick="setTheme('ember')" title="EMBER" style="width:16px;height:16px;border-radius:50%;border:none;cursor:pointer;transition:all .2s;background:#E8B878;opacity:0.7;"></button>
@@ -2932,6 +2932,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
   <button class="th-dot" data-theme="keynote-dark" data-glow="rgba(10,132,255,0.8)" onclick="setTheme('keynote-dark')" title="KEYNOTE" style="width:16px;height:16px;border-radius:50%;border:none;cursor:pointer;transition:all .2s;background:#0A84FF;opacity:0.7;"></button>
 </div>
 <div class="tb-r">
+      <button id="themeToggleBtn" onclick="toggleThemeDots(event)" aria-label="Change color theme" title="Theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12.5" r="1.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.7-.7 1.7-1.7 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.7-1.7 1.7-1.7h2c3 0 5.5-2.5 5.5-5.5C22 6 17.5 2 12 2z"/></svg></button>
       <div class="badge bw" id="wkBadge">W1</div>
       <div class="badge bd" id="daysBadge">—d</div>
       <button id="userAvatarBtn" onclick="toggleUserMenu()" style="width:28px;height:28px;border-radius:50%;border:1.5px solid var(--accent,#C9A84C);background:var(--card2,#1a2535);cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:4px;flex-shrink:0;padding:0;">
@@ -2992,7 +2993,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
 
         <!-- RIGHT: Countdown -->
         <div style="background:var(--card);border:1px solid rgba(245,196,0,.25);border-radius:10px;padding:8px 10px;text-align:center;display:flex;flex-direction:column;justify-content:center;min-width:80px;">
-          <div style="font-family:'SF Mono',Consolas,monospace;font-size:10px;color:var(--grey);letter-spacing:1.5px;margin-bottom:2px;">DAYS TO<br>TRIALS</div>
+          <div style="font-family:'SF Mono',Consolas,monospace;font-size:10px;color:var(--grey);letter-spacing:1.5px;margin-bottom:2px;">DAYS<br>TO GO</div>
           <div style="font-family:Impact,'Arial Narrow',Arial,sans-serif;font-size:44px;color:var(--gold);line-height:1;" id="cdNum">—</div>
           <div id="compDateLabel" style="font-family:'SF Mono',Consolas,monospace;font-size:10px;color:var(--grey);margin-top:3px;letter-spacing:1px;">APR 4 2028<br>EUGENE OR</div>
         </div>
@@ -3148,7 +3149,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
             <div class="wt-tgt" id="wtStatus">Week target: 176.6</div>
           </div>
         </div>
-        <div class="wt-prow"><span>177 lbs</span><span id="wtPctLbl"></span><span>148 lbs</span></div>
+        <div class="wt-prow"><span id="wtStartLbl"></span><span id="wtPctLbl"></span><span id="wtGoalLbl"></span></div>
         <div class="wt-prog"><div class="wt-pf" id="wtBar"></div></div>
         <div class="wt-stats" id="wtStats"></div>
         <button class="wt-log-btn" onclick="logWeight()">LOG</button>
@@ -4139,6 +4140,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
         <div class="card"><div class="cb">
           <div id="authStatus" style="font-family:'SF Mono',monospace;font-size:12px;color:var(--grey);margin-bottom:12px;"></div>
           <button class="btn" id="authLogoutBtn" style="display:none;background:var(--red);color:#fff;" onclick="authLogout()">SIGN OUT</button>
+          <button id="authDeleteBtn" style="display:none;width:100%;margin-top:10px;padding:10px;background:transparent;border:1px solid rgba(232,88,88,.45);border-radius:8px;color:#FF8A8A;font-family:'SF Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;" onclick="authDeleteAccount()">DELETE ACCOUNT</button>
           <button class="btn" id="authLoginBtn" style="display:none;" onclick="$('authScreen').style.display='block';">SIGN IN / CREATE ACCOUNT</button>
         </div></div>
         <div class="sh">SUPABASE CONFIG</div>
@@ -4798,6 +4800,11 @@ async function railwayFetch(path, options){
 }
 
 function checkForUpdates(){
+  // Off for the beta/TestFlight build: replacing the app's code from a server is an
+  // App Review risk (guideline 2.5.2), and the cached update was discarded on the
+  // next launch anyway. Ship updates through TestFlight instead.
+  // To re-enable on a device for testing: localStorage.setItem('gedyon_ota_enabled','1')
+  if(localStorage.getItem('gedyon_ota_enabled')!=='1') return;
   fetch(OTA_SERVER + '/app/version', { cache:'no-store' })
     .then(function(r){ return r.json(); })
     .then(function(data){
@@ -5117,7 +5124,23 @@ async function authLogout(){
   updateAuthStatus();
   showAlert('setAlert','Signed out','ok');
 }
+async function authDeleteAccount(){
+  if(!sbClient||!currentUser){showAlert('setAlert','Sign in first','err');return;}
+  if(!confirm('Delete your GEDYON account?\n\nThis permanently erases your profile, logs and KODA history from our servers. It cannot be undone.')) return;
+  try{
+    var res=await sbClient.functions.invoke('delete-account',{body:{}});
+    if(res.error||!res.data||!res.data.ok) throw new Error((res.data&&res.data.message)||(res.error&&res.error.message)||'Server did not confirm');
+    try{await sbClient.auth.signOut();}catch(_){}
+    currentUser=null;
+    Object.keys(localStorage).filter(function(k){return k.indexOf('gedyon')===0;}).forEach(function(k){localStorage.removeItem(k);});
+    alert('Your account has been deleted.');
+    location.reload();
+  }catch(e){
+    showAlert('setAlert','Could not delete account: '+e.message+'. Email eligedyon@gmail.com and it will be removed within 48 hours.','err');
+  }
+}
 function updateAuthStatus(){
+  var _db=$('authDeleteBtn'); if(_db) _db.style.display=currentUser?'block':'none';
   var statusEl=$('authStatus');
   var logoutBtn=$('authLogoutBtn');
   var loginBtn=$('authLoginBtn');
@@ -5322,8 +5345,8 @@ function pickLevel(el,l){
 }
 function setupAdvance(){
   if(setupStep===1){
-    if(!$('setupName').value.trim()){$('setupName').style.borderColor='#C94C4C';return;}
-    if(!_selectedSports.length){$('setupSportSearch').style.borderColor='#C94C4C';return;}
+    if(!$('setupName').value.trim()){$('setupName').style.borderColor='#C94C4C';setupError('Add your name so KODA knows who it\'s coaching.',$('setupName'));return;}
+    if(!_selectedSports.length){$('setupSportSearch').style.borderColor='#C94C4C';setupError('Pick at least one sport — tap it in the list.',$('setupSportSearch'));return;}
   }
   if(setupStep===3){
     // Build review
@@ -5354,6 +5377,7 @@ function setupAdvance(){
     h+='<span style="color:var(--accent,#C9A84C);">DAYS TO GO: '+daysToComp+'</span>';
     r.innerHTML=h;
   }
+  setupError('');
   if(setupStep<4){
     setupStep++;
     showSetupStep();
@@ -6868,7 +6892,8 @@ function renderWtHero(date){
   // Stats
   const ws2=$('wtStats');if(!ws2)return;
   if(w){
-    const pct=Math.max(0,Math.min(100,((D.settings.startWt-w.wt)/(D.settings.startWt-D.settings.raceWt))*100));
+    const _tot=D.settings.startWt-D.settings.raceWt;
+    const pct=_tot>0?Math.max(0,Math.min(100,((D.settings.startWt-w.wt)/_tot)*100)):0;
     const lost=(D.settings.startWt-w.wt).toFixed(1);
     const toGo=(w.wt-D.settings.raceWt).toFixed(1);
     const gained=+lost<0;
@@ -6934,11 +6959,14 @@ function wtLive(val){
   const tgt=getWeekTarget(d);
   const delta=(wt-tgt).toFixed(1);
   const total=D.settings.startWt-D.settings.raceWt;
-  const pct=Math.max(0,Math.min(100,((D.settings.startWt-wt)/total)*100));
+  const hasGoal=total>0;
+  const pct=hasGoal?Math.max(0,Math.min(100,((D.settings.startWt-wt)/total)*100)):0;
+  const sl=$('wtStartLbl');if(sl)sl.textContent=D.settings.startWt?'Start '+D.settings.startWt+' lbs':'';
+  const gl=$('wtGoalLbl');if(gl)gl.textContent=hasGoal?'Goal '+D.settings.raceWt+' lbs':'';
   const dEl=$('wtDelta');
   if(dEl){dEl.textContent=(delta>0?'+':'')+delta+(+delta<=0?' ':' ▲');dEl.style.color=+delta>2?'var(--red)':+delta>0?'var(--orange)':'var(--green)';}
   const bar=$('wtBar');if(bar)bar.style.width=pct.toFixed(1)+'%';
-  const lbl=$('wtPctLbl');if(lbl)lbl.textContent=pct.toFixed(0)+'% lost';
+  const lbl=$('wtPctLbl');if(lbl)lbl.textContent=hasGoal?pct.toFixed(0)+'% to goal':'No goal weight set';
 }
 function logWeight(){
   const v=parseFloat($('wtInput').value),d=$('docDate').value||td();
@@ -9008,7 +9036,7 @@ function renderDash(){
   $('stWt').textContent=lastWt+'lb'; if($('topWt')) $('topWt').textContent=lastWt+'lb';
   var daysInProgram=Math.max(0,Math.ceil((new Date()-parseLocalDate(D.settings.start||'2026-02-23'))/86400000));
   if($('stDaysIn')) $('stDaysIn').textContent=daysInProgram;
-  if($('dayOfBadge')) $('dayOfBadge').textContent='of 770';
+  if($('dayOfBadge')){ var _tot=Math.max(1,Math.ceil((parseLocalDate(getCompDate())-parseLocalDate(D.settings.start||td()))/86400000)); $('dayOfBadge').textContent='of '+_tot; }
   if($('stDays'))$('stDays').textContent=Math.max(0,getDaysToComp());
   const r7=D.logs.slice(-7);
   if(r7.length&&$('stSl'))$('stSl').textContent=(r7.reduce((a,e)=>a+(parseFloat(e.sleep)||0),0)/r7.length).toFixed(1)+'h';
@@ -11774,7 +11802,7 @@ const SLIDES = [
     eye:'FEATURE 01',
     icon:'',
     head:'WEIGHT\nHERO',
-    sub:'Type your weight the second you wake up.\nSee real-time delta vs. your weekly target.\n177 → 148 lbs = 52 seconds off your 5K.',
+    sub:'Type your weight the second you wake up.\nSee real-time delta vs. your weekly target.\nEvery pound is tracked against your goal.',
     orb1:'orb-gold', orb2:'orb-gold',
     bg:'radial-gradient(ellipse at 70% 80%, #140F00 0%, #050508 70%)',
     btn:'NEXT FEATURE →',
@@ -11811,7 +11839,7 @@ const SLIDES = [
     snap:'upload'
   },
   {
-    eye:'FEATURE 06',
+    eye:'FEATURE 05',
     icon:'⊞',
     head:'YOUR DASHBOARD\nYOUR RULES',
     sub:'Tap CUSTOMIZE to reorder every card.\nHide what you don\'t need. Unlock HRV,\nSleep, Nutrition, and Next Race widgets.',
@@ -11821,7 +11849,7 @@ const SLIDES = [
     snap:'widgets'
   },
   {
-    eye:'FEATURE 07',
+    eye:'FEATURE 06',
     icon:'⟲',
     head:'CONNECTED\nTO EVERYTHING',
     sub:'Strava · WHOOP · Garmin · Oura\nApple Health · Nutrition.\nOne tap connects. Data flows in automatically.',
@@ -11831,7 +11859,7 @@ const SLIDES = [
     snap:'integrations'
   },
   {
-    eye:'FEATURE 08',
+    eye:'FEATURE 07',
     icon:'',
     head:'SUPPLEMENT\nCHECKLIST',
     sub:'12 protocols. Tap to check off.\nCreatine · Magnesium · Tart Cherry.\nEvery pill is a tick up on the GPI.',
@@ -11841,7 +11869,7 @@ const SLIDES = [
     snap:'supps'
   },
   {
-    eye:'FEATURE 09',
+    eye:'FEATURE 08',
     icon:'',
     head:'GPI STOCK\nCHART',
     sub:'Execute the plan → stock goes up.\nSkip → it drops.\n110 weeks of data. One score. All yours.',
@@ -11854,21 +11882,21 @@ const SLIDES = [
 
 const SNAPS = {
   welcome: () => `<div class="snap-inner" style="background:linear-gradient(135deg,#0F0F1A,#151522);border:1px solid rgba(245,196,0,.2);">
-    <div class="snap-row"><span class="snap-label" style="color:#F5C400;">GPI STOCK</span><span class="snap-val" style="color:#F5C400;">127.4</span></div>
+    <div class="snap-row"><span class="snap-label" style="color:#F5C400;">GPI STOCK</span><span class="snap-val" style="color:#F5C400;">100.0</span></div>
     <div class="snap-bar-wrap"><div class="snap-bar" style="width:63%;background:linear-gradient(90deg,#F5C400,#00E676);"></div></div>
     <div class="snap-grid">
-      <div class="snap-cell" style="background:rgba(245,196,0,.07);"><div class="snap-cv" style="color:#F5C400;">177</div><div class="snap-cl">LBS NOW</div></div>
-      <div class="snap-cell" style="background:rgba(255,61,87,.07);"><div class="snap-cv" style="color:#FF3D57;">803</div><div class="snap-cl">DAYS LEFT</div></div>
-      <div class="snap-cell" style="background:rgba(0,230,118,.07);"><div class="snap-cv" style="color:#00E676;">148</div><div class="snap-cl">RACE WT</div></div>
+      <div class="snap-cell" style="background:rgba(245,196,0,.07);"><div class="snap-cv" style="color:#F5C400;">${(D.settings&&D.settings.startWt)||'—'}</div><div class="snap-cl">LBS NOW</div></div>
+      <div class="snap-cell" style="background:rgba(255,61,87,.07);"><div class="snap-cv" style="color:#FF3D57;">${typeof getDaysToComp==='function'?getDaysToComp():'—'}</div><div class="snap-cl">DAYS LEFT</div></div>
+      <div class="snap-cell" style="background:rgba(0,230,118,.07);"><div class="snap-cv" style="color:#00E676;">${(D.settings&&D.settings.raceWt&&D.settings.raceWt<D.settings.startWt)?D.settings.raceWt:'—'}</div><div class="snap-cl">GOAL WT</div></div>
     </div>
   </div>`,
 
   weight: () => `<div class="snap-inner" style="background:linear-gradient(135deg,#0F0F1A,#151522);border:1px solid rgba(245,196,0,.3);position:relative;">
     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FF3D57,#F5C400,#00E676);"></div>
-    <div style="font-family:Impact,sans-serif;font-size:54px;color:#F5C400;line-height:1;margin-top:6px;">176.2<span style="font-size:14px;color:rgba(255,255,255,.4);"> lbs</span></div>
+    <div style="font-family:Impact,sans-serif;font-size:54px;color:#F5C400;line-height:1;margin-top:6px;">${(D.settings&&D.settings.startWt)||170}<span style="font-size:14px;color:rgba(255,255,255,.4);"> lbs</span></div>
     <div style="font-family:'SF Mono',monospace;font-size:13px;color:#00E676;margin:4px 0 8px;">▼ −0.4 lbs vs target </div>
     <div class="snap-bar-wrap"><div class="snap-bar" style="width:4%;background:linear-gradient(90deg,#FF3D57,#F5C400,#00E676);"></div></div>
-    <div style="display:flex;justify-content:space-between;font-family:'SF Mono',monospace;font-size:11px;opacity:.5;margin-top:3px;"><span>177 lbs</span><span>4% lost</span><span>148 lbs</span></div>
+    <div style="display:flex;justify-content:space-between;font-family:'SF Mono',monospace;font-size:11px;opacity:.5;margin-top:3px;"><span>Start ${(D.settings&&D.settings.startWt)||170} lbs</span><span>Day 1</span><span>${(D.settings&&D.settings.raceWt&&D.settings.raceWt<D.settings.startWt)?'Goal '+D.settings.raceWt+' lbs':'Hold steady'}</span></div>
   </div>`,
 
   plan: () => `<div class="snap-inner" style="background:#0F0F1A;border:1px solid rgba(255,61,87,.25);position:relative;">
@@ -22552,10 +22580,9 @@ function kodaPopulatePanels() {
     if (uc && uc.month === new Date().toISOString().slice(0,7)) kodaUpdateFreeCounter(uc.used, uc.limit);
   } catch(e) {}
   // Populate trials counter in header
-  const trialsMs = new Date('2028-04-04') - new Date();
-  const trialsDays = Math.max(0, Math.floor(trialsMs / 86400000));
+  const trialsDays = typeof getDaysToComp==='function' ? getDaysToComp() : 0;
   const tc = document.getElementById('koda-trials-counter');
-  if (tc) tc.innerHTML = `TRIALS<br>${trialsDays}D`;
+  if (tc) tc.innerHTML = `TO GO<br>${trialsDays}D`;
 
   // Calculate week stats for left meta
   const startMs2 = new Date('2026-02-23').getTime();
@@ -23472,5 +23499,53 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </div>
 
+<!-- ═══ BETA POLISH — layout + readability fixes for tester build ═══ -->
+<style id="beta-polish">
+/* Theme picker lives behind one palette button instead of 11 dots in the header */
+#themeDots{display:none;position:fixed;top:56px;right:12px;z-index:10000;flex-wrap:wrap;gap:12px;width:196px;padding:14px;
+  background:var(--card,#0D1018);border:1px solid var(--border-hi,rgba(255,255,255,.14));border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.55);}
+#themeDots.open{display:flex;}
+#themeDots .th-dot{width:24px!important;height:24px!important;}
+#themeToggleBtn{width:28px;height:28px;border-radius:50%;border:1px solid var(--border-hi,rgba(255,255,255,.14));background:transparent;
+  color:var(--accent,#C9A84C);display:flex;align-items:center;justify-content:center;padding:0;margin-right:6px;cursor:pointer;flex-shrink:0;}
+.topbar .tb-sub{white-space:nowrap;}
+/* Selected options must stay readable on the accent color */
+.setup-chip.active,.setup-chip:hover,.sport-btn.active,.sport-btn:hover{color:#000!important;font-weight:700;}
+.setup-chip:not(.active){color:rgba(255,255,255,.75)!important;}
+/* Setup wizard: inline error message */
+#setupErr{display:none;margin:14px 0 0;padding:10px 12px;border-radius:8px;background:rgba(232,88,88,.12);border:1px solid rgba(232,88,88,.4);
+  color:#FF8A8A;font-family:'SF Mono',monospace;font-size:12px;line-height:1.5;}
+#setupErr.show{display:block;}
+/* Sign-in: guest link must be findable */
+#authLogin button[onclick="authSkip()"]{color:rgba(255,255,255,.55)!important;font-size:12px!important;padding:8px!important;}
+/* Bottom nav labels: legible on a phone */
+.bnav .nl{font-size:9.5px!important;letter-spacing:.8px!important;color:rgba(255,255,255,.55)!important;}
+.bnav .nb.on .nl{color:var(--accent,#C9A84C)!important;}
+.bnav .nb{min-width:0;}
+/* KODA header: fit on a 390px phone */
+#koda-appbar{gap:8px;}
+#koda-appbar > div:last-child{gap:6px!important;flex-shrink:1;min-width:0;}
+#koda-status-wrap{display:none!important;}
+#koda-appbar-sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;}
+/* Respect the iPhone home indicator */
+.bnav{padding-bottom:max(6px,env(safe-area-inset-bottom))!important;}
+</style>
+<script>
+function toggleThemeDots(e){
+  if(e) e.stopPropagation();
+  var d=document.getElementById('themeDots'); if(!d) return;
+  d.classList.toggle('open');
+  if(d.classList.contains('open')){
+    setTimeout(function(){document.addEventListener('click',function c(ev){ if(!d.contains(ev.target)){d.classList.remove('open');} else {setTimeout(function(){d.classList.remove('open');},250);} },{once:true});},10);
+  }
+}
+function setupError(msg,focusEl){
+  var nav=document.getElementById('setupNav'); if(!nav) return;
+  var el=document.getElementById('setupErr');
+  if(!el){ el=document.createElement('div'); el.id='setupErr'; el.setAttribute('role','alert'); nav.parentNode.insertBefore(el,nav); }
+  el.textContent=msg||''; el.classList.toggle('show',!!msg);
+  if(msg&&focusEl){ try{focusEl.scrollIntoView({block:'center',behavior:'smooth'});}catch(_){} }
+}
+</script>
 </body>
 </html>
