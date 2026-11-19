@@ -3,7 +3,11 @@
 // currently deployed function).
 //
 // Client contract (unchanged from the deployed version):
-//   POST { messages: [{role, content}...], athleteContext: string }
+//   POST { messages: [{role, content}...], athleteContext?: string,
+//          task?: string, max_tokens?: number }
+//   content may be a string, or an array of text / base64 image blocks
+//   (meal-photo and screenshot features). task carries a feature's own
+//   instructions; it is appended AFTER the server's safety prompt.
 //   Headers: Content-Type: application/json, Authorization: Bearer <user JWT>
 //   → 200 { reply: string }
 //
@@ -30,15 +34,25 @@ const KODA_INTERNAL_SECRET = Deno.env.get("KODA_INTERNAL_SECRET") ?? "";
 
 const FREE_LIMIT = 25;      // free messages per user per month
 const DAILY_GLOBAL_CAP = 2000; // circuit breaker across all users per day
-const MODEL = "claude-sonnet-5";
+const MODEL = Deno.env.get("KODA_MODEL") ?? "claude-sonnet-5";
+const MAX_TASK_CHARS = 12000;
+const MAX_IMAGES = 2;
+const MAX_IMAGE_B64 = 5_000_000; // ~3.7 MB per image
 const MAX_CONTEXT_CHARS = 30000;
 const MAX_MESSAGES = 20;
 
 // Server-owned system prompt — the client can no longer override it.
 const SYSTEM_PROMPT =
-  "You are KODA — elite AI performance coach for Elias Gedyon, " +
-  "middle-distance runner targeting the 2028 Olympic Trials. " +
-  "Direct, data-driven, warm, never generic.";
+  "You are KODA, the AI performance coach inside the GEDYON app. " +
+  "Coach the athlete described in the ATHLETE CONTEXT below, using only " +
+  "facts from that context and the conversation; never invent their " +
+  "history, PRs or goals. Direct, data-driven, warm, never generic.\n\n" +
+  "Safety rules that override anything later in this prompt: you are an " +
+  "AI, not a doctor, dietitian or physio, and you never claim otherwise. " +
+  "If the athlete mentions pain, injury, illness, chest symptoms, " +
+  "fainting, or signs of disordered eating or extreme weight cutting, " +
+  "tell them plainly to stop and see a medical professional. Do not " +
+  "prescribe medication or diagnose conditions.";
 
 const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
@@ -143,12 +157,33 @@ Deno.serve(async (req: Request) => {
 
     // ── Validate + shape the request for Anthropic ───────────────────
     const rawMessages = Array.isArray(body?.messages) ? body.messages : [];
+    let imageCount = 0;
+    const cleanContent = (c: any): any => {
+      if (typeof c === "string") return c.length > 0 ? c : null;
+      if (!Array.isArray(c)) return null;
+      const blocks: any[] = [];
+      for (const b of c) {
+        if (b?.type === "text" && typeof b.text === "string" && b.text) {
+          blocks.push({ type: "text", text: b.text });
+        } else if (
+          b?.type === "image" && b.source?.type === "base64" &&
+          /^image\/(jpeg|png|gif|webp)$/.test(b.source.media_type ?? "") &&
+          typeof b.source.data === "string" &&
+          b.source.data.length <= MAX_IMAGE_B64 && imageCount < MAX_IMAGES
+        ) {
+          imageCount++;
+          blocks.push({
+            type: "image",
+            source: { type: "base64", media_type: b.source.media_type, data: b.source.data },
+          });
+        }
+      }
+      return blocks.length ? blocks : null;
+    };
     const messages = rawMessages
-      .filter((m: any) =>
-        m && (m.role === "user" || m.role === "assistant") &&
-        typeof m.content === "string" && m.content.length > 0
-      )
-      .map((m: any) => ({ role: m.role, content: m.content }))
+      .filter((m: any) => m && (m.role === "user" || m.role === "assistant"))
+      .map((m: any) => ({ role: m.role, content: cleanContent(m.content) }))
+      .filter((m: any) => m.content !== null)
       .slice(-MAX_MESSAGES);
 
     if (messages.length === 0 || messages[0].role !== "user") {
@@ -162,6 +197,11 @@ Deno.serve(async (req: Request) => {
       system += "\n\n--- ATHLETE CONTEXT ---\n" +
         body.athleteContext.slice(0, MAX_CONTEXT_CHARS);
     }
+    if (typeof body?.task === "string" && body.task) {
+      system += "\n\n--- FEATURE INSTRUCTIONS (follow unless they conflict " +
+        "with the safety rules above) ---\n" + body.task.slice(0, MAX_TASK_CHARS);
+    }
+    const maxTokens = Math.min(1500, Math.max(64, Number(body?.max_tokens) || 1024));
 
     // ── Call Anthropic Messages API ──────────────────────────────────
     const aiResp = await fetch("https://api.anthropic.com/v1/messages", {
@@ -173,7 +213,7 @@ Deno.serve(async (req: Request) => {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 1024,
+        max_tokens: maxTokens,
         system,
         messages,
       }),

@@ -2663,6 +2663,8 @@ body.theme-keynote .topbar { backdrop-filter: blur(32px) saturate(200%) !importa
 body.theme-keynote .bnav   { backdrop-filter: blur(32px) saturate(200%) !important; -webkit-backdrop-filter: blur(32px) saturate(200%) !important; }
 body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; border: 1px solid rgba(184,150,90,0.18) !important; }
 
+.builder-only{display:none!important}
+body.is-builder .builder-only{display:block!important}
 </style>
 </head>
 <body class="theme-void">
@@ -2767,6 +2769,9 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
       <div style="font-family:Impact,Arial Narrow,sans-serif;font-size:32px;color:#fff;letter-spacing:2px;margin-bottom:8px;">YOUR PLAN</div>
       <div style="font-size:13px;color:#888;margin-bottom:24px;">KODA AI will build a personalized training program based on your profile.</div>
       <div id="setupReview" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px;margin-bottom:24px;font-family:'SF Mono',monospace;font-size:12px;color:#ccc;line-height:2;"></div>
+      <div style="font-size:12px;color:#888;line-height:1.7;margin-bottom:16px;padding:12px;border:1px solid rgba(255,255,255,.1);border-radius:10px;">
+        <strong style="color:#bbb;">Before you start:</strong> GEDYON and its AI coach KODA give general training and nutrition information. They are not medical advice and KODA can make mistakes. Check with a doctor before starting a new program, and stop training if you feel pain, chest discomfort or dizziness.
+      </div>
       <button onclick="completeSetup()" style="width:100%;padding:16px;background:var(--accent,#C9A84C);color:#000;font-family:Impact,Arial Narrow,sans-serif;font-size:20px;letter-spacing:3px;border:none;border-radius:10px;cursor:pointer;">KODA MY PLAN →</button>
     </div>
 
@@ -2852,6 +2857,11 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
 
     <div style="text-align:center;margin-top:40px;font-family:'SF Mono',monospace;font-size:10px;color:#333;letter-spacing:1px;">
       ENCRYPTED · SECURE · YOUR DATA IS YOURS
+    </div>
+    <div style="text-align:center;margin-top:14px;font-family:'SF Mono',monospace;font-size:11px;color:rgba(255,255,255,.5);line-height:1.8;">
+      By continuing you agree to the <a href="terms.html" target="_blank" rel="noopener" style="color:rgba(255,255,255,.75);">Terms</a> and
+      <a href="privacy.html" target="_blank" rel="noopener" style="color:rgba(255,255,255,.75);">Privacy Policy</a> ·
+      <a href="support.html" target="_blank" rel="noopener" style="color:rgba(255,255,255,.75);">Support</a>
     </div>
   </div>
 </div>
@@ -3431,6 +3441,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
       </div>
       <div id="ms-supps" class="msec on">
         <div class="sh" style="margin-top:0;">SUPPLEMENT PROTOCOL</div>
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);line-height:1.7;margin:0 0 10px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;">Example protocol for educational purposes only, not a recommendation for you. Supplements can interact with medicines and conditions. Check with a doctor or registered dietitian before taking any of these.</div>
         <div class="supc sg"><div class="sco">$20/3mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Creatine Monohydrate</div><div class="sdo">5g daily · no loading</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> Morning with water</div><div class="swy">Protects muscle during 29 lb weight loss. Non-negotiable.</div></div>
         <div class="supc sbl"><div class="sco">$20/mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Vitamin D3 + K2</div><div class="sdo">5000 IU D3 + 100mcg K2</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> Morning with fat</div><div class="swy">Bone density, testosterone, immunity.</div></div>
         <div class="supc sg"><div class="sco">$15/mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Magnesium Glycinate</div><div class="sdo">400mg every night</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> 9:00pm — every night</div><div class="swy">Sleep quality, muscle recovery, cramp prevention.</div></div>
@@ -3841,7 +3852,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
         <div class="sh" style="margin-top:0;">CONNECT YOUR DEVICES</div>
 
         <!-- DIAGNOSTIC BANNER -->
-        <div id="diagBanner" style="background:rgba(255,196,0,.06);border:1px solid rgba(255,196,0,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;">
+        <div class="builder-only" id="diagBanner" style="background:rgba(255,196,0,.06);border:1px solid rgba(255,196,0,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
             <div style="font-family:monospace;font-size:13px;color:var(--gold);letter-spacing:2px;">SYSTEM DIAGNOSTIC</div>
             <button onclick="runDiagnostic()" style="background:rgba(245,196,0,.15);border:1px solid rgba(245,196,0,.3);border-radius:8px;padding:4px 10px;font-family:monospace;font-size:11px;color:var(--gold);cursor:pointer;">RUN CHECK ↻</button>
@@ -3852,7 +3863,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
         </div>
 
         <!-- SETUP GUIDE (collapsed by default) -->
-        <details style="background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;">
+        <details class="builder-only" style="background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;">
           <summary style="padding:12px 14px;cursor:pointer;font-family:monospace;font-size:12px;color:rgba(179,136,255,.8);letter-spacing:2px;list-style:none;display:flex;align-items:center;gap:8px;">
             <span style="font-size:14px;"></span> FIRST TIME SETUP GUIDE — TAP TO EXPAND
           </summary>
@@ -3931,7 +3942,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
         <div id="connectStatusMsg" style="font-family:'SF Mono',monospace;font-size:12px;color:var(--gold);margin-bottom:10px;line-height:1.8;display:none;padding:8px 12px;background:rgba(0,0,0,.3);border-radius:8px;border-left:3px solid var(--gold);"></div>
 
         <!-- STEP 1: SERVER -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;">
+        <div class="builder-only" style="background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;">
           <div style="background:rgba(179,136,255,.08);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
             <div style="display:flex;align-items:center;gap:8px;">
               <div style="width:20px;height:20px;border-radius:50%;background:rgba(179,136,255,.2);border:1px solid rgba(179,136,255,.4);display:flex;align-items:center;justify-content:center;font-family:Impact,sans-serif;font-size:11px;color:rgba(179,136,255,.9);">1</div>
@@ -4143,6 +4154,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
           <button id="authDeleteBtn" style="display:none;width:100%;margin-top:10px;padding:10px;background:transparent;border:1px solid rgba(232,88,88,.45);border-radius:8px;color:#FF8A8A;font-family:'SF Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;" onclick="authDeleteAccount()">DELETE ACCOUNT</button>
           <button class="btn" id="authLoginBtn" style="display:none;" onclick="$('authScreen').style.display='block';">SIGN IN / CREATE ACCOUNT</button>
         </div></div>
+        <div class="builder-only">
         <div class="sh">SUPABASE CONFIG</div>
         <div class="card"><div class="cb">
           <div class="fr"><div class="fl">Project URL</div><input type="text" id="setSbUrl" placeholder="https://xxxxx.supabase.co" style="font-size:11px;"></div>
@@ -4150,11 +4162,20 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
           <button class="btn" onclick="saveSbConfig()">CONNECT SUPABASE</button>
           <div class="al" id="sbAlert"></div>
         </div></div>
+        </div>
         <div class="sh">DATA</div>
         <div class="card"><div class="cb" style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn" style="width:auto;padding:10px 16px;font-size:14px;" onclick="exportData()"> EXPORT</button>
           <button class="btn" style="width:auto;padding:10px 16px;font-size:14px;" onclick="if(currentUser)saveCloudData().then(function(){showAlert('setAlert','Synced to cloud!','ok');});">SYNC TO CLOUD</button>
           <button class="btn" style="width:auto;padding:10px 16px;font-size:14px;background:var(--red);color:#fff;" onclick="if(confirm('Reset ALL data?')){localStorage.removeItem(KEY);localStorage.removeItem(SETUP_KEY);location.reload();}"> RESET</button>
+        </div></div>
+        <div class="sh">LEGAL &amp; SUPPORT</div>
+        <div class="card"><div class="cb" style="display:flex;flex-direction:column;gap:8px;font-family:'SF Mono',monospace;font-size:13px;">
+          <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--off);">Privacy Policy</a>
+          <a href="terms.html" target="_blank" rel="noopener" style="color:var(--off);">Terms of Use</a>
+          <a href="support.html" target="_blank" rel="noopener" style="color:var(--off);">Support &amp; Contact</a>
+          <label style="display:flex;align-items:center;gap:10px;color:var(--off);margin-top:4px;"><input type="checkbox" id="aiConsentToggle" onchange="setAIConsent(this.checked)"> Allow KODA to send my data to Anthropic (Claude) to answer me</label>
+          <div style="color:var(--grey);font-size:11px;line-height:1.7;">GEDYON and KODA give general training information, not medical advice. Talk to a doctor before starting a new program, and stop if you feel pain, chest discomfort or dizziness.</div>
         </div></div>
         <div style="padding:12px;background:var(--card);border:1px solid var(--border);border-radius:10px;font-family:'SF Mono',Consolas,monospace;font-size:11px;color:#2A2A42;line-height:2;margin-bottom:10px;">
            2026 Elias Gedyon™ · All Rights Reserved<br>
@@ -4973,6 +4994,10 @@ function loadBuilderData(){
   // Only set defaults if this is a fresh account (no existing data)
   if(!D.settings.isBuilder){
     Object.assign(D.settings, BUILDER_DEFAULTS);
+    ['waCode','prs','currentFitness','athleteProfile'].forEach(function(k){
+      if(!D.settings[k] || (typeof D.settings[k]==='object' && !Object.keys(D.settings[k]).length)) D.settings[k]=JSON.parse(JSON.stringify(OWNER_SEED.settings[k]));
+    });
+    if(!D.races || !D.races.length) D.races=JSON.parse(JSON.stringify(OWNER_SEED.races));
     saveData();
   }
   // Mark setup as done for builder
@@ -5140,6 +5165,8 @@ async function authDeleteAccount(){
   }
 }
 function updateAuthStatus(){
+  try{ document.body.classList.toggle('is-builder', !!(D.settings && D.settings.isBuilder)); }catch(e){}
+  try{ var _ac=document.getElementById('aiConsentToggle'); if(_ac) _ac.checked=hasAIConsent(); }catch(e){}
   var _db=$('authDeleteBtn'); if(_db) _db.style.display=currentUser?'block':'none';
   var statusEl=$('authStatus');
   var logoutBtn=$('authLogoutBtn');
@@ -5161,8 +5188,9 @@ function updateAuthStatus(){
 // Cloud sync is now triggered on every saveData() call — no timer needed
 const DEFAULT_PIN = '042028'; // April 2028 — Trials month/year
 
-let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
-  logs:[], food:[], workouts:[], weights:[],
+// ═══ OWNER SEED — the builder's own history. Applied ONLY to the builder
+// account (isBuilder). Public users start from a clean slate.
+var OWNER_SEED = {
   races:[
     {id:1006,date:'2026-04-26',ev:'10k',time:'37:53',meet:'Pueblo Spring Runoff',location:'Pueblo, CO',pr:true,priority:'A',place:4,ageGroup:'1st/3 AG 30-34'},
     {id:1001,date:'2018-02-10',ev:'mile',time:'4:01.10',meet:'UW Invitational',location:'Seattle, WA',pr:true,priority:'A'},
@@ -5171,7 +5199,6 @@ let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
     {id:1004,date:'2019-04-18',ev:'5k',time:'13:45.66',meet:'Azusa Pacific Invitational',location:'Azusa, CA',pr:true,priority:'A'},
     {id:1005,date:'2019-03-09',ev:'3k',time:'8:05.90',meet:'Pittsburg State Invitational',location:'Pittsburg, KS',pr:true,priority:'A'}
   ],
-  supps:{}, dayScores:{}, lactate:{},
   settings:{name:'Elias Gedyon', start:'2026-02-23', startWt:181, raceWt:148, waCode:'14329251', compDate:'2028-04-04',
     prs:{
       '10k':   {time:'37:53',   date:'2026-04-26', meet:'Pueblo Spring Runoff'},
@@ -5202,17 +5229,39 @@ let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
       note: 'Speed has never been the question. The aerobic base is being built now for the first time properly.'
     }
   }
+};
+let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
+  logs:[], food:[], workouts:[], weights:[], races:[],
+  supps:{}, dayScores:{}, lactate:{},
+  settings:{name:'', start:new Date().toISOString().slice(0,10), compDate:'', prs:{}}
 }));
+// One-time cleanup: earlier builds seeded every new user with the builder's
+// races, PRs and World Athletics code. Strip that from non-builder data.
+(function(){
+  if(D.settings && D.settings.isBuilder) return;
+  if(localStorage.getItem('gedyon_owner_seed_cleaned')) return;
+  var seedIds=[1001,1002,1003,1004,1005,1006];
+  if(Array.isArray(D.races)) D.races=D.races.filter(function(r){return seedIds.indexOf(r.id)===-1;});
+  if(D.settings){
+    if(D.settings.waCode==='14329251') delete D.settings.waCode;
+    if(D.settings.name==='Elias Gedyon') D.settings.name='';
+    if(D.settings.prs && D.settings.prs['1500m'] && D.settings.prs['1500m'].time==='3:45.25') D.settings.prs={};
+    delete D.settings.athleteProfile;
+    if(D.settings.currentFitness && D.settings.currentFitness.time==='37:53') delete D.settings.currentFitness;
+  }
+  localStorage.setItem('gedyon_owner_seed_cleaned','1');
+  try{ localStorage.setItem(KEY, JSON.stringify(D)); }catch(e){}
+})();
 if(!D.actualMeals) D.actualMeals={};
 if(!D.dayScores) D.dayScores={};
 /// Start date is athlete-adjustable (recalibration + Gap Protocol move it).
 // The old guard here reset anything after Mar 1 back to Feb 23 on every
 // load — silently undoing every recalibration ever applied.
-if(!D.settings.start) D.settings.start = '2026-02-23';
+if(!D.settings.start) D.settings.start = new Date().toISOString().slice(0,10);
 // One-time repositioning (July 2026): athlete confirmed most of the original
 // plan was missed; the data-driven recommendation from his logged mileage
 // was week 13. Reposition once; RECALIBRATE adjusts freely from here.
-if(D.settings.start === '2026-02-23'){
+if(D.settings.isBuilder && D.settings.start === '2026-02-23'){
   // Self-healing (no flag check): any state still carrying the original
   // start — including stale sandboxes where an earlier build set the
   // flag but failed to persist the date — gets repositioned to week 13.
@@ -5222,16 +5271,10 @@ if(D.settings.start === '2026-02-23'){
   try{ localStorage.setItem('gedyon_v5', JSON.stringify(D)); }catch(e){}
   setTimeout(function(){ try{ saveData(); }catch(e){} }, 800);
 }
-// Ensure PR races always exist in race history
+// Ensure the builder's PR races always exist in his race history (builder only)
 (function(){
-  var prRaces=[
-    {id:1006,date:'2026-04-26',ev:'10k',time:'37:53',meet:'Pueblo Spring Runoff',location:'Pueblo, CO',pr:true,priority:'A',place:4,ageGroup:'1st/3 AG 30-34'},
-    {id:1001,date:'2018-02-10',ev:'mile',time:'4:01.10',meet:'UW Invitational',location:'Seattle, WA',pr:true,priority:'A'},
-    {id:1002,date:'2017-04-14',ev:'1500m',time:'3:45.25',meet:'Azusa Pacific Invitational',location:'Azusa, CA',pr:true,priority:'A'},
-    {id:1003,date:'2009-05-23',ev:'800m',time:'1:51.91',meet:'Junior PR — Age 15 · CIF Southern Section',location:'Norwalk, CA',pr:true,priority:'A'},
-    {id:1004,date:'2019-04-18',ev:'5k',time:'13:45.66',meet:'Azusa Pacific Invitational',location:'Azusa, CA',pr:true,priority:'A'},
-    {id:1005,date:'2019-03-09',ev:'3k',time:'8:05.90',meet:'Pittsburg State Invitational',location:'Pittsburg, KS',pr:true,priority:'A'}
-  ];
+  if(!D.settings || !D.settings.isBuilder) return;
+  var prRaces=OWNER_SEED.races;
   if(!D.races) D.races=[];
   prRaces.forEach(function(pr){
     // Deduplicate by canonical id OR by ev+date match (catches manually-injected dupes)
@@ -5436,6 +5479,10 @@ function completeSetup(){
   // Clear previous user data
   D.logs=[];D.food=[];D.workouts=[];D.weights=[];D.supps={};D.dayScores={};D.lactate={};
   D.races=[];D.actualMeals={};
+  if(!D.settings.isBuilder){
+    D.settings.prs={};
+    delete D.settings.waCode; delete D.settings.athleteProfile; delete D.settings.currentFitness;
+  }
 
   saveData();
   localStorage.setItem(SETUP_KEY,'1');
@@ -7039,20 +7086,11 @@ function askEliasToday(date){
 
 // ═══ AI ═══
 async function callAI(messages, maxTok=600, sysPrompt=null){
-  const sv=(D.settings?.serverUrl||localStorage.getItem('gedyon_server_url')||'').replace(/\/+$/,'');
-  const isProxy=!!sv;
-  const body=isProxy
-    ?JSON.stringify({messages,max_tokens:maxTok,...(sysPrompt?{system:sysPrompt}:{})})
-    :JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:maxTok,messages,...(sysPrompt?{system:sysPrompt}:{})});
-  const headers={'Content-Type':'application/json'};
-  const url=isProxy?sv+'/api/chat':'https://api.anthropic.com/v1/messages';
   try{
-    const r=await fetch(url,{method:'POST',headers,body});
-    const d=await r.json();
-    if(isProxy) return d.reply||'';
-    return d.content?d.content.map(c=>c.text||'').join(''):'';
+    return await gedyonAI({ messages: messages, maxTokens: maxTok, system: sysPrompt || '' });
   }catch(e){
     console.error('[AI]',e);
+    if (typeof showToast === 'function') showToast(gedyonAIErrorText(e), 'info');
     return '';
   }
 }
@@ -11289,7 +11327,8 @@ function importAllRaces(silent) {
 }
 
 function importWorldAthleticsRaces() {
-  var waCode = D.settings.waCode || '14329251'; // Elias's known code as default
+  var waCode = D.settings.waCode || '';
+  if (!waCode) { showToast('Add your World Athletics code in Settings first', 'info'); return; }
   var status = document.getElementById('importRacesStatus');
   if (status) { status.style.display='block'; status.style.color='var(--grey)'; status.textContent='Fetching World Athletics results for code '+waCode+'...'; }
 
@@ -11549,7 +11588,7 @@ function renderAthleteProfile() {
   }
 
   // Name
-  var name = D.settings.name || 'Elias Gedyon';
+  var name = D.settings.name || 'Athlete';
   var nameParts = name.toUpperCase().split(' ');
   var el = document.getElementById('profileName');
   if (el) el.textContent = nameParts.join(' ');
@@ -18065,7 +18104,7 @@ async function eliasChat(){
   const systemPrompt = `You are KODA — an elite autonomous AI system purpose-built for one athlete. You are not a generic chatbot. You are a specialized intelligence that thinks deeper, remembers more, and reasons harder than any AI assistant. You operate like a world-class performance scientist who has been embedded with this athlete for years.
 
 ## CORE IDENTITY
-You are KODA. You don't say "I'm an AI" or hedge with disclaimers. You speak with authority because you have ALL the data. You think before you speak. You reason through every answer. You never give generic advice — everything is specific to THIS athlete, THIS day, THIS situation.
+You are KODA. You don't pad answers with generic disclaimers, but you never pretend to be human or a medical professional. If the athlete mentions pain, injury, illness, chest symptoms, fainting, or signs of disordered eating, tell them plainly to see a doctor or physio before training through it. You speak with authority because you have ALL the data. You think before you speak. You reason through every answer. You never give generic advice — everything is specific to THIS athlete, THIS day, THIS situation.
 
 ## HOW YOU THINK (chain-of-thought reasoning — every response):
 
@@ -18093,26 +18132,7 @@ ${chizalMem}
 ## LIVE TRAINING DATA:
 ${ctx}
 
-## ATHLETE DOSSIER:
-- **Name**: Elias Gedyon
-- **Events**: 800m / 1500m / Mile — pure speed-endurance specialist
-- **Goal**: 2028 Olympic Trials, April 4, 2028, Eugene OR — 1500m qualifier (3:36 standard)
-- **Race Weight**: 148lb target
-- **System**: Norwegian threshold (4x8min @ LT2) + polarized base (80% easy / 20% hard)
-- **Philosophy**: Anti-bloat, anti-inflammation, fast-digesting foods, nothing that makes him feel heavy
-- **Personality**: Driven, wants direct answers, no BS, responds well to data-backed reasoning
-
-PHYSIOLOGICAL CEILING — CRITICAL CONTEXT:
-- **Junior 800m PR: 1:51.91 at age 15** → VDOT 77.7 as a teenager, before full aerobic development
-- **Adult mile PR: 4:01.10** → VDOT 76.1 (speed ceiling, not aerobic ceiling)
-- **Current 10k VDOT: 55.4** → aerobic base only, NOT a reflection of speed potential
-- **Adult physiological ceiling: VDOT 83–87** (conservative to optimistic, based on junior 800m + adult progression norms)
-- **Ceiling translates to: 3:26–3:18 for 1500m, 3:42–3:33 for mile**
-- The Trials standard (3:36 / VDOT 79) is INSIDE his conservative ceiling — it's the expected outcome if the system executes
-- 3:24 1500m sits at the top of the conservative ceiling — world-class but physiologically within range
-- NEVER calibrate his potential from the 10k VDOT. The 10k measures aerobic base only. His speed ceiling is set by the 800m junior history.
-- The Norwegian plan's entire job is to pull the aerobic base (55.4) up to meet the speed ceiling (77+). Every week of threshold work closes that gap.
-
+${(D.settings && D.settings.isBuilder) ? OWNER_DOSSIER : genericDossier()}
 ## AUTONOMOUS CAPABILITIES:
 You don't just answer questions — you THINK and ACT:
 - Detect problems he hasn't noticed yet ("You've been 300cal over target 4 of the last 5 days")
@@ -18142,22 +18162,7 @@ After each conversation, if you learn something new about Elias (food preference
 - You are KODA. Own it.`;
 
   try {
-    // Route through YOUR Railway server — no API key needed in the app
-    const serverUrl = (D.settings?.serverUrl || localStorage.getItem('gedyon_server_url') || '').replace(/\/+$/,'');
-    const endpoint = serverUrl ? serverUrl + '/api/chat' : 'https://api.anthropic.com/v1/messages';
-    const isProxy = !!serverUrl;
-
-    const body = isProxy
-      ? JSON.stringify({ system: systemPrompt, messages: ELIAS_HISTORY.slice(-20), max_tokens: 2000, model: 'claude-opus-4-6' })
-      : JSON.stringify({ model: 'claude-opus-4-6', max_tokens: 2000, system: systemPrompt, messages: ELIAS_HISTORY.slice(-20) });
-
-    const headers = isProxy
-      ? { 'Content-Type': 'application/json' }
-      : { 'Content-Type': 'application/json', 'x-api-key': '', 'anthropic-version': '2023-06-01' };
-
-    const resp = await fetch(endpoint, { method: 'POST', headers, body });
-    const data = await resp.json();
-    const reply = isProxy ? (data.reply || '...') : (data.content?.[0]?.text || '...');
+    const reply = (await gedyonAI({ system: systemPrompt, messages: ELIAS_HISTORY.slice(-20), maxTokens: 1500 })) || '...';
 
     // Remove thinking indicator
     const thinkEl = document.getElementById(thinkId);
@@ -20561,7 +20566,7 @@ async function atlasChat(){
   log.scrollTop = log.scrollHeight;
 
   const ctx = (typeof buildEliasContext === 'function') ? buildEliasContext() : '';
-  const systemPrompt = `You are KODA — Elias Gedyon's elite AI performance coach. You have the combined knowledge of:
+  const systemPrompt = `You are KODA — ${athleteName()}'s elite AI performance coach. You have the combined knowledge of:
 - Exercise physiology (Veronique Billat, Stephen Seiler, Tim Noakes — Norwegian threshold method, polarized training)
 - Sports science (HRV, lactate threshold, VO2max, periodization, supercompensation)
 - Elite running coaching (Pete Julian, Alberto Salazar methodology, Jack Daniels VDOT)
@@ -20582,28 +20587,14 @@ ${ctx}
 GOAL: 2028 Olympic Trials (April 4, 2028 — Eugene OR). 800m/1500m specialist. Norwegian threshold system.
 
 VOICE RULES:
-- Talk like a brilliant coach who also knows Elias personally — direct, no fluff
+- Talk like a brilliant coach who also knows ${athleteName()} personally — direct, no fluff
 - Use real numbers from his data. Never make up data.
 - Responses: 3-8 sentences normally. For complex decisions, use a brief structured breakdown.
 - Never say "Great question" or "I understand". Just answer.
 - End with a specific action: "Here's exactly what to do right now:"`;
 
   try {
-    const serverUrl = (typeof D !== 'undefined' && D.settings?.serverUrl) ? D.settings.serverUrl : (localStorage.getItem('gedyon_server_url') || '');
-    const cleanUrl = serverUrl.replace(/\/+$/,'');
-    const endpoint = cleanUrl ? cleanUrl + '/api/chat' : 'https://api.anthropic.com/v1/messages';
-    const isProxy = !!cleanUrl;
-
-    const body = isProxy
-      ? JSON.stringify({ system: systemPrompt, messages: ATLAS_HISTORY.slice(-10), max_tokens: 500 })
-      : JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:500, system: systemPrompt, messages: ATLAS_HISTORY.slice(-10) });
-    const headers = isProxy
-      ? {'Content-Type':'application/json'}
-      : {'Content-Type':'application/json','x-api-key':'','anthropic-version':'2023-06-01'};
-
-    const resp = await fetch(endpoint, { method:'POST', headers, body });
-    const data = await resp.json();
-    const reply = isProxy ? (data.reply || '...') : (data.content?.[0]?.text || '...');
+    const reply = (await gedyonAI({ system: systemPrompt, messages: ATLAS_HISTORY.slice(-10), maxTokens: 500 })) || '...';
 
     document.getElementById(thinkId)?.remove();
 
@@ -20665,7 +20656,7 @@ async function analyzeWorkout(workout){
     ? 'WHOOP recovery: ' + (whoopRec.recovery || whoopRec.recoveryScore || '?') + '% · HRV: ' + (whoopRec.hrv || '?') + ' ms · RHR: ' + (whoopRec.rhr || whoopRec.restingHR || '?') + ' bpm'
     : 'No WHOOP recovery data available';
 
-  const systemPrompt = `You are KODA — Elias Gedyon's elite AI performance coach. Respond in exactly 2 sentences. Be direct, specific, data-driven. No fluff, no greetings.`;
+  const systemPrompt = `You are KODA — ${athleteName()}'s elite AI performance coach. Respond in exactly 2 sentences. Be direct, specific, data-driven. No fluff, no greetings.`;
 
   const userMessage = `POST-WORKOUT ANALYSIS for ${workout.name} on ${workout.date}:
 
@@ -20677,30 +20668,7 @@ ${whoopDesc}
 Grade this workout execution and give me exactly 2 sentences of coaching feedback. Reference the actual numbers. End with a concrete recommendation for tomorrow.`;
 
   try {
-    // Primary: KODA edge function (always available). Fallback: Railway proxy.
-    let analysis = '';
-    try {
-      const resp = await fetch(KODA_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': KODA_TOKEN },
-        body: JSON.stringify({ messages: [{ role: 'user', content: systemPrompt + '\n\n' + userMessage }], athleteContext: '' })
-      });
-      if(resp.ok){ const d = await resp.json(); analysis = d.reply || ''; }
-    } catch(e) {}
-    if(!analysis){
-      const serverUrl = (typeof D !== 'undefined' && D.settings?.serverUrl)
-        ? D.settings.serverUrl
-        : (localStorage.getItem('gedyon_server_url') || 'https://gedyon-server-production.up.railway.app');
-      const endpoint = serverUrl.replace(/\/+$/, '') + '/api/chat';
-      const resp2 = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system: systemPrompt, messages: [{ role: 'user', content: userMessage }], max_tokens: 180 })
-      });
-      if(!resp2.ok) throw new Error('Server responded ' + resp2.status);
-      const data = await resp2.json();
-      analysis = data.reply || data.content?.[0]?.text || '';
-    }
+    let analysis = await gedyonAI({ system: systemPrompt, messages: [{ role: 'user', content: userMessage }], maxTokens: 300 });
     if(!analysis) throw new Error('Empty analysis');
 
     localStorage.setItem(cacheKey, '1');
@@ -20809,13 +20777,142 @@ function showPostWorkoutInsight(workout, grade, analysisText){
 // ─── KODA AI COACH ────────────────────────────────────────────────────────────
 const KODA_ENDPOINT = 'https://qfmklkgvobfckcippwyh.supabase.co/functions/v1/koda-chat';
 const KODA_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmbWtsa2d2b2JmY2tjaXBwd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NjcxMDgsImV4cCI6MjA5MDE0MzEwOH0.VyxUjvWgqljaiixibNnqPtP47mGSNmZH64RsmUO5z5Q';
+// Lightweight toast. Many features call showToast(); it was never defined,
+// so those calls threw. type: 'ok' | 'err' | 'error' | 'info'
+function showToast(msg, type){
+  try {
+    var el = document.getElementById('gedyon-toast');
+    if (!el) {
+      el = document.createElement('div'); el.id = 'gedyon-toast';
+      el.setAttribute('role', 'status');
+      el.style.cssText = "position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:100000;max-width:88vw;padding:10px 16px;border-radius:10px;font-family:'SF Mono',monospace;font-size:12px;line-height:1.6;color:#fff;box-shadow:0 6px 24px rgba(0,0,0,.4);transition:opacity .3s;";
+      document.body.appendChild(el);
+    }
+    el.style.background = (type === 'err' || type === 'error') ? '#8a1c1c' : type === 'ok' ? '#155d3a' : '#1f2a44';
+    el.textContent = msg; el.style.opacity = '1';
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(function(){ el.style.opacity = '0'; }, 3800);
+  } catch(e) {}
+}
+// Hosts allowed to call the KODA cloud function. Add your custom domain here
+// (e.g. 'app.gedyon.com') when you move off GitHub Pages / Netlify.
+const GEDYON_APP_HOSTS = ['eligedyon.github.io', 'localhost', '127.0.0.1'];
+function gedyonHostAllowed(){
+  var h = window.location.hostname;
+  return window.location.protocol === 'capacitor:' || GEDYON_APP_HOSTS.indexOf(h) !== -1 || h.endsWith('.netlify.app');
+}
+const OWNER_DOSSIER = `## ATHLETE DOSSIER:
+- **Name**: Elias Gedyon
+- **Events**: 800m / 1500m / Mile — pure speed-endurance specialist
+- **Goal**: 2028 Olympic Trials, April 4, 2028, Eugene OR — 1500m qualifier (3:36 standard)
+- **Race Weight**: 148lb target
+- **System**: Norwegian threshold (4x8min @ LT2) + polarized base (80% easy / 20% hard)
+- **Philosophy**: Anti-bloat, anti-inflammation, fast-digesting foods, nothing that makes him feel heavy
+- **Personality**: Driven, wants direct answers, no BS, responds well to data-backed reasoning
+
+PHYSIOLOGICAL CEILING — CRITICAL CONTEXT:
+- **Junior 800m PR: 1:51.91 at age 15** → VDOT 77.7 as a teenager, before full aerobic development
+- **Adult mile PR: 4:01.10** → VDOT 76.1 (speed ceiling, not aerobic ceiling)
+- **Current 10k VDOT: 55.4** → aerobic base only, NOT a reflection of speed potential
+- **Adult physiological ceiling: VDOT 83–87** (conservative to optimistic, based on junior 800m + adult progression norms)
+- **Ceiling translates to: 3:26–3:18 for 1500m, 3:42–3:33 for mile**
+- The Trials standard (3:36 / VDOT 79) is INSIDE his conservative ceiling — it's the expected outcome if the system executes
+- 3:24 1500m sits at the top of the conservative ceiling — world-class but physiologically within range
+- NEVER calibrate his potential from the 10k VDOT. The 10k measures aerobic base only. His speed ceiling is set by the 800m junior history.
+- The Norwegian plan's entire job is to pull the aerobic base (55.4) up to meet the speed ceiling (77+). Every week of threshold work closes that gap.
+`;
+function genericDossier(){
+  var st = (typeof D !== 'undefined' && D.settings) ? D.settings : {};
+  return '## ATHLETE DOSSIER:\n- **Name**: ' + (st.name || 'Athlete') +
+    '\n- **Sport**: ' + (st.sport || 'not set') + (st.event ? ' — ' + st.event : '') +
+    '\n- **Goal**: ' + (st.compName || st.goal || 'not set') + (st.compDate ? ', ' + st.compDate : '') +
+    '\n- **Level**: ' + (st.level || 'not set') + (st.age ? ', age ' + st.age : '') +
+    (st.injuries ? '\n- **Injuries / limits**: ' + st.injuries : '') +
+    '\nOnly use facts from this dossier and the live data. Never invent PRs, history or goals.\n';
+}
+function athleteName(){
+  return (typeof D !== 'undefined' && D.settings && D.settings.name) ? D.settings.name : 'the athlete';
+}
+// Apple guideline 5.1.2(i): explicit permission before personal data goes to a
+// third-party AI. Asked once; the answer can be changed in Settings.
+var AI_CONSENT_KEY = 'gedyon_ai_consent_v1';
+function hasAIConsent(){ try { return localStorage.getItem(AI_CONSENT_KEY) === 'yes'; } catch(e) { return false; } }
+function setAIConsent(v){ try { localStorage.setItem(AI_CONSENT_KEY, v ? 'yes' : 'no'); } catch(e) {} }
+function ensureAIConsent(){
+  if (hasAIConsent()) return Promise.resolve(true);
+  return new Promise(function(resolve){
+    var old = document.getElementById('ai-consent-modal'); if (old) old.remove();
+    var o = document.createElement('div');
+    o.id = 'ai-consent-modal';
+    o.style.cssText = 'position:fixed;inset:0;z-index:100001;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px;';
+    var mono = "font-family:'SF Mono',monospace;";
+    o.innerHTML = '<div role="dialog" aria-modal="true" style="background:#0d0d1a;border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:22px;max-width:440px;width:100%;color:#e8f4ff;">'
+      + '<div style="font-family:Impact,sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:10px;">Allow KODA to use AI?</div>'
+      + '<div style="' + mono + 'font-size:12px;line-height:1.8;color:rgba(255,255,255,.8);">KODA is powered by Claude, an AI model from Anthropic. When you use KODA or other AI features, GEDYON sends Anthropic:'
+      + '<ul style="margin:8px 0 8px 18px;padding:0;"><li>your messages and any photos you attach</li><li>your profile and the training, nutrition, sleep and heart data you have logged or synced from Apple Health</li></ul>'
+      + 'Anthropic processes it only to generate KODA\'s reply and does not use it to train its models. Nothing is sent until you allow it. You can turn this off in Settings, and the rest of the app keeps working without AI. '
+      + '<a href="privacy.html" target="_blank" rel="noopener" style="color:#7fb8ff;">Privacy Policy</a></div>'
+      + '<div style="display:flex;gap:10px;margin-top:16px;">'
+      + '<button id="ai-consent-no" style="flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,.25);color:#ddd;border-radius:10px;' + mono + 'font-size:12px;">NOT NOW</button>'
+      + '<button id="ai-consent-yes" style="flex:1;padding:12px;background:linear-gradient(135deg,#4A9EFF,#7C4DFF);border:none;color:#fff;border-radius:10px;' + mono + 'font-size:12px;font-weight:700;">ALLOW</button>'
+      + '</div></div>';
+    document.body.appendChild(o);
+    document.getElementById('ai-consent-yes').onclick = function(){ setAIConsent(true); o.remove(); resolve(true); };
+    document.getElementById('ai-consent-no').onclick = function(){ setAIConsent(false); o.remove(); resolve(false); };
+  });
+}
+// ONE path for every AI feature: the koda-chat edge function, with the signed-in
+// user's token. The Anthropic key lives only on the server; usage is metered
+// per user and capped globally. Returns the reply text, or throws an Error with
+// .kodaCode = AUTH_REQUIRED | LIMIT_REACHED | CAPACITY | PREVIEW.
+async function gedyonAI(opts){
+  opts = opts || {};
+  if (!gedyonHostAllowed()) { var pe = new Error('preview'); pe.kodaCode = 'PREVIEW'; throw pe; }
+  if (!(await ensureAIConsent())) { var ne = new Error('AI not allowed'); ne.kodaCode = 'NO_CONSENT'; throw ne; }
+  var token = null;
+  try {
+    if (typeof sbClient !== 'undefined' && sbClient) {
+      var sess = await sbClient.auth.getSession();
+      if (sess && sess.data && sess.data.session) token = sess.data.session.access_token;
+    }
+  } catch(e) {}
+  if (!token) { var ae = new Error('Sign in to use KODA'); ae.kodaCode = 'AUTH_REQUIRED'; throw ae; }
+  var res = await fetch(KODA_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify({
+      messages: opts.messages || [],
+      athleteContext: opts.context || '',
+      task: opts.system || '',
+      max_tokens: opts.maxTokens || 800
+    })
+  });
+  var data = await res.json().catch(function(){ return {}; });
+  if (data.code === 'LIMIT_REACHED' || data.code === 'CAPACITY' || data.code === 'AUTH_REQUIRED') {
+    var ce = new Error(data.code); ce.kodaCode = data.code; ce.used = data.used; ce.limit = data.limit;
+    if (data.code === 'LIMIT_REACHED' && typeof showKodaPaywall === 'function') showKodaPaywall(data.used, data.limit);
+    throw ce;
+  }
+  if (!res.ok) throw new Error('koda_' + res.status);
+  if (typeof kodaUpdateFreeCounter === 'function' && typeof data.used === 'number') kodaUpdateFreeCounter(data.used, data.limit);
+  return data.reply || '';
+}
+function gedyonAIErrorText(e){
+  var c = e && e.kodaCode;
+  if (c === 'AUTH_REQUIRED') return 'Sign in (Settings → Account) to use KODA.';
+  if (c === 'LIMIT_REACHED') return 'You have used this month\'s free KODA messages.';
+  if (c === 'CAPACITY') return 'KODA is at capacity right now. Try again later.';
+  if (c === 'PREVIEW') return 'KODA is only available in the GEDYON app.';
+  if (c === 'NO_CONSENT') return 'AI features are off. Turn them on in Settings → Legal & Support.';
+  return 'KODA could not respond. Check your connection and try again.';
+}
 let kodaHistory = [];
 let kodaReady = false;
 
 // ── KODA TOOLS — actions KODA can execute directly in the app ──────────────
 const KODA_TOOLS = [{
   name: 'log_pr',
-  description: 'Log a new race result or personal record for Elias. Automatically recalibrates all training zones via VDOT. Use whenever the athlete mentions a new race time or PR.',
+  description: 'Log a new race result or personal record for the athlete. Automatically recalibrates all training zones via VDOT. Use whenever the athlete mentions a new race time or PR.',
   input_schema: {
     type: 'object',
     properties: {
@@ -21679,10 +21776,10 @@ Athlete context:\n${ctx}`;
   }
 
   async function trySupabase() {
-    const host = window.location.hostname;
-    if (!(host === 'eligedyon.github.io' || host.endsWith('.netlify.app') || host === 'localhost' || host === '127.0.0.1')) {
+    if (!gedyonHostAllowed()) {
       const err = new Error('preview'); err.kodaCode = 'PREVIEW'; throw err;
     }
+    if (!(await ensureAIConsent())) { const err = new Error('AI not allowed'); err.kodaCode = 'NO_CONSENT'; throw err; }
     const headers = { 'Content-Type': 'application/json', 'Authorization': KODA_TOKEN };
     // Prefer the signed-in user's JWT so the server can meter per-user
     try {
@@ -21746,8 +21843,10 @@ Athlete context:\n${ctx}`;
     if (e.kodaCode === 'PREVIEW') {
       kodaAppendMsg('assistant', 'This preview window can\'t reach my brain — it blocks all outside connections. Open the real app in Safari: eligedyon.github.io/gedyon — I\'ll be there.');
     } else if (e.kodaCode === 'LIMIT_REACHED') {
-      kodaAppendMsg('assistant', "You've used your " + (e.limit || 25) + " free KODA sessions this month. Unlimited coaching — $9.99/mo.");
+      kodaAppendMsg('assistant', "You've used your " + (e.limit || 25) + " free KODA messages this month. They reset on the 1st.");
       showKodaPaywall(e.used, e.limit);
+    } else if (e.kodaCode === 'NO_CONSENT') {
+      kodaAppendMsg('assistant', 'AI is off, so nothing was sent. Turn it on in Settings → Legal & Support whenever you want coaching.');
     } else if (e.kodaCode === 'CAPACITY') {
       kodaAppendMsg('assistant', 'KODA is at capacity today — back tomorrow.');
     } else if (e.kodaCode === 'AUTH_REQUIRED') {
@@ -21770,31 +21869,103 @@ function kodaUpdateFreeCounter(used, limit) {
   else el.style.display = 'none';
 }
 
+// ── IN-APP PURCHASE (iOS, RevenueCat → StoreKit) ─────────────────
+// Paste the PUBLIC Apple API key from RevenueCat (Project → API keys, starts
+// with "appl_"). It is safe to ship in the app. Leave empty to hide purchasing.
+var REVENUECAT_IOS_KEY = '';
+var KODA_ENTITLEMENT = 'koda_unlimited'; // must match the entitlement id in RevenueCat
+var _rcReady = false;
+function rcPlugin(){
+  try { return window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() && window.Capacitor.Plugins && window.Capacitor.Plugins.Purchases; } catch(e) { return null; }
+}
+async function rcEnsure(){
+  var P = rcPlugin();
+  if (!P || !REVENUECAT_IOS_KEY) return null;
+  if (!_rcReady) {
+    // app_user_id = Supabase user id, so the revenuecat-webhook can match the subscriber
+    await P.configure({ apiKey: REVENUECAT_IOS_KEY, appUserID: (typeof currentUser !== 'undefined' && currentUser) ? currentUser.id : undefined });
+    _rcReady = true;
+  } else if (typeof currentUser !== 'undefined' && currentUser) {
+    try { await P.logIn({ appUserID: currentUser.id }); } catch(e) {}
+  }
+  return P;
+}
+async function rcCurrentPackage(){
+  var P = await rcEnsure(); if (!P) return null;
+  var o = await P.getOfferings();
+  var cur = o && o.current;
+  return (cur && cur.availablePackages && cur.availablePackages[0]) || null;
+}
+function rcHasEntitlement(info){
+  try { return !!(info && info.entitlements && info.entitlements.active && info.entitlements.active[KODA_ENTITLEMENT]); } catch(e) { return false; }
+}
+
 function showKodaPaywall(used, limit) {
   if (document.getElementById('koda-paywall-modal')) return;
+  var canBuy = !!(rcPlugin() && REVENUECAT_IOS_KEY);
   var overlay = document.createElement('div');
   overlay.id = 'koda-paywall-modal';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.85);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);';
+  var mono = "font-family:'SF Mono',monospace;";
   overlay.innerHTML = '<div style="background:#0d0d1a;border:1.5px solid rgba(74,158,255,0.4);border-radius:20px 20px 0 0;padding:28px 24px 40px;width:100%;max-width:480px;box-sizing:border-box;">'
     + '<div style="font-family:Impact,sans-serif;font-size:22px;letter-spacing:2px;color:#e8f4ff;margin-bottom:8px;">KODA UNLIMITED</div>'
-    + '<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:rgba(255,255,255,.55);line-height:1.9;margin-bottom:18px;">You\'ve used your ' + (limit||25) + ' free KODA sessions this month.<br>Unlimited coaching — <strong style="color:#FFB84D;">$9.99/mo</strong>.</div>'
-    + '<div style="background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.18);border-radius:12px;padding:14px;margin-bottom:18px;font-family:\'SF Mono\',monospace;font-size:11px;color:rgba(255,255,255,.5);line-height:2;">'
+    + '<div style="' + mono + 'font-size:12px;color:rgba(255,255,255,.65);line-height:1.9;margin-bottom:18px;">You\'ve used your ' + (limit||25) + ' free KODA messages this month. Free messages reset on the 1st.</div>'
+    + '<div style="background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.18);border-radius:12px;padding:14px;margin-bottom:14px;' + mono + 'font-size:11px;color:rgba(255,255,255,.75);line-height:2;">'
     + '✓ Unlimited KODA conversations<br>✓ Morning check-ins &amp; race analysis<br>✓ Gap Protocol re-placement<br>✓ Food–performance intelligence</div>'
-    + '<button onclick="kodaStartSubscribe()" style="width:100%;padding:15px;background:linear-gradient(135deg,#4A9EFF,#7C4DFF);color:#fff;font-family:Impact,sans-serif;font-size:17px;letter-spacing:2px;border:none;border-radius:12px;cursor:pointer;margin-bottom:8px;">GO UNLIMITED — $9.99/MO</button>'
-    + '<button onclick="document.getElementById(\'koda-paywall-modal\').remove()" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,.1);color:#555;font-family:\'SF Mono\',monospace;font-size:11px;border-radius:10px;cursor:pointer;">Not now</button>'
+    + (canBuy
+      ? '<div id="koda-pw-price" style="' + mono + 'font-size:13px;color:#e8f4ff;margin-bottom:12px;">Loading price…</div>'
+        + '<button id="koda-pw-buy" onclick="kodaStartSubscribe()" disabled style="width:100%;padding:15px;background:linear-gradient(135deg,#4A9EFF,#7C4DFF);color:#fff;font-family:Impact,sans-serif;font-size:17px;letter-spacing:2px;border:none;border-radius:12px;margin-bottom:10px;opacity:.6;">SUBSCRIBE</button>'
+        + '<button onclick="kodaRestorePurchases()" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.75);' + mono + 'font-size:12px;border-radius:10px;margin-bottom:10px;">RESTORE PURCHASES</button>'
+        + '<div style="' + mono + 'font-size:10px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:10px;">Payment is charged to your Apple ID at confirmation. The subscription renews automatically at the same price each period unless cancelled at least 24 hours before the period ends. Manage or cancel any time in Settings → Apple ID → Subscriptions.</div>'
+      : '<div style="' + mono + 'font-size:12px;color:rgba(255,255,255,.65);line-height:1.8;margin-bottom:12px;">Upgrades are available in the GEDYON iPhone app.</div>')
+    + '<div style="' + mono + 'font-size:11px;margin-bottom:12px;"><a href="terms.html" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);">Terms of Use</a> · <a href="privacy.html" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);">Privacy Policy</a></div>'
+    + '<button onclick="document.getElementById(\'koda-paywall-modal\').remove()" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);' + mono + 'font-size:12px;border-radius:10px;">NOT NOW</button>'
     + '</div>';
   document.body.appendChild(overlay);
   overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
+  if (canBuy) {
+    rcCurrentPackage().then(function(pkg){
+      var el = document.getElementById('koda-pw-price'); var btn = document.getElementById('koda-pw-buy');
+      if (!el) return;
+      if (!pkg) { el.textContent = 'Subscriptions are unavailable right now.'; return; }
+      var per = pkg.packageType === 'ANNUAL' ? 'year' : pkg.packageType === 'MONTHLY' ? 'month' : pkg.packageType === 'WEEKLY' ? 'week' : 'period';
+      el.textContent = (pkg.product.title || 'KODA Unlimited') + ' · ' + pkg.product.priceString + ' per ' + per + ', auto-renews';
+      if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+    }).catch(function(){ var el = document.getElementById('koda-pw-price'); if (el) el.textContent = 'Subscriptions are unavailable right now.'; });
+  }
 }
 
-function kodaStartSubscribe() {
-  // On iOS this hands off to RevenueCat/StoreKit via the Capacitor purchases
-  // plugin when present; on web there is no purchase flow yet.
+async function kodaStartSubscribe() {
+  if (typeof currentUser === 'undefined' || !currentUser) { showToast('Create an account or sign in first so your subscription follows you', 'info'); return; }
   try {
-    var P = window.Capacitor && window.Capacitor.Plugins && (window.Capacitor.Plugins.Purchases || window.Capacitor.Plugins.RevenueCat);
-    if (P && P.purchasePackage) { showToast('Opening subscription...', 'ok'); return; }
-  } catch(e) {}
-  showToast('Subscriptions are coming to the iOS app — for now KODA resets on the 1st of each month', 'info');
+    var pkg = await rcCurrentPackage();
+    if (!pkg) { showToast('Subscriptions are available in the GEDYON iPhone app', 'info'); return; }
+    var P = rcPlugin();
+    var r = await P.purchasePackage({ aPackage: pkg });
+    if (rcHasEntitlement(r && r.customerInfo)) {
+      var m = document.getElementById('koda-paywall-modal'); if (m) m.remove();
+      showToast('KODA Unlimited is active', 'ok');
+    }
+  } catch(e) {
+    if (e && (e.userCancelled || /cancel/i.test(e.message || ''))) return;
+    showToast('Purchase did not complete: ' + ((e && e.message) || 'unknown error'), 'err');
+  }
+}
+
+async function kodaRestorePurchases() {
+  try {
+    var P = await rcEnsure();
+    if (!P) { showToast('Restore is available in the GEDYON iPhone app', 'info'); return; }
+    var r = await P.restorePurchases();
+    if (rcHasEntitlement(r && r.customerInfo)) {
+      var m = document.getElementById('koda-paywall-modal'); if (m) m.remove();
+      showToast('Purchases restored: KODA Unlimited is active', 'ok');
+    } else {
+      showToast('No active subscription found for this Apple ID', 'info');
+    }
+  } catch(e) {
+    showToast('Restore failed: ' + ((e && e.message) || 'unknown error'), 'err');
+  }
 }
 
 function kodaAppendMsg(role, text) {
@@ -23332,7 +23503,7 @@ async function kodaInit() {
     if (hero) hero.classList.add('intro-mode');
   }
 
-  const name = (typeof D !== 'undefined' && D.settings && D.settings.name) ? D.settings.name.split(' ')[0] : 'Elias';
+  const name = (typeof D !== 'undefined' && D.settings && D.settings.name) ? D.settings.name.split(' ')[0] : 'Athlete';
   // GAP PROTOCOL: assess (and auto-apply re-placement, once per gap) before building context
   try { await assessTrainingGap(); } catch(e) { console.warn('[GapProtocol] assess:', e && e.message); }
   // ADAPTIVE LEARNING: fetch the athlete-model package (one RPC) so

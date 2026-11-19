@@ -4,15 +4,17 @@
   "description": "GEDYON — AI-powered training for the 2028 Olympic Trials",
   "private": true,
   "scripts": {
-    "sync:web": "mkdir -p www && cp index.html www/index.html && cp 200.html www/200.html 2>/dev/null || true",
+    "sync:web": "mkdir -p www && cp index.html www/index.html && cp index.html www/200.html && cp privacy.html terms.html support.html www/",
     "ios:init": "npm run sync:web && npx cap add ios",
     "ios:sync": "npm run sync:web && npx cap sync ios",
-    "ios:open": "npx cap open ios"
+    "ios:open": "npx cap open ios",
+    "build": "npm run sync:web"
   },
   "dependencies": {
     "@capacitor/core": "^6.0.0",
     "@capacitor/ios": "^6.0.0",
-    "@perfood/capacitor-healthkit": "^1.2.0"
+    "@perfood/capacitor-healthkit": "^1.2.0",
+    "@revenuecat/purchases-capacitor": "^9.2.2"
   },
   "devDependencies": {
     "@capacitor/cli": "^6.0.0"

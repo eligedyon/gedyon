@@ -1,0 +1,11 @@
+<!-- Paste inside the top-level <dict> of ios/App/App/Info.plist -->
+<key>NSHealthShareUsageDescription</key>
+<string>GEDYON reads your workouts, heart rate, heart rate variability, resting heart rate, VO2 max, sleep and respiratory rate to set your training load and give KODA coaching context. Health data is never used for advertising.</string>
+<key>NSHealthUpdateUsageDescription</key>
+<string>GEDYON does not write data to Apple Health.</string>
+<key>NSCameraUsageDescription</key>
+<string>Take a photo of a meal so KODA can estimate its nutrition.</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Choose a meal or workout screenshot to analyze.</string>
+<key>ITSAppUsesNonExemptEncryption</key>
+<false/>
