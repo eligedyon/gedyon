@@ -2807,7 +2807,7 @@ body.is-builder .builder-only{display:block!important}
     <!-- Login Form -->
     <div id="authLogin">
       <label class="setup-label">EMAIL</label>
-      <input id="authEmail" type="email" class="setup-input" placeholder="you@email.com" autocomplete="email">
+      <input id="authEmail" type="email" class="setup-input" placeholder="you@email.com" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false">
       <label class="setup-label" style="margin-top:16px;">PASSWORD</label>
       <input id="authPass" type="password" class="setup-input" placeholder="Your password" autocomplete="current-password">
       <button onclick="authSignIn()" style="width:100%;padding:14px;background:var(--accent,#C9A84C);color:#000;font-family:Impact,Arial Narrow,sans-serif;font-size:18px;letter-spacing:3px;border:none;border-radius:8px;cursor:pointer;margin-top:20px;">SIGN IN</button>
@@ -2844,9 +2844,9 @@ body.is-builder .builder-only{display:block!important}
       <label class="setup-label">NAME</label>
       <input id="authSignupName" type="text" class="setup-input" placeholder="Your name" autocomplete="name">
       <label class="setup-label" style="margin-top:16px;">EMAIL</label>
-      <input id="authSignupEmail" type="email" class="setup-input" placeholder="you@email.com" autocomplete="email">
+      <input id="authSignupEmail" type="email" class="setup-input" placeholder="you@email.com" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false">
       <label class="setup-label" style="margin-top:16px;">PASSWORD</label>
-      <input id="authSignupPass" type="password" class="setup-input" placeholder="Min 6 characters" autocomplete="new-password">
+      <input id="authSignupPass" type="password" class="setup-input" placeholder="At least 8 characters" autocomplete="new-password">
       <button onclick="authCreateAccount()" style="width:100%;padding:14px;background:var(--accent,#C9A84C);color:#000;font-family:Impact,Arial Narrow,sans-serif;font-size:18px;letter-spacing:3px;border:none;border-radius:8px;cursor:pointer;margin-top:20px;">CREATE ACCOUNT</button>
       <div id="authSignupError" style="color:#FF3D57;font-family:'SF Mono',monospace;font-size:11px;text-align:center;margin-top:12px;display:none;"></div>
       <div style="text-align:center;margin-top:24px;">
@@ -4897,8 +4897,16 @@ function initSupabase(){
 // Supabase fires PASSWORD_RECOVERY — prompt for the new password.
 function _hookRecovery(){
   try{
-    sbClient.auth.onAuthStateChange(function(event){
+    sbClient.auth.onAuthStateChange(function(event, session){
       if(event === 'PASSWORD_RECOVERY') setTimeout(showSetNewPassword, 400);
+      // Token refreshed or user updated: keep the in-memory user current
+      if((event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') && session && currentUser && session.user.id === currentUser.id) currentUser = session.user;
+      // Signed out elsewhere (another tab, password change, deleted account)
+      if(event === 'SIGNED_OUT' && currentUser && !_signingOut){
+        currentUser = null; _cloudReady = false;
+        try{ updateAuthStatus(); }catch(e){}
+        try{ showSyncToast('You were signed out. Sign in again to keep syncing.','red'); }catch(e){}
+      }
     });
   }catch(e){}
 }
@@ -4911,7 +4919,7 @@ function showSetNewPassword(){
   m.innerHTML = '<div style="background:#0d0d1a;border:1.5px solid rgba(201,168,76,.45);border-radius:20px;padding:28px 24px;width:100%;max-width:400px;">'
     + '<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:22px;letter-spacing:2px;color:var(--gold);margin-bottom:6px;">🔑 SET NEW PASSWORD</div>'
     + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);margin-bottom:18px;line-height:1.7;">Your reset link worked — you\'re signed in. Pick a new password so you can sign in anywhere.</div>'
-    + '<input id="newPwInput" type="password" placeholder="New password (6+ characters)" autocomplete="new-password" style="width:100%;box-sizing:border-box;padding:13px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.35);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:14px;margin-bottom:10px;outline:none;">'
+    + '<input id="newPwInput" type="password" placeholder="New password (8+ characters)" autocomplete="new-password" style="width:100%;box-sizing:border-box;padding:13px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.35);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:14px;margin-bottom:10px;outline:none;">'
     + '<input id="newPwInput2" type="password" placeholder="Type it again" autocomplete="new-password" style="width:100%;box-sizing:border-box;padding:13px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.35);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:14px;margin-bottom:16px;outline:none;">'
     + '<div id="newPwMsg" style="font-family:\'SF Mono\',monospace;font-size:11px;color:#FF3D57;margin-bottom:10px;display:none;"></div>'
     + '<button onclick="_confirmNewPassword()" style="width:100%;padding:14px;background:var(--gold);color:#000;font-family:Impact,Arial Narrow,sans-serif;font-size:17px;letter-spacing:2px;border:none;border-radius:12px;cursor:pointer;">SAVE PASSWORD</button>'
@@ -4925,7 +4933,7 @@ async function _confirmNewPassword(){
   var p2 = (document.getElementById('newPwInput2')||{}).value||'';
   var msg = document.getElementById('newPwMsg');
   function err(t){ if(msg){ msg.style.display='block'; msg.textContent=t; } }
-  if(p1.length < 6) return err('At least 6 characters.');
+  if(p1.length < 8) return err('At least 8 characters.');
   if(p1 !== p2) return err('The two passwords don\'t match.');
   try{
     var r = await sbClient.auth.updateUser({ password: p1 });
@@ -4933,6 +4941,80 @@ async function _confirmNewPassword(){
     var m = document.getElementById('newPwModal'); if(m) m.remove();
     showSyncToast('Password saved — you\'re signed in everywhere now','green');
   }catch(e){ err('Error: ' + e.message); }
+}
+// ═══ ACCOUNT HYGIENE — many people, one device ═══════════════════════
+// Local data always belongs to exactly one owner: an account id or 'guest'.
+// Switching accounts on a device wipes the previous owner's local data, and
+// nothing is written to the cloud until this session has read the account's
+// cloud copy, so a slow network can never overwrite someone's history.
+var DATA_OWNER_KEY = 'gedyon_data_owner';
+var _cloudReady = false;
+var _signingOut = false;
+var _authBusy = false;
+var _KEEP_ON_SWITCH = ['gedyon_sb_url','gedyon_sb_key','gedyon_ota_enabled','gedyon_ota_version','gedyon_ota_html','gedyon-theme'];
+function _blankData(){
+  return {logs:[], food:[], workouts:[], weights:[], races:[], supps:{}, dayScores:{}, lactate:{}, actualMeals:{},
+    settings:{name:'', start:td(), compDate:'', prs:{}}};
+}
+function _normalizeData(x){
+  var b = _blankData();
+  if(!x || typeof x !== 'object') return b;
+  Object.keys(b).forEach(function(k){
+    if(x[k] === undefined || x[k] === null || typeof x[k] !== typeof b[k] || Array.isArray(x[k]) !== Array.isArray(b[k])) x[k] = b[k];
+  });
+  if(!x.settings.start) x.settings.start = td();
+  if(!x.settings.prs) x.settings.prs = {};
+  return x;
+}
+function _wipeLocalUserData(){
+  try{
+    Object.keys(localStorage).filter(function(k){ return k.indexOf('gedyon') === 0 && _KEEP_ON_SWITCH.indexOf(k) === -1; })
+      .forEach(function(k){ localStorage.removeItem(k); });
+  }catch(e){}
+  D = _blankData();
+}
+function _authRedirectUrl(){
+  var h = window.location.hostname;
+  if(window.location.protocol === 'capacitor:' || h === 'localhost' || h === '127.0.0.1') return 'https://eligedyon.github.io/gedyon/';
+  return window.location.origin + window.location.pathname;
+}
+function _friendlyAuthError(msg){
+  var m = String(msg || '');
+  if(/invalid login credentials/i.test(m)) return 'Wrong email or password.';
+  if(/email not confirmed/i.test(m)) return 'Confirm your email first: open the link we sent you (check spam too), then sign in.';
+  if(/rate limit|too many/i.test(m)) return 'Too many tries. Wait a minute and try again.';
+  if(/not authorized/i.test(m)) return 'We could not send email to that address right now. Please try again later.';
+  if(/failed to fetch|network/i.test(m)) return 'No connection. Check your internet and try again.';
+  if(/already registered|already exists/i.test(m)) return 'An account with that email already exists. Try signing in instead.';
+  return m || 'Something went wrong. Please try again.';
+}
+function _validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e); }
+// Make this device's data belong to the signed-in account.
+async function _adoptSignedInUser(user){
+  currentUser = user; _cloudReady = false;
+  var owner = localStorage.getItem(DATA_OWNER_KEY);
+  var builderAcct = isBuilder(user.email);
+  // Another account's data (or builder data from an older build) on this device: clear it first
+  if((owner && owner !== 'guest' && owner !== user.id) || (!owner && D.settings && D.settings.isBuilder && !builderAcct)){
+    _wipeLocalUserData();
+  }
+  var res = await loadCloudData();
+  if(res === 'loaded' || res === 'empty') _cloudReady = true;
+  localStorage.setItem(DATA_OWNER_KEY, user.id);
+  if(builderAcct) loadBuilderData();
+  else if(D.settings.isBuilder) D.settings.isBuilder = false;
+  // Returning user on a new device: never send them back through setup
+  // (setup clears the log, which would then sync over their history)
+  if(res === 'loaded' && (D.settings.setupDone || D.settings.level || (D.workouts && D.workouts.length) || (D.logs && D.logs.length))){
+    D.settings.setupDone = true;
+    localStorage.setItem(SETUP_KEY,'1');
+    localStorage.setItem('gedyon_tutdone_v2','1');
+  }
+  localStorage.setItem(KEY, JSON.stringify(D));
+  if(res === 'empty') await saveCloudData(); // new account (or guest data moving into it)
+  if(res === 'error'){ try{ showSyncToast('Offline: using what is saved on this device. Sync resumes next time you open the app.','red'); }catch(e){} }
+  try{ updateAuthStatus(); }catch(e){}
+  return res;
 }
 function showAuthLogin(){
   $('authLogin').style.display='block';
@@ -5013,49 +5095,66 @@ function loadBuilderData(){
 
 async function authSignIn(){
   if(!sbClient){initSupabase();} if(!sbClient){showAuthError('authError','Supabase not configured. Go to Settings → Connect.');return;}
-  var email=$('authEmail').value.trim();
+  var email=$('authEmail').value.trim().toLowerCase();
   var pass=$('authPass').value;
   if(!email||!pass){showAuthError('authError','Enter email and password');return;}
+  if(!_validEmail(email)){showAuthError('authError','That email doesn\'t look right.');return;}
+  if(_authBusy) return; _authBusy=true;
   try{
     var {data,error}=await sbClient.auth.signInWithPassword({email:email,password:pass});
-    if(error){showAuthError('authError',error.message);return;}
-    currentUser=data.user;
-    if(isBuilder(email)) loadBuilderData();
-    await loadCloudData();
+    if(error){showAuthError('authError',_friendlyAuthError(error.message));return;}
+    $('authPass').value='';
+    await _adoptSignedInUser(data.user);
     $('authScreen').style.display='none';
     proceedAfterAuth();
-  }catch(e){showAuthError('authError','Sign in failed: '+e.message);}
+  }catch(e){showAuthError('authError',_friendlyAuthError(e.message));}
+  finally{_authBusy=false;}
 }
 async function authCreateAccount(){
   if(!sbClient){initSupabase();} if(!sbClient){showAuthError('authSignupError','Supabase not configured. Go to Settings → Connect.');return;}
   var name=$('authSignupName').value.trim();
-  var email=$('authSignupEmail').value.trim();
+  var email=$('authSignupEmail').value.trim().toLowerCase();
   var pass=$('authSignupPass').value;
   if(!name||!email||!pass){showAuthError('authSignupError','Fill in all fields');return;}
-  if(pass.length<6){showAuthError('authSignupError','Password must be at least 6 characters');return;}
+  if(!_validEmail(email)){showAuthError('authSignupError','That email doesn\'t look right.');return;}
+  if(pass.length<8){showAuthError('authSignupError','Password must be at least 8 characters');return;}
+  if(_authBusy) return; _authBusy=true;
   try{
-    var {data,error}=await sbClient.auth.signUp({email:email,password:pass,options:{data:{name:name}}});
-    if(error){showAuthError('authSignupError',error.message);return;}
-    // If user is null, email already exists — Supabase hides this for security
-    if(!data.user){showAuthError('authSignupError','An account with that email already exists. Try signing in instead.');return;}
-    currentUser=data.user;
-    if(isBuilder(email)){
-      loadBuilderData();
-    } else {
-      D.settings.name=name;
+    var {data,error}=await sbClient.auth.signUp({email:email,password:pass,options:{data:{name:name},emailRedirectTo:_authRedirectUrl()}});
+    if(error){showAuthError('authSignupError',_friendlyAuthError(error.message));return;}
+    // Existing email: Supabase returns no user, or a user with no identities
+    if(!data.user || (Array.isArray(data.user.identities) && data.user.identities.length===0)){
+      showAuthError('authSignupError','An account with that email already exists. Try signing in instead.');return;
     }
-    saveData();
-    await saveCloudData();
+    $('authSignupPass').value='';
+    // Email confirmation is on: no session until they click the link
+    if(!data.session){
+      showAuthLogin();
+      if($('authEmail')) $('authEmail').value=email;
+      var el=$('authError');
+      if(el){ el.style.color='#00E676'; el.textContent='Almost done: we sent a link to '+email+'. Open it to confirm your account, then sign in here.'; el.style.display='block'; setTimeout(function(){ el.style.color=''; },20000); }
+      return;
+    }
+    await _adoptSignedInUser(data.user);
+    if(!isBuilder(email)){ D.settings.name=name; saveData(); }
     $('authScreen').style.display='none';
     proceedAfterAuth();
-  }catch(e){showAuthError('authSignupError','Signup failed: '+e.message);}
+  }catch(e){showAuthError('authSignupError',_friendlyAuthError(e.message));}
+  finally{_authBusy=false;}
 }
 function authSkip(){
+  // Guest mode: never inherit an account's data or the builder profile
+  var owner = localStorage.getItem(DATA_OWNER_KEY);
+  if((owner && owner !== 'guest') || (D.settings && D.settings.isBuilder)) _wipeLocalUserData();
+  localStorage.setItem(DATA_OWNER_KEY, 'guest');
+  currentUser = null; _cloudReady = false;
   $('authScreen').style.display='none';
   if($('splash'))$('splash').style.display='none';
   proceedAfterAuth();
 }
 function proceedAfterAuth(){
+  // Builder mode follows the signed-in account, never what is stored on the device
+  try{ if(D.settings && D.settings.isBuilder && !(currentUser && isBuilder(currentUser.email))){ D.settings.isBuilder=false; localStorage.setItem(KEY, JSON.stringify(D)); } }catch(e){}
   if($('splash'))$('splash').style.display='none';
   if($('authScreen'))$('authScreen').style.display='none';
   updateAuthStatus();
@@ -5094,20 +5193,29 @@ function updateUserMenu(){
     if(lo) lo.style.display='none';
   }
 }
+// Returns 'loaded' (account has saved data), 'empty' (new account) or 'error'.
 async function loadCloudData(){
-  if(!supabase||!currentUser) return;
+  if(!sbClient||!currentUser) return 'error';
   try{
-    var {data,error}=await sbClient.from('user_data').select('data').eq('user_id',currentUser.id).single();
-    if(data&&data.data){
-      D=typeof data.data==='string'?JSON.parse(data.data):data.data;
-      saveData();
+    var r=await sbClient.from('user_data').select('data').eq('user_id',currentUser.id).maybeSingle();
+    if(r.error){ console.log('Cloud load:',r.error); return 'error'; }
+    if(r.data&&r.data.data){
+      D=_normalizeData(typeof r.data.data==='string'?JSON.parse(r.data.data):r.data.data);
+      localStorage.setItem(KEY, JSON.stringify(D));
+      return 'loaded';
     }
-  }catch(e){console.log('Cloud load:',e);}
+    return 'empty';
+  }catch(e){console.log('Cloud load:',e); return 'error';}
 }
 async function saveCloudData(){
-  if(!supabase||!currentUser) return;
+  // Never write before this session has read the account's cloud copy
+  if(!sbClient||!currentUser||!_cloudReady) return;
   try{
-    await sbClient.from('user_data').upsert({user_id:currentUser.id,data:JSON.stringify(D),updated_at:new Date().toISOString()});
+    var r=await sbClient.from('user_data').upsert({user_id:currentUser.id,data:JSON.stringify(D),updated_at:new Date().toISOString()});
+    if(r && r.error){
+      console.log('Cloud save:',r.error);
+      if(!saveCloudData._warned){ saveCloudData._warned=true; try{ showSyncToast('Could not back up to your account. Your data is safe on this device.','red'); }catch(e){} }
+    } else saveCloudData._warned=false;
   }catch(e){console.log('Cloud save:',e);}
 }
 async function checkAuth(){
@@ -5119,17 +5227,13 @@ async function checkAuth(){
     // refreshSession() auto-renews expired tokens — stays signed in across app restarts
     var {data,error}=await sbClient.auth.refreshSession();
     if(!error && data && data.session){
-      currentUser=data.session.user;
-      updateAuthStatus();
-      await loadCloudData();
+      await _adoptSignedInUser(data.session.user);
       return false;
     }
     // Fallback: getSession reads cached token (works offline)
     var {data:d2}=await sbClient.auth.getSession();
     if(d2&&d2.session){
-      currentUser=d2.session.user;
-      updateAuthStatus();
-      await loadCloudData();
+      await _adoptSignedInUser(d2.session.user);
       return false;
     }
   }catch(e){console.log('Auth check:',e);}
@@ -5151,10 +5255,16 @@ function saveSbConfig(){
   }
 }
 async function authLogout(){
-  if(sbClient){await sbClient.auth.signOut();}
-  currentUser=null;
-  updateAuthStatus();
-  showAlert('setAlert','Signed out','ok');
+  if(currentUser && !_cloudReady){
+    if(!confirm('This device could not reach your account, so recent changes are not backed up yet. Sign out anyway? Those changes will be lost on this device.')) return;
+  }
+  _signingOut = true;
+  // Back up the latest changes, then remove this account's data from the device
+  try{ clearTimeout(saveData._t); await saveCloudData(); }catch(e){}
+  try{ if(sbClient) await sbClient.auth.signOut(); }catch(e){}
+  currentUser=null; _cloudReady=false;
+  _wipeLocalUserData();
+  location.reload();
 }
 async function authDeleteAccount(){
   if(!sbClient||!currentUser){showAlert('setAlert','Sign in first','err');return;}
@@ -5483,6 +5593,7 @@ function completeSetup(){
   D.settings.age=age;
   D.settings.injuries=injuries;
   D.settings.totalWeeks=Math.min(totalWeeks,110);
+  D.settings.setupDone=true;
 
   // Clear previous user data
   D.logs=[];D.food=[];D.workouts=[];D.weights=[];D.supps={};D.dayScores={};D.lactate={};
@@ -19765,7 +19876,8 @@ window.connectMyFitnessPal=connectMyFitnessPal;
 document.addEventListener('DOMContentLoaded', function() {
   try {
     // Dev bypass: ?dev=1 skips all auth/setup/tour gates
-    if(new URLSearchParams(window.location.search).get('dev') === '1') {
+    var _isLocalDev = ['localhost','127.0.0.1'].indexOf(window.location.hostname) !== -1 && window.location.protocol !== 'capacitor:';
+    if(_isLocalDev && new URLSearchParams(window.location.search).get('dev') === '1') {
       localStorage.setItem(SETUP_KEY,'1');
       localStorage.setItem(TUT_KEY,'1');
       if(!D.settings.isBuilder) Object.assign(D.settings, BUILDER_DEFAULTS);

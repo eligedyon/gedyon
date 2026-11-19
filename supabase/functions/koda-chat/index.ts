@@ -32,8 +32,10 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const KODA_INTERNAL_SECRET = Deno.env.get("KODA_INTERNAL_SECRET") ?? "";
 
-const FREE_LIMIT = 25;      // free messages per user per month
-const DAILY_GLOBAL_CAP = 2000; // circuit breaker across all users per day
+const FREE_LIMIT = Number(Deno.env.get("KODA_FREE_LIMIT") ?? 25);         // free messages per user per month
+// Circuit breaker on FREE messages across all users per day. Raise it with
+// the KODA_DAILY_CAP secret as the user base grows. Subscribers are never blocked by it.
+const DAILY_GLOBAL_CAP = Number(Deno.env.get("KODA_DAILY_CAP") ?? 2000);
 const MODEL = Deno.env.get("KODA_MODEL") ?? "claude-sonnet-5";
 const MAX_TASK_CHARS = 12000;
 const MAX_IMAGES = 2;
@@ -107,8 +109,24 @@ Deno.serve(async (req: Request) => {
     const today = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
     const month = today.slice(0, 7);                     // 'YYYY-MM'
 
-    // ── Global circuit breaker (all users, per day) ──────────────────
-    if (!skipUsageCount) {
+    // Active subscription? (paying users skip both the free cap and the
+    // global free-tier circuit breaker)
+    let entitledSub = false;
+    if (userId && !skipUsageCount) {
+      const { data: sub0 } = await admin
+        .from("subscriptions")
+        .select("status, expires_at")
+        .eq("user_id", userId)
+        .maybeSingle();
+      const notExpired0 = !sub0?.expires_at ||
+        new Date(sub0.expires_at).getTime() > Date.now();
+      entitledSub = !!sub0 && notExpired0 &&
+        (sub0.status === "active" || sub0.status === "cancelled" ||
+          sub0.status === "grace");
+    }
+
+    // ── Global circuit breaker (free usage, all users, per day) ──────
+    if (!skipUsageCount && !entitledSub) {
       const { data: daily } = await admin
         .from("koda_daily")
         .select("total")
@@ -130,7 +148,7 @@ Deno.serve(async (req: Request) => {
         .maybeSingle();
       usedThisMonth = usage?.message_count ?? 0;
 
-      if (usedThisMonth >= FREE_LIMIT) {
+      if (usedThisMonth >= FREE_LIMIT && !entitledSub) {
         const { data: sub } = await admin
           .from("subscriptions")
           .select("status, expires_at")

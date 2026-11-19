@@ -14,6 +14,7 @@ supabase link --project-ref qfmklkgvobfckcippwyh
 Dashboard → SQL Editor, paste and run each file **in this order** (all are
 safe to re-run):
 
+0. `supabase/user_data.sql`            — the app's saved data, one row per account, locked to its owner (RLS)
 1. `supabase/phase1_health_sync.sql`   — health_metrics, workouts, sync_state
 2. `supabase/gap_protocol.sql`         — plan_position, gap_responses
 3. `supabase/koda_monetization.sql`    — koda_usage, koda_daily, subscriptions, increment rpcs
@@ -24,6 +25,22 @@ safe to re-run):
 (Dashboard → Settings → API → `service_role`). The cron job runs daily at
 **11:30 UTC** (5:30 AM Denver during MDT; pg_cron has no timezone support —
 keep 11:30 UTC year-round or bump to `30 12 * * *` for winter/MST).
+
+## 1b. Before public sign-ups (Dashboard, no code)
+
+- **Custom SMTP (required).** Supabase's built-in email only sends to your
+  own team's addresses, about 2 emails an hour. Every other person's
+  confirmation and password-reset email will fail. Authentication → Emails →
+  SMTP Settings: connect a sender such as Resend, Postmark, SendGrid or
+  Brevo, then raise Authentication → Rate Limits → emails per hour.
+- **Confirm email: on.** The app handles it (shows "check your email").
+- **URL Configuration:** Site URL = the public web address; add it and
+  `https://eligedyon.github.io/gedyon/` to Redirect URLs, so confirmation and
+  reset links land back in the app.
+- **Password minimum: 8** (Authentication → Policies), to match the app.
+- **KODA caps:** optional secrets `KODA_DAILY_CAP` (free messages per day
+  across all users, default 2000; subscribers are never blocked by it) and
+  `KODA_FREE_LIMIT` (free messages per user per month, default 25).
 
 ## 2. Set edge function secrets
 
