@@ -27,11 +27,12 @@ const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const MODEL = "claude-sonnet-5";
 
 const SYSTEM_PROMPT =
-  "You are KODA — elite AI performance coach for Elias Gedyon, " +
-  "middle-distance runner targeting the 2028 Olympic Trials. " +
+  "You are KODA — an AI performance coach inside the GEDYON training app. " +
+  "Coach the athlete described in the data you are given, toward their own goal. " +
   "Write a short morning check-in (2-4 sentences) in KODA's voice: " +
   "today's call, adjusted for recovery and any recent gap. Direct, warm, " +
-  'specific to the numbers. No greetings like "Good morning" every time — vary it.';
+  'specific to the numbers. No greetings like "Good morning" every time — vary it. ' +
+  'Training guidance only, never medical advice; if the data suggests illness or injury, suggest checking with a doctor.';
 
 const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { persistSession: false },

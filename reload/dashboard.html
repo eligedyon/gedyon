@@ -1,0 +1,246 @@
+<title>GEDYON Command</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Archivo+Narrow:wght@500;600;700&display=swap">
+<style>
+:root{
+  --bg:#0b0e12; --panel:#12161c; --panel2:#171c24; --line:#232a34;
+  --ink:#e8edf3; --dim:#8b96a5; --faint:#5a6572;
+  --green:#3ddc84; --yellow:#f5c542; --red:#ff5d5d; --blue:#5aa9ff; --violet:#b78bff;
+  --accent:#3ddc84;
+  color-scheme:dark;
+}
+body{background:var(--bg);color:var(--ink);font-family:Archivo,system-ui,sans-serif;
+  padding:0 16px 48px;margin:0;line-height:1.45}
+.wrap{max-width:860px;margin:0 auto}
+header{padding:28px 0 10px;display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;justify-content:space-between}
+h1{font-family:"Archivo Narrow",Archivo,sans-serif;font-weight:700;font-size:30px;margin:0;letter-spacing:.04em}
+h1 span{color:var(--accent)}
+.sub{color:var(--dim);font-size:13px}
+h2{font-family:"Archivo Narrow",sans-serif;font-size:13px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);margin:34px 0 12px;border-bottom:1px solid var(--line);padding-bottom:7px;text-wrap:balance}
+.mission{background:linear-gradient(135deg,#12161c 0%,#101a14 100%);border:1px solid #1f3a2a;
+  border-left:4px solid var(--accent);border-radius:10px;padding:16px 18px;margin-top:16px}
+.mission .tag{font-family:"Archivo Narrow",sans-serif;font-weight:700;font-size:12px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--accent)}
+.mission h3{font-family:"Archivo Narrow",sans-serif;font-weight:700;font-size:22px;margin:4px 0 8px;letter-spacing:.03em}
+.mission p{margin:6px 0;font-size:13.5px;color:var(--ink)}
+.mission .vs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.mission .chip{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;border:1px solid var(--line);
+  border-radius:6px;padding:3px 9px;color:var(--dim)}
+.mission .chip b{color:var(--ink)}
+.mission .tbc{color:var(--accent);font-weight:700;letter-spacing:.06em}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.tile .k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.tile .v{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px}
+.tile .n{font-size:12px;color:var(--dim)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+svg text{font-family:Archivo,sans-serif}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{color:var(--faint);font-size:11px;text-transform:uppercase;letter-spacing:.1em;text-align:left;
+  padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top;
+  font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+.tablewrap{overflow-x:auto}
+.grade{font-weight:800;display:inline-block;min-width:2ch}
+.gA{color:var(--green)} .gB{color:var(--yellow)} .gC{color:var(--red)} .gX{color:var(--faint)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:baseline}
+.badge{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  border-radius:5px;padding:2px 8px;display:inline-block}
+.b-open{background:#1c2a3a;color:var(--blue)} .b-hit{background:#15301f;color:var(--green)}
+.b-miss{background:#3a1c1c;color:var(--red)} .b-hold{background:#332a12;color:var(--yellow)}
+.si-level{font-weight:700;font-variant-numeric:tabular-nums}
+.muted{color:var(--dim)} .small{font-size:12.5px}
+ul.proto{margin:0;padding-left:18px;font-size:13.5px}
+ul.proto li{margin:5px 0}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--dim);margin-top:8px}
+#loading{color:var(--dim);padding:30px 0;font-size:14px}
+footer{margin-top:44px;color:var(--faint);font-size:12px;border-top:1px solid var(--line);padding-top:12px}
+@media(max-width:480px){h1{font-size:24px}.tile .v{font-size:22px}}
+</style>
+
+<div class="wrap">
+<header>
+  <div>
+    <h1>GEDYON <span>COMMAND</span></h1>
+    <div class="sub">Eli Gedyon · Broomfield CO · 45-week block → 2028 Trials · Coach: KODA</div>
+  </div>
+  <div class="sub" id="asof"></div>
+</header>
+
+<div class="mission">
+  <div class="tag">Project ReLoad · North Star</div>
+  <h3>The tape is not a finish line. It's a reload.</h3>
+  <p>The gun went off years ago and the old Eli has been leading ever since — writing the first
+  story in school records and championship finals. The current Eli is on the current page, chasing.
+  Catching him closes the first book. <strong>Passing him is the reload</strong> — take the lead,
+  load the next chapter, and rewrite the future the way I want it.</p>
+  <div class="vs">
+    <span class="chip">OLD ELI · 800 <b>1:52.24</b></span>
+    <span class="chip">MILE <b>4:01.10</b></span>
+    <span class="chip">1500 <b>3:45.59</b></span>
+    <span class="chip">RACE WT <b>140–145</b></span>
+    <span class="chip" style="border-color:#1f3a2a">TARGET ZONE <b style="color:var(--accent)">135–140</b></span>
+  </div>
+  <p class="tbc" style="margin-top:10px">TO BE… — chapter continues.</p>
+</div>
+
+<div id="loading">Loading the data layer…</div>
+<div id="app" hidden>
+
+<h2>Today</h2>
+<div class="tiles" id="statusTiles"></div>
+
+<h2>Recovery — WHOOP % · HRV · RHR</h2>
+<div class="panel">
+  <div id="recChart"></div>
+  <div class="legend">
+    <span><span class="dot" style="background:var(--green)"></span>Recovery % (bar, colored by band)</span>
+    <span><span class="dot" style="background:var(--blue)"></span>HRV (baseline ~45)</span>
+    <span><span class="dot" style="background:var(--violet)"></span>RHR (baseline ~58–61)</span>
+  </div>
+</div>
+
+<h2>Weight — fasted AM</h2>
+<div class="panel"><div id="wtChart"></div></div>
+
+<h2>Training log &amp; grades</h2>
+<div class="panel tablewrap"><table id="sessTable">
+  <thead><tr><th>Date</th><th>Wk</th><th>Session</th><th>Grade</th><th>Notes</th></tr></thead>
+  <tbody></tbody></table></div>
+
+<h2>SI trial diary <span class="muted" style="text-transform:none;letter-spacing:0">— trial Sep 18 → Oct 9</span></h2>
+<div class="panel tablewrap"><table id="siTable">
+  <thead><tr><th>Date</th><th>Level</th><th>Entry</th></tr></thead>
+  <tbody></tbody></table></div>
+
+<h2>Gates &amp; checkpoints</h2>
+<div class="panel tablewrap"><table id="gateTable">
+  <thead><tr><th>Date</th><th>Gate</th><th>Status</th><th>Standard</th></tr></thead>
+  <tbody></tbody></table></div>
+
+<h2>Protocols running</h2>
+<div class="panel"><ul class="proto" id="protoList"></ul></div>
+
+<footer>Project ReLoad · Live board — KODA updates it as data comes in. Sources: WHOOP (recovery), Peloton (treadmill truth), Strava watch app (outdoor), Apple Health (wellness), intervals.icu (analytics). Every number is tracked and weighted: decision tier steers the day · milestone tier judges the weeks · estimate tier (strain, calories, watch VO₂max) is logged and trended, never used to overrule a clean measurement. Nothing is discarded.</footer>
+</div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmtD=s=>{const[y,m,d]=s.split("-").map(Number);return `${m}/${d}`};
+const colorFor=c=>({green:"var(--green)",yellow:"var(--yellow)",red:"var(--red)"}[c]||"var(--dim)");
+const gradeCls=g=>!g||g==="—"?"gX":/^A/.test(g)?"gA":/^B/.test(g)?"gB":"gC";
+
+function svgOpen(w,h){return `<svg viewBox="0 0 ${w} ${h}" width="100%" style="display:block;max-width:100%">`}
+
+function recChart(rows){
+  const w=820,h=230,pl=34,pr=34,pt=14,pb=26,iw=w-pl-pr,ih=h-pt-pb;
+  const n=rows.length; if(!n){return "<div class='muted small'>No recovery data yet.</div>"}
+  const bw=Math.min(30,iw/n*0.55), step=iw/n;
+  const x=i=>pl+step*i+step/2;
+  const yPct=v=>pt+ih*(1-v/100);
+  // HRV/RHR share a right-side scale 20..80
+  const yBio=v=>pt+ih*(1-(v-20)/60);
+  let s=svgOpen(w,h);
+  // gridlines at 33/66/100
+  for(const g of[33,66,100]){s+=`<line x1="${pl}" y1="${yPct(g)}" x2="${w-pr}" y2="${yPct(g)}" stroke="var(--line)" stroke-width="1"/>
+  <text x="${pl-6}" y="${yPct(g)+4}" fill="var(--faint)" font-size="10" text-anchor="end">${g}</text>`;}
+  rows.forEach((r,i)=>{
+    s+=`<rect x="${x(i)-bw/2}" y="${yPct(r.pct)}" width="${bw}" height="${ih-(yPct(r.pct)-pt)}" rx="3" fill="${colorFor(r.color)}" opacity="0.85"/>`;
+    s+=`<text x="${x(i)}" y="${yPct(r.pct)-5}" fill="var(--ink)" font-size="11" font-weight="700" text-anchor="middle">${r.pct}</text>`;
+    s+=`<text x="${x(i)}" y="${h-8}" fill="var(--dim)" font-size="10" text-anchor="middle">${fmtD(r.date)}</text>`;
+  });
+  const line=(key,color)=>{
+    const pts=rows.map((r,i)=>r[key]==null?null:`${x(i)},${yBio(r[key])}`).filter(Boolean);
+    if(pts.length<2)return"";
+    let out=`<polyline points="${pts.join(" ")}" fill="none" stroke="${color}" stroke-width="2"/>`;
+    rows.forEach((r,i)=>{if(r[key]!=null)out+=`<circle cx="${x(i)}" cy="${yBio(r[key])}" r="3" fill="${color}"/>`});
+    return out;
+  };
+  s+=line("hrv","var(--blue)")+line("rhr","var(--violet)");
+  for(const g of[30,60]){s+=`<text x="${w-pr+6}" y="${yBio(g)+4}" fill="var(--faint)" font-size="10">${g}</text>`;}
+  return s+"</svg>";
+}
+
+function wtChart(rows){
+  const w=820,h=170,pl=44,pr=16,pt=16,pb=26,iw=w-pl-pr,ih=h-pt-pb;
+  const n=rows.length; if(n<2){return "<div class='muted small'>Not enough weigh-ins yet.</div>"}
+  const vs=rows.map(r=>r.lbs), lo=Math.min(...vs)-0.6, hi=Math.max(...vs)+0.6;
+  const x=i=>pl+iw*(n===1?0.5:i/(n-1)), y=v=>pt+ih*(1-(v-lo)/(hi-lo));
+  let s=svgOpen(w,h);
+  for(const g of[lo+0.6,hi-0.6]){s+=`<line x1="${pl}" y1="${y(g)}" x2="${w-pr}" y2="${y(g)}" stroke="var(--line)"/>
+    <text x="${pl-6}" y="${y(g)+4}" fill="var(--faint)" font-size="10" text-anchor="end">${g.toFixed(1)}</text>`;}
+  s+=`<polyline points="${rows.map((r,i)=>`${x(i)},${y(r.lbs)}`).join(" ")}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>`;
+  rows.forEach((r,i)=>{s+=`<circle cx="${x(i)}" cy="${y(r.lbs)}" r="3.5" fill="var(--accent)"/>
+    <text x="${x(i)}" y="${y(r.lbs)-8}" fill="var(--ink)" font-size="11" font-weight="700" text-anchor="middle">${r.lbs.toFixed(1)}</text>
+    <text x="${x(i)}" y="${h-8}" fill="var(--dim)" font-size="10" text-anchor="middle">${fmtD(r.date)}</text>`;});
+  return s+"</svg>";
+}
+
+function esc(t){const d=document.createElement("div");d.textContent=t??"";return d.innerHTML}
+
+function render(data){
+  const {status,recovery,weight,sessions,si,gates,protocols}=data;
+  $("asof").textContent=status?`${status.phase} · updated ${status.updated}`:"";
+  const t=[];
+  if(status){
+    t.push(["Week",status.week,status.phase]);
+    t.push(["Fitness / Form",`${status.fitness} / ${status.form}`,`fatigue ${status.fatigue} · intervals.icu`]);
+  }
+  const lastR=recovery[recovery.length-1];
+  if(lastR)t.push(["Recovery",`<span style="color:${colorFor(lastR.color)}">${lastR.pct}%</span>`,
+    `HRV ${lastR.hrv??"—"} · RHR ${lastR.rhr??"—"}`]);
+  const lastW=weight[weight.length-1];
+  if(lastW)t.push(["Weight",lastW.lbs.toFixed(1),`lbs fasted · ${fmtD(lastW.date)} · road to 135–140`]);
+  if(status&&status.note)t.push(["Coach read","&nbsp;",status.note]);
+  $("statusTiles").innerHTML=t.map(([k,v,n])=>
+    `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="n">${esc(n).replace(/&amp;nbsp;/g,"")||"&nbsp;"}</div></div>`).join("");
+
+  $("recChart").innerHTML=recChart(recovery.slice(-10));
+  $("wtChart").innerHTML=wtChart(weight);
+
+  $("sessTable").tBodies[0].innerHTML=sessions.map(r=>
+    `<tr><td>${fmtD(r.date)}</td><td>W${r.week}</td><td>${esc(r.name)}</td>
+     <td><span class="grade ${gradeCls(r.grade)}">${esc(r.grade)}</span></td>
+     <td class="muted small">${esc(r.detail)}</td></tr>`).join("");
+
+  $("siTable").tBodies[0].innerHTML=si.map(r=>
+    `<tr><td>${fmtD(r.date)}</td><td class="si-level" style="color:${r.level>=3?"var(--red)":r.level>0?"var(--yellow)":"var(--green)"}">${r.level}/10</td>
+     <td class="small">${esc(r.entry)}</td></tr>`).join("");
+
+  const badge={open:"b-open",hit:"b-hit",miss:"b-miss",hold:"b-hold"};
+  $("gateTable").tBodies[0].innerHTML=gates.map(r=>
+    `<tr><td>${fmtD(r.date)}</td><td><strong>${esc(r.name)}</strong></td>
+     <td><span class="badge ${badge[r.status]||"b-open"}">${esc(r.status)}</span></td>
+     <td class="muted small">${esc(r.detail)}</td></tr>`).join("");
+
+  $("protoList").innerHTML=protocols.map(r=>
+    `<li><strong>${esc(r.name)}</strong> — <span class="muted">${esc(r.detail)}</span></li>`).join("");
+
+  $("loading").hidden=true;$("app").hidden=false;
+}
+
+async function load(col,order){
+  try{
+    const q=await col.orderBy(order||"date").get();
+    return q.docs.map(d=>d.data());
+  }catch(e){return[]}
+}
+
+(async()=>{
+  const db=await claude.use("db");
+  if(!db){$("loading").textContent="Data layer unavailable in this view — open the board signed in on claude.ai.";return;}
+  try{
+    const [statusDoc,recovery,weight,sessions,si,gates,protocols]=await Promise.all([
+      db.doc("status/current").get().catch(()=>null),
+      load(db.collection("recovery")),load(db.collection("weight")),
+      load(db.collection("sessions")),load(db.collection("si")),
+      load(db.collection("gates")),load(db.collection("protocols"),"name")
+    ]);
+    render({status:statusDoc&&statusDoc.exists?statusDoc.data():null,recovery,weight,sessions,si,gates,protocols});
+  }catch(e){
+    $("loading").textContent="Could not load data: "+(e&&e.message||e);
+  }
+})();
+</script>

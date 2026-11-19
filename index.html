@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#050508">
   <link rel="manifest" href="data:application/json,{%22name%22:%22GEDYON%22,%22short_name%22:%22GEDYON%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23050508%22,%22theme_color%22:%22%23050508%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23050508'/><text y='.9em' font-size='90'></text></svg>%22,%22sizes%22:%22any%22,%22type%22:%22image/svg+xml%22}]}">
-<title>GEDYON 2028 TRIALS</title>
+<title>GEDYON</title>
 <!--
   ╔══════════════════════════════════════════════════════════════════════╗
   ║  GEDYON 2028 OLYMPIC TRIALS TRAINING SYSTEM                         ║
@@ -2663,6 +2663,8 @@ body.theme-keynote .topbar { backdrop-filter: blur(32px) saturate(200%) !importa
 body.theme-keynote .bnav   { backdrop-filter: blur(32px) saturate(200%) !important; -webkit-backdrop-filter: blur(32px) saturate(200%) !important; }
 body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; border: 1px solid rgba(184,150,90,0.18) !important; }
 
+.builder-only{display:none!important}
+body.is-builder .builder-only{display:block!important}
 </style>
 </head>
 <body class="theme-void">
@@ -2767,6 +2769,9 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
       <div style="font-family:Impact,Arial Narrow,sans-serif;font-size:32px;color:#fff;letter-spacing:2px;margin-bottom:8px;">YOUR PLAN</div>
       <div style="font-size:13px;color:#888;margin-bottom:24px;">KODA AI will build a personalized training program based on your profile.</div>
       <div id="setupReview" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px;margin-bottom:24px;font-family:'SF Mono',monospace;font-size:12px;color:#ccc;line-height:2;"></div>
+      <div style="font-size:12px;color:#888;line-height:1.7;margin-bottom:16px;padding:12px;border:1px solid rgba(255,255,255,.1);border-radius:10px;">
+        <strong style="color:#bbb;">Before you start:</strong> GEDYON and its AI coach KODA give general training and nutrition information. They are not medical advice and KODA can make mistakes. Check with a doctor before starting a new program, and stop training if you feel pain, chest discomfort or dizziness.
+      </div>
       <button onclick="completeSetup()" style="width:100%;padding:16px;background:var(--accent,#C9A84C);color:#000;font-family:Impact,Arial Narrow,sans-serif;font-size:20px;letter-spacing:3px;border:none;border-radius:10px;cursor:pointer;">KODA MY PLAN →</button>
     </div>
 
@@ -2802,9 +2807,9 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
     <!-- Login Form -->
     <div id="authLogin">
       <label class="setup-label">EMAIL</label>
-      <input id="authEmail" type="email" class="setup-input" placeholder="you@email.com" autocomplete="email">
+      <input id="authEmail" type="email" class="setup-input" placeholder="you@email.com" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false">
       <label class="setup-label" style="margin-top:16px;">PASSWORD</label>
-      <input id="authPass" type="password" class="setup-input" placeholder="••••••••" autocomplete="current-password">
+      <input id="authPass" type="password" class="setup-input" placeholder="Your password" autocomplete="current-password">
       <button onclick="authSignIn()" style="width:100%;padding:14px;background:var(--accent,#C9A84C);color:#000;font-family:Impact,Arial Narrow,sans-serif;font-size:18px;letter-spacing:3px;border:none;border-radius:8px;cursor:pointer;margin-top:20px;">SIGN IN</button>
       <div id="authError" style="color:#FF3D57;font-family:'SF Mono',monospace;font-size:11px;text-align:center;margin-top:12px;display:none;"></div>
       <div style="text-align:center;margin-top:16px;">
@@ -2839,9 +2844,9 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
       <label class="setup-label">NAME</label>
       <input id="authSignupName" type="text" class="setup-input" placeholder="Your name" autocomplete="name">
       <label class="setup-label" style="margin-top:16px;">EMAIL</label>
-      <input id="authSignupEmail" type="email" class="setup-input" placeholder="you@email.com" autocomplete="email">
+      <input id="authSignupEmail" type="email" class="setup-input" placeholder="you@email.com" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false">
       <label class="setup-label" style="margin-top:16px;">PASSWORD</label>
-      <input id="authSignupPass" type="password" class="setup-input" placeholder="Min 6 characters" autocomplete="new-password">
+      <input id="authSignupPass" type="password" class="setup-input" placeholder="At least 8 characters" autocomplete="new-password">
       <button onclick="authCreateAccount()" style="width:100%;padding:14px;background:var(--accent,#C9A84C);color:#000;font-family:Impact,Arial Narrow,sans-serif;font-size:18px;letter-spacing:3px;border:none;border-radius:8px;cursor:pointer;margin-top:20px;">CREATE ACCOUNT</button>
       <div id="authSignupError" style="color:#FF3D57;font-family:'SF Mono',monospace;font-size:11px;text-align:center;margin-top:12px;display:none;"></div>
       <div style="text-align:center;margin-top:24px;">
@@ -2852,6 +2857,11 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
 
     <div style="text-align:center;margin-top:40px;font-family:'SF Mono',monospace;font-size:10px;color:#333;letter-spacing:1px;">
       ENCRYPTED · SECURE · YOUR DATA IS YOURS
+    </div>
+    <div style="text-align:center;margin-top:14px;font-family:'SF Mono',monospace;font-size:11px;color:rgba(255,255,255,.5);line-height:1.8;">
+      By continuing you agree to the <a href="terms.html" target="_blank" rel="noopener" style="color:rgba(255,255,255,.75);">Terms</a> and
+      <a href="privacy.html" target="_blank" rel="noopener" style="color:rgba(255,255,255,.75);">Privacy Policy</a> ·
+      <a href="support.html" target="_blank" rel="noopener" style="color:rgba(255,255,255,.75);">Support</a>
     </div>
   </div>
 </div>
@@ -2917,7 +2927,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
 <div id="app">
   <div class="topbar">
     <div><div class="tb-name">GEDYON</div><div class="tb-sub" id="tbSub">AI-POWERED TRAINING</div></div>
-    <div style="display:flex;gap:7px;align-items:center;margin-right:10px;">
+    <div id="themeDots" role="menu" aria-label="Color theme">
   <!-- THEME DNA DOTS — add/remove dots to match themes -->
   <button class="th-dot" data-theme="void" data-glow="rgba(255,255,255,0.8)" onclick="setTheme('void')" title="FRZN" style="width:16px;height:16px;border-radius:50%;border:none;cursor:pointer;transition:all .2s;background:#fff;opacity:0.7;"></button>
   <button class="th-dot" data-theme="ember" data-glow="rgba(232,184,120,0.8)" onclick="setTheme('ember')" title="EMBER" style="width:16px;height:16px;border-radius:50%;border:none;cursor:pointer;transition:all .2s;background:#E8B878;opacity:0.7;"></button>
@@ -2932,6 +2942,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
   <button class="th-dot" data-theme="keynote-dark" data-glow="rgba(10,132,255,0.8)" onclick="setTheme('keynote-dark')" title="KEYNOTE" style="width:16px;height:16px;border-radius:50%;border:none;cursor:pointer;transition:all .2s;background:#0A84FF;opacity:0.7;"></button>
 </div>
 <div class="tb-r">
+      <button id="themeToggleBtn" onclick="toggleThemeDots(event)" aria-label="Change color theme" title="Theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12.5" r="1.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.7-.7 1.7-1.7 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.7-1.7 1.7-1.7h2c3 0 5.5-2.5 5.5-5.5C22 6 17.5 2 12 2z"/></svg></button>
       <div class="badge bw" id="wkBadge">W1</div>
       <div class="badge bd" id="daysBadge">—d</div>
       <button id="userAvatarBtn" onclick="toggleUserMenu()" style="width:28px;height:28px;border-radius:50%;border:1.5px solid var(--accent,#C9A84C);background:var(--card2,#1a2535);cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:4px;flex-shrink:0;padding:0;">
@@ -2992,9 +3003,9 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
 
         <!-- RIGHT: Countdown -->
         <div style="background:var(--card);border:1px solid rgba(245,196,0,.25);border-radius:10px;padding:8px 10px;text-align:center;display:flex;flex-direction:column;justify-content:center;min-width:80px;">
-          <div style="font-family:'SF Mono',Consolas,monospace;font-size:10px;color:var(--grey);letter-spacing:1.5px;margin-bottom:2px;">DAYS TO<br>TRIALS</div>
+          <div style="font-family:'SF Mono',Consolas,monospace;font-size:10px;color:var(--grey);letter-spacing:1.5px;margin-bottom:2px;">DAYS<br>TO GO</div>
           <div style="font-family:Impact,'Arial Narrow',Arial,sans-serif;font-size:44px;color:var(--gold);line-height:1;" id="cdNum">—</div>
-          <div id="compDateLabel" style="font-family:'SF Mono',Consolas,monospace;font-size:10px;color:var(--grey);margin-top:3px;letter-spacing:1px;">APR 4 2028<br>EUGENE OR</div>
+          <div id="compDateLabel" style="font-family:'SF Mono',Consolas,monospace;font-size:10px;color:var(--grey);margin-top:3px;letter-spacing:1px;">RACE DAY</div>
         </div>
 
       </div>
@@ -3148,7 +3159,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
             <div class="wt-tgt" id="wtStatus">Week target: 176.6</div>
           </div>
         </div>
-        <div class="wt-prow"><span>177 lbs</span><span id="wtPctLbl"></span><span>148 lbs</span></div>
+        <div class="wt-prow"><span id="wtStartLbl"></span><span id="wtPctLbl"></span><span id="wtGoalLbl"></span></div>
         <div class="wt-prog"><div class="wt-pf" id="wtBar"></div></div>
         <div class="wt-stats" id="wtStats"></div>
         <button class="wt-log-btn" onclick="logWeight()">LOG</button>
@@ -3368,7 +3379,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
             <div style="font-size:20px;">⚡</div>
             <div style="text-align:left;">
               <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:16px;letter-spacing:2px;color:var(--gold);">RECALIBRATE TRAINING</div>
-              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:1px;">Find your true week based on fitness + time to Trials</div>
+              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:1px;">Find your true week based on fitness + time to race day</div>
             </div>
           </div>
           <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--gold);opacity:.6;">›</div>
@@ -3430,6 +3441,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
       </div>
       <div id="ms-supps" class="msec on">
         <div class="sh" style="margin-top:0;">SUPPLEMENT PROTOCOL</div>
+        <div style="font-family:'SF Mono',monospace;font-size:11px;color:var(--grey);line-height:1.7;margin:0 0 10px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;">Example protocol for educational purposes only, not a recommendation for you. Supplements can interact with medicines and conditions. Check with a doctor or registered dietitian before taking any of these.</div>
         <div class="supc sg"><div class="sco">$20/3mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Creatine Monohydrate</div><div class="sdo">5g daily · no loading</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> Morning with water</div><div class="swy">Protects muscle during 29 lb weight loss. Non-negotiable.</div></div>
         <div class="supc sbl"><div class="sco">$20/mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Vitamin D3 + K2</div><div class="sdo">5000 IU D3 + 100mcg K2</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> Morning with fat</div><div class="swy">Bone density, testosterone, immunity.</div></div>
         <div class="supc sg"><div class="sco">$15/mo</div><div class="str2">TIER 1 — DAILY</div><div class="ssn">Magnesium Glycinate</div><div class="sdo">400mg every night</div><div class="swh"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;display:inline-block"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3L2 6"/><path d="M22 6l-3-3"/></svg> 9:00pm — every night</div><div class="swy">Sleep quality, muscle recovery, cramp prevention.</div></div>
@@ -3449,8 +3461,8 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
       <div id="ms-race" class="msec"><div id="raceTestList"></div></div>
       <div id="ms-wt" class="msec">
         <div id="weightAttackCard"></div>
-        <div class="sh" style="margin-top:0;">PERFORMANCE AT EACH WEIGHT</div>
-        <div class="card" style="overflow-x:auto;"><table id="perfTable" style="width:100%;border-collapse:collapse;font-family:'SF Mono',Consolas,monospace;font-size:13px;"></table></div>
+        <div class="sh builder-only" style="margin-top:0;">PERFORMANCE AT EACH WEIGHT</div>
+        <div class="card builder-only" style="overflow-x:auto;"><table id="perfTable" style="width:100%;border-collapse:collapse;font-family:'SF Mono',Consolas,monospace;font-size:13px;"></table></div>
         <div class="sh">WEIGHT PROJECTION</div>
         <div class="card"><div class="cb" style="padding:10px 14px;"><canvas id="wtProjChart" style="max-height:160px;"></canvas></div></div>
         <div class="sh">LOG PAST WEIGHT</div>
@@ -3622,7 +3634,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
 
       <!-- BOTTOM FOOTER -->
       <div style="margin-top:12px;text-align:center;font-family:'SF Mono',monospace;font-size:8px;color:rgba(255,255,255,0.4);letter-spacing:2px;">
-        GEDYON · 2028 OLYMPIC TRIALS · AI-POWERED TRAINING
+        GEDYON · AI-POWERED TRAINING
       </div>
 
     </div><!-- /content -->
@@ -3840,7 +3852,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
         <div class="sh" style="margin-top:0;">CONNECT YOUR DEVICES</div>
 
         <!-- DIAGNOSTIC BANNER -->
-        <div id="diagBanner" style="background:rgba(255,196,0,.06);border:1px solid rgba(255,196,0,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;">
+        <div class="builder-only" id="diagBanner" style="background:rgba(255,196,0,.06);border:1px solid rgba(255,196,0,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
             <div style="font-family:monospace;font-size:13px;color:var(--gold);letter-spacing:2px;">SYSTEM DIAGNOSTIC</div>
             <button onclick="runDiagnostic()" style="background:rgba(245,196,0,.15);border:1px solid rgba(245,196,0,.3);border-radius:8px;padding:4px 10px;font-family:monospace;font-size:11px;color:var(--gold);cursor:pointer;">RUN CHECK ↻</button>
@@ -3851,7 +3863,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
         </div>
 
         <!-- SETUP GUIDE (collapsed by default) -->
-        <details style="background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;">
+        <details class="builder-only" style="background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;">
           <summary style="padding:12px 14px;cursor:pointer;font-family:monospace;font-size:12px;color:rgba(179,136,255,.8);letter-spacing:2px;list-style:none;display:flex;align-items:center;gap:8px;">
             <span style="font-size:14px;"></span> FIRST TIME SETUP GUIDE — TAP TO EXPAND
           </summary>
@@ -3930,7 +3942,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
         <div id="connectStatusMsg" style="font-family:'SF Mono',monospace;font-size:12px;color:var(--gold);margin-bottom:10px;line-height:1.8;display:none;padding:8px 12px;background:rgba(0,0,0,.3);border-radius:8px;border-left:3px solid var(--gold);"></div>
 
         <!-- STEP 1: SERVER -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;">
+        <div class="builder-only" style="background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;">
           <div style="background:rgba(179,136,255,.08);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
             <div style="display:flex;align-items:center;gap:8px;">
               <div style="width:20px;height:20px;border-radius:50%;background:rgba(179,136,255,.2);border:1px solid rgba(179,136,255,.4);display:flex;align-items:center;justify-content:center;font-family:Impact,sans-serif;font-size:11px;color:rgba(179,136,255,.9);">1</div>
@@ -4108,7 +4120,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
             </div>
             <div class="fr">
               <div class="fl">ATHLETE CODE</div>
-              <input type="text" id="waCodeInput" placeholder="e.g. 14329251"
+              <input type="text" id="waCodeInput" placeholder="Your World Athletics athlete ID"
                 style="width:100%;font-family:'SF Mono',monospace;font-size:12px;"
                 oninput="D.settings.waCode=this.value.trim();save()">
             </div>
@@ -4139,8 +4151,10 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
         <div class="card"><div class="cb">
           <div id="authStatus" style="font-family:'SF Mono',monospace;font-size:12px;color:var(--grey);margin-bottom:12px;"></div>
           <button class="btn" id="authLogoutBtn" style="display:none;background:var(--red);color:#fff;" onclick="authLogout()">SIGN OUT</button>
+          <button id="authDeleteBtn" style="display:none;width:100%;margin-top:10px;padding:10px;background:transparent;border:1px solid rgba(232,88,88,.45);border-radius:8px;color:#FF8A8A;font-family:'SF Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;" onclick="authDeleteAccount()">DELETE ACCOUNT</button>
           <button class="btn" id="authLoginBtn" style="display:none;" onclick="$('authScreen').style.display='block';">SIGN IN / CREATE ACCOUNT</button>
         </div></div>
+        <div class="builder-only">
         <div class="sh">SUPABASE CONFIG</div>
         <div class="card"><div class="cb">
           <div class="fr"><div class="fl">Project URL</div><input type="text" id="setSbUrl" placeholder="https://xxxxx.supabase.co" style="font-size:11px;"></div>
@@ -4148,11 +4162,20 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
           <button class="btn" onclick="saveSbConfig()">CONNECT SUPABASE</button>
           <div class="al" id="sbAlert"></div>
         </div></div>
+        </div>
         <div class="sh">DATA</div>
         <div class="card"><div class="cb" style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn" style="width:auto;padding:10px 16px;font-size:14px;" onclick="exportData()"> EXPORT</button>
           <button class="btn" style="width:auto;padding:10px 16px;font-size:14px;" onclick="if(currentUser)saveCloudData().then(function(){showAlert('setAlert','Synced to cloud!','ok');});">SYNC TO CLOUD</button>
           <button class="btn" style="width:auto;padding:10px 16px;font-size:14px;background:var(--red);color:#fff;" onclick="if(confirm('Reset ALL data?')){localStorage.removeItem(KEY);localStorage.removeItem(SETUP_KEY);location.reload();}"> RESET</button>
+        </div></div>
+        <div class="sh">LEGAL &amp; SUPPORT</div>
+        <div class="card"><div class="cb" style="display:flex;flex-direction:column;gap:8px;font-family:'SF Mono',monospace;font-size:13px;">
+          <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--off);">Privacy Policy</a>
+          <a href="terms.html" target="_blank" rel="noopener" style="color:var(--off);">Terms of Use</a>
+          <a href="support.html" target="_blank" rel="noopener" style="color:var(--off);">Support &amp; Contact</a>
+          <label style="display:flex;align-items:center;gap:10px;color:var(--off);margin-top:4px;"><input type="checkbox" id="aiConsentToggle" onchange="setAIConsent(this.checked)"> Allow KODA to send my data to Anthropic (Claude) to answer me</label>
+          <div style="color:var(--grey);font-size:11px;line-height:1.7;">GEDYON and KODA give general training information, not medical advice. Talk to a doctor before starting a new program, and stop if you feel pain, chest discomfort or dizziness.</div>
         </div></div>
         <div style="padding:12px;background:var(--card);border:1px solid var(--border);border-radius:10px;font-family:'SF Mono',Consolas,monospace;font-size:11px;color:#2A2A42;line-height:2;margin-bottom:10px;">
            2026 Elias Gedyon™ · All Rights Reserved<br>
@@ -4211,7 +4234,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
         <!-- Header -->
         <div style="padding:14px 16px 10px;border-bottom:1px solid rgba(255,255,255,0.10);">
           <div style="font-family:Impact,sans-serif;font-size:26px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;"> PLAYBOOK</div>
-          <div style="font-family:'SF Mono',monospace;font-size:12px;color:var(--grey);margin-top:2px;">1500m · MILE · 800m &nbsp;·&nbsp; TRIALS 2028 · 110 WEEKS &nbsp;·&nbsp; <span style="color:var(--gold);">FINAL BUILD</span></div>
+          <div style="font-family:'SF Mono',monospace;font-size:12px;color:var(--grey);margin-top:2px;"><span id="playbookSub">YOUR PLAN · BUILD TO RACE DAY</span></div>
         </div>
 
         <div style="padding:12px 14px 80px;">
@@ -4299,7 +4322,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
               <div style="display:flex;gap:5px;flex-wrap:wrap;">
                 <button onclick="atlasQuick('What should my easy pace be right now based on my current fitness?')" style="background:rgba(255,150,0,0.08);border:1px solid rgba(255,150,0,0.2);border-radius:20px;padding:5px 11px;font-size:12px;color:rgba(255,150,0,0.9);cursor:pointer;font-family:monospace;">Current pace zones</button>
                 <button onclick="atlasQuick('How should I adjust training this week based on my recovery data?')" style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);border-radius:20px;padding:5px 11px;font-size:12px;color:rgba(0,230,118,0.9);cursor:pointer;font-family:monospace;">Recovery check</button>
-                <button onclick="atlasQuick('Am I on track for the 2028 Olympic Trials? What are my biggest limiters right now?')" style="background:rgba(245,196,0,0.08);border:1px solid rgba(245,196,0,0.2);border-radius:20px;padding:5px 11px;font-size:12px;color:rgba(245,196,0,0.9);cursor:pointer;font-family:monospace;">Trials readiness</button>
+                <button onclick="atlasQuick('Am I on track for my goal race? What are my biggest limiters right now?')" style="background:rgba(245,196,0,0.08);border:1px solid rgba(245,196,0,0.2);border-radius:20px;padding:5px 11px;font-size:12px;color:rgba(245,196,0,0.9);cursor:pointer;font-family:monospace;">Trials readiness</button>
                 <button onclick="atlasQuick('Explain the Norwegian threshold method and how it applies to my current phase.')" style="background:rgba(100,100,255,0.08);border:1px solid rgba(100,100,255,0.2);border-radius:20px;padding:5px 11px;font-size:12px;color:rgba(150,150,255,0.9);cursor:pointer;font-family:monospace;">Norwegian method</button>
                 <button onclick="atlasQuick('What is the optimal race strategy for 800m given my current fitness?')" style="background:rgba(255,45,85,0.08);border:1px solid rgba(255,45,85,0.2);border-radius:20px;padding:5px 11px;font-size:12px;color:rgba(255,45,85,0.9);cursor:pointer;font-family:monospace;"> 800m race strategy</button>
                 <button onclick="atlasQuick('Should I do a double today or consolidate into one run? Walk me through the physiology.')" style="background:rgba(0,180,255,0.08);border:1px solid rgba(0,180,255,0.2);border-radius:20px;padding:5px 11px;font-size:12px;color:rgba(0,180,255,0.9);cursor:pointer;font-family:monospace;"> Double vs single</button>
@@ -4690,7 +4713,7 @@ body.theme-keynote .card   { background: rgba(255,255,255,0.72) !important; bord
       <div style="display:flex;gap:6px;">
         <button class="koda-chip" onclick="kodaQuick('What should my current pace zones be?')">PACE ZONES</button>
         <button class="koda-chip" onclick="kodaQuick('How should I adjust training this week based on my recovery?')">RECOVERY</button>
-        <button class="koda-chip" onclick="kodaQuick('Am I on track for the 2028 Olympic Trials? What are my biggest limiters?')">TRIALS 2028</button>
+        <button class="koda-chip" onclick="kodaQuick('Am I on track for my goal race? What are my biggest limiters?')">ON TRACK?</button>
         <button class="koda-chip" onclick="kodaQuick('What should I eat today to optimize my training?')">NUTRITION</button>
         <button class="koda-chip" onclick="kodaQuick('What is the optimal race strategy for my upcoming race given my current fitness?')">RACE PLAN</button>
         <button class="koda-chip" onclick="kodaQuick('Should I do a double today or one run? Walk me through the decision.')">DOUBLE?</button>
@@ -4798,6 +4821,11 @@ async function railwayFetch(path, options){
 }
 
 function checkForUpdates(){
+  // Off for the beta/TestFlight build: replacing the app's code from a server is an
+  // App Review risk (guideline 2.5.2), and the cached update was discarded on the
+  // next launch anyway. Ship updates through TestFlight instead.
+  // To re-enable on a device for testing: localStorage.setItem('gedyon_ota_enabled','1')
+  if(localStorage.getItem('gedyon_ota_enabled')!=='1') return;
   fetch(OTA_SERVER + '/app/version', { cache:'no-store' })
     .then(function(r){ return r.json(); })
     .then(function(data){
@@ -4869,8 +4897,16 @@ function initSupabase(){
 // Supabase fires PASSWORD_RECOVERY — prompt for the new password.
 function _hookRecovery(){
   try{
-    sbClient.auth.onAuthStateChange(function(event){
+    sbClient.auth.onAuthStateChange(function(event, session){
       if(event === 'PASSWORD_RECOVERY') setTimeout(showSetNewPassword, 400);
+      // Token refreshed or user updated: keep the in-memory user current
+      if((event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') && session && currentUser && session.user.id === currentUser.id) currentUser = session.user;
+      // Signed out elsewhere (another tab, password change, deleted account)
+      if(event === 'SIGNED_OUT' && currentUser && !_signingOut){
+        currentUser = null; _cloudReady = false;
+        try{ updateAuthStatus(); }catch(e){}
+        try{ showSyncToast('You were signed out. Sign in again to keep syncing.','red'); }catch(e){}
+      }
     });
   }catch(e){}
 }
@@ -4883,7 +4919,7 @@ function showSetNewPassword(){
   m.innerHTML = '<div style="background:#0d0d1a;border:1.5px solid rgba(201,168,76,.45);border-radius:20px;padding:28px 24px;width:100%;max-width:400px;">'
     + '<div style="font-family:Impact,Arial Narrow,sans-serif;font-size:22px;letter-spacing:2px;color:var(--gold);margin-bottom:6px;">🔑 SET NEW PASSWORD</div>'
     + '<div style="font-family:\'SF Mono\',monospace;font-size:11px;color:var(--grey);margin-bottom:18px;line-height:1.7;">Your reset link worked — you\'re signed in. Pick a new password so you can sign in anywhere.</div>'
-    + '<input id="newPwInput" type="password" placeholder="New password (6+ characters)" autocomplete="new-password" style="width:100%;box-sizing:border-box;padding:13px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.35);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:14px;margin-bottom:10px;outline:none;">'
+    + '<input id="newPwInput" type="password" placeholder="New password (8+ characters)" autocomplete="new-password" style="width:100%;box-sizing:border-box;padding:13px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.35);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:14px;margin-bottom:10px;outline:none;">'
     + '<input id="newPwInput2" type="password" placeholder="Type it again" autocomplete="new-password" style="width:100%;box-sizing:border-box;padding:13px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.35);border-radius:12px;color:#fff;font-family:\'SF Mono\',monospace;font-size:14px;margin-bottom:16px;outline:none;">'
     + '<div id="newPwMsg" style="font-family:\'SF Mono\',monospace;font-size:11px;color:#FF3D57;margin-bottom:10px;display:none;"></div>'
     + '<button onclick="_confirmNewPassword()" style="width:100%;padding:14px;background:var(--gold);color:#000;font-family:Impact,Arial Narrow,sans-serif;font-size:17px;letter-spacing:2px;border:none;border-radius:12px;cursor:pointer;">SAVE PASSWORD</button>'
@@ -4897,7 +4933,7 @@ async function _confirmNewPassword(){
   var p2 = (document.getElementById('newPwInput2')||{}).value||'';
   var msg = document.getElementById('newPwMsg');
   function err(t){ if(msg){ msg.style.display='block'; msg.textContent=t; } }
-  if(p1.length < 6) return err('At least 6 characters.');
+  if(p1.length < 8) return err('At least 8 characters.');
   if(p1 !== p2) return err('The two passwords don\'t match.');
   try{
     var r = await sbClient.auth.updateUser({ password: p1 });
@@ -4905,6 +4941,80 @@ async function _confirmNewPassword(){
     var m = document.getElementById('newPwModal'); if(m) m.remove();
     showSyncToast('Password saved — you\'re signed in everywhere now','green');
   }catch(e){ err('Error: ' + e.message); }
+}
+// ═══ ACCOUNT HYGIENE — many people, one device ═══════════════════════
+// Local data always belongs to exactly one owner: an account id or 'guest'.
+// Switching accounts on a device wipes the previous owner's local data, and
+// nothing is written to the cloud until this session has read the account's
+// cloud copy, so a slow network can never overwrite someone's history.
+var DATA_OWNER_KEY = 'gedyon_data_owner';
+var _cloudReady = false;
+var _signingOut = false;
+var _authBusy = false;
+var _KEEP_ON_SWITCH = ['gedyon_sb_url','gedyon_sb_key','gedyon_ota_enabled','gedyon_ota_version','gedyon_ota_html','gedyon-theme'];
+function _blankData(){
+  return {logs:[], food:[], workouts:[], weights:[], races:[], supps:{}, dayScores:{}, lactate:{}, actualMeals:{},
+    settings:{name:'', start:td(), compDate:'', prs:{}}};
+}
+function _normalizeData(x){
+  var b = _blankData();
+  if(!x || typeof x !== 'object') return b;
+  Object.keys(b).forEach(function(k){
+    if(x[k] === undefined || x[k] === null || typeof x[k] !== typeof b[k] || Array.isArray(x[k]) !== Array.isArray(b[k])) x[k] = b[k];
+  });
+  if(!x.settings.start) x.settings.start = td();
+  if(!x.settings.prs) x.settings.prs = {};
+  return x;
+}
+function _wipeLocalUserData(){
+  try{
+    Object.keys(localStorage).filter(function(k){ return k.indexOf('gedyon') === 0 && _KEEP_ON_SWITCH.indexOf(k) === -1; })
+      .forEach(function(k){ localStorage.removeItem(k); });
+  }catch(e){}
+  D = _blankData();
+}
+function _authRedirectUrl(){
+  var h = window.location.hostname;
+  if(window.location.protocol === 'capacitor:' || h === 'localhost' || h === '127.0.0.1') return 'https://eligedyon.github.io/gedyon/';
+  return window.location.origin + window.location.pathname;
+}
+function _friendlyAuthError(msg){
+  var m = String(msg || '');
+  if(/invalid login credentials/i.test(m)) return 'Wrong email or password.';
+  if(/email not confirmed/i.test(m)) return 'Confirm your email first: open the link we sent you (check spam too), then sign in.';
+  if(/rate limit|too many/i.test(m)) return 'Too many tries. Wait a minute and try again.';
+  if(/not authorized/i.test(m)) return 'We could not send email to that address right now. Please try again later.';
+  if(/failed to fetch|network/i.test(m)) return 'No connection. Check your internet and try again.';
+  if(/already registered|already exists/i.test(m)) return 'An account with that email already exists. Try signing in instead.';
+  return m || 'Something went wrong. Please try again.';
+}
+function _validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e); }
+// Make this device's data belong to the signed-in account.
+async function _adoptSignedInUser(user){
+  currentUser = user; _cloudReady = false;
+  var owner = localStorage.getItem(DATA_OWNER_KEY);
+  var builderAcct = isBuilder(user.email);
+  // Another account's data (or builder data from an older build) on this device: clear it first
+  if((owner && owner !== 'guest' && owner !== user.id) || (!owner && D.settings && D.settings.isBuilder && !builderAcct)){
+    _wipeLocalUserData();
+  }
+  var res = await loadCloudData();
+  if(res === 'loaded' || res === 'empty') _cloudReady = true;
+  localStorage.setItem(DATA_OWNER_KEY, user.id);
+  if(builderAcct) loadBuilderData();
+  else if(D.settings.isBuilder) D.settings.isBuilder = false;
+  // Returning user on a new device: never send them back through setup
+  // (setup clears the log, which would then sync over their history)
+  if(res === 'loaded' && (D.settings.setupDone || D.settings.level || (D.workouts && D.workouts.length) || (D.logs && D.logs.length))){
+    D.settings.setupDone = true;
+    localStorage.setItem(SETUP_KEY,'1');
+    localStorage.setItem('gedyon_tutdone_v2','1');
+  }
+  localStorage.setItem(KEY, JSON.stringify(D));
+  if(res === 'empty') await saveCloudData(); // new account (or guest data moving into it)
+  if(res === 'error'){ try{ showSyncToast('Offline: using what is saved on this device. Sync resumes next time you open the app.','red'); }catch(e){} }
+  try{ updateAuthStatus(); }catch(e){}
+  return res;
 }
 function showAuthLogin(){
   $('authLogin').style.display='block';
@@ -4959,13 +5069,24 @@ var BUILDER_DEFAULTS = {
   isBuilder:true
 };
 function isBuilder(email){ return email && email.toLowerCase()===BUILDER_EMAIL; }
-function getCompDate(){ return D.settings.compDate || '2028-04-04'; }
-function getCompName(){ return D.settings.compName || 'Competition'; }
+function _isTrialsUser(){ return !!(typeof D!=='undefined' && D.settings && D.settings.isBuilder); }
+function _targetWord(){ return _isTrialsUser() ? 'Trials' : 'Goal'; }
+function getCompDate(){
+  if(D.settings.compDate) return D.settings.compDate;
+  if(D.settings.isBuilder) return '2028-04-04';
+  // No race set: aim at the end of the user's own plan length (default 16 weeks)
+  try{ var _s=parseLocalDate(D.settings.start||td()); _s.setDate(_s.getDate()+7*(D.settings.totalWeeks||16)); return _s.toISOString().split('T')[0]; }catch(e){ return td(); }
+}
+function getCompName(){ return D.settings.compName || (D.settings.isBuilder ? '2028 US Olympic Trials' : 'Race Day'); }
 function getDaysToComp(){ return Math.max(0,Math.ceil((new Date(getCompDate()+'T12:00:00')-new Date())/86400000)); }
 function loadBuilderData(){
   // Only set defaults if this is a fresh account (no existing data)
   if(!D.settings.isBuilder){
     Object.assign(D.settings, BUILDER_DEFAULTS);
+    ['waCode','prs','currentFitness','athleteProfile'].forEach(function(k){
+      if(!D.settings[k] || (typeof D.settings[k]==='object' && !Object.keys(D.settings[k]).length)) D.settings[k]=JSON.parse(JSON.stringify(OWNER_SEED.settings[k]));
+    });
+    if(!D.races || !D.races.length) D.races=JSON.parse(JSON.stringify(OWNER_SEED.races));
     saveData();
   }
   // Mark setup as done for builder
@@ -4974,49 +5095,66 @@ function loadBuilderData(){
 
 async function authSignIn(){
   if(!sbClient){initSupabase();} if(!sbClient){showAuthError('authError','Supabase not configured. Go to Settings → Connect.');return;}
-  var email=$('authEmail').value.trim();
+  var email=$('authEmail').value.trim().toLowerCase();
   var pass=$('authPass').value;
   if(!email||!pass){showAuthError('authError','Enter email and password');return;}
+  if(!_validEmail(email)){showAuthError('authError','That email doesn\'t look right.');return;}
+  if(_authBusy) return; _authBusy=true;
   try{
     var {data,error}=await sbClient.auth.signInWithPassword({email:email,password:pass});
-    if(error){showAuthError('authError',error.message);return;}
-    currentUser=data.user;
-    if(isBuilder(email)) loadBuilderData();
-    await loadCloudData();
+    if(error){showAuthError('authError',_friendlyAuthError(error.message));return;}
+    $('authPass').value='';
+    await _adoptSignedInUser(data.user);
     $('authScreen').style.display='none';
     proceedAfterAuth();
-  }catch(e){showAuthError('authError','Sign in failed: '+e.message);}
+  }catch(e){showAuthError('authError',_friendlyAuthError(e.message));}
+  finally{_authBusy=false;}
 }
 async function authCreateAccount(){
   if(!sbClient){initSupabase();} if(!sbClient){showAuthError('authSignupError','Supabase not configured. Go to Settings → Connect.');return;}
   var name=$('authSignupName').value.trim();
-  var email=$('authSignupEmail').value.trim();
+  var email=$('authSignupEmail').value.trim().toLowerCase();
   var pass=$('authSignupPass').value;
   if(!name||!email||!pass){showAuthError('authSignupError','Fill in all fields');return;}
-  if(pass.length<6){showAuthError('authSignupError','Password must be at least 6 characters');return;}
+  if(!_validEmail(email)){showAuthError('authSignupError','That email doesn\'t look right.');return;}
+  if(pass.length<8){showAuthError('authSignupError','Password must be at least 8 characters');return;}
+  if(_authBusy) return; _authBusy=true;
   try{
-    var {data,error}=await sbClient.auth.signUp({email:email,password:pass,options:{data:{name:name}}});
-    if(error){showAuthError('authSignupError',error.message);return;}
-    // If user is null, email already exists — Supabase hides this for security
-    if(!data.user){showAuthError('authSignupError','An account with that email already exists. Try signing in instead.');return;}
-    currentUser=data.user;
-    if(isBuilder(email)){
-      loadBuilderData();
-    } else {
-      D.settings.name=name;
+    var {data,error}=await sbClient.auth.signUp({email:email,password:pass,options:{data:{name:name},emailRedirectTo:_authRedirectUrl()}});
+    if(error){showAuthError('authSignupError',_friendlyAuthError(error.message));return;}
+    // Existing email: Supabase returns no user, or a user with no identities
+    if(!data.user || (Array.isArray(data.user.identities) && data.user.identities.length===0)){
+      showAuthError('authSignupError','An account with that email already exists. Try signing in instead.');return;
     }
-    saveData();
-    await saveCloudData();
+    $('authSignupPass').value='';
+    // Email confirmation is on: no session until they click the link
+    if(!data.session){
+      showAuthLogin();
+      if($('authEmail')) $('authEmail').value=email;
+      var el=$('authError');
+      if(el){ el.style.color='#00E676'; el.textContent='Almost done: we sent a link to '+email+'. Open it to confirm your account, then sign in here.'; el.style.display='block'; setTimeout(function(){ el.style.color=''; },20000); }
+      return;
+    }
+    await _adoptSignedInUser(data.user);
+    if(!isBuilder(email)){ D.settings.name=name; saveData(); }
     $('authScreen').style.display='none';
     proceedAfterAuth();
-  }catch(e){showAuthError('authSignupError','Signup failed: '+e.message);}
+  }catch(e){showAuthError('authSignupError',_friendlyAuthError(e.message));}
+  finally{_authBusy=false;}
 }
 function authSkip(){
+  // Guest mode: never inherit an account's data or the builder profile
+  var owner = localStorage.getItem(DATA_OWNER_KEY);
+  if((owner && owner !== 'guest') || (D.settings && D.settings.isBuilder)) _wipeLocalUserData();
+  localStorage.setItem(DATA_OWNER_KEY, 'guest');
+  currentUser = null; _cloudReady = false;
   $('authScreen').style.display='none';
   if($('splash'))$('splash').style.display='none';
   proceedAfterAuth();
 }
 function proceedAfterAuth(){
+  // Builder mode follows the signed-in account, never what is stored on the device
+  try{ if(D.settings && D.settings.isBuilder && !(currentUser && isBuilder(currentUser.email))){ D.settings.isBuilder=false; localStorage.setItem(KEY, JSON.stringify(D)); } }catch(e){}
   if($('splash'))$('splash').style.display='none';
   if($('authScreen'))$('authScreen').style.display='none';
   updateAuthStatus();
@@ -5055,20 +5193,29 @@ function updateUserMenu(){
     if(lo) lo.style.display='none';
   }
 }
+// Returns 'loaded' (account has saved data), 'empty' (new account) or 'error'.
 async function loadCloudData(){
-  if(!supabase||!currentUser) return;
+  if(!sbClient||!currentUser) return 'error';
   try{
-    var {data,error}=await sbClient.from('user_data').select('data').eq('user_id',currentUser.id).single();
-    if(data&&data.data){
-      D=typeof data.data==='string'?JSON.parse(data.data):data.data;
-      saveData();
+    var r=await sbClient.from('user_data').select('data').eq('user_id',currentUser.id).maybeSingle();
+    if(r.error){ console.log('Cloud load:',r.error); return 'error'; }
+    if(r.data&&r.data.data){
+      D=_normalizeData(typeof r.data.data==='string'?JSON.parse(r.data.data):r.data.data);
+      localStorage.setItem(KEY, JSON.stringify(D));
+      return 'loaded';
     }
-  }catch(e){console.log('Cloud load:',e);}
+    return 'empty';
+  }catch(e){console.log('Cloud load:',e); return 'error';}
 }
 async function saveCloudData(){
-  if(!supabase||!currentUser) return;
+  // Never write before this session has read the account's cloud copy
+  if(!sbClient||!currentUser||!_cloudReady) return;
   try{
-    await sbClient.from('user_data').upsert({user_id:currentUser.id,data:JSON.stringify(D),updated_at:new Date().toISOString()});
+    var r=await sbClient.from('user_data').upsert({user_id:currentUser.id,data:JSON.stringify(D),updated_at:new Date().toISOString()});
+    if(r && r.error){
+      console.log('Cloud save:',r.error);
+      if(!saveCloudData._warned){ saveCloudData._warned=true; try{ showSyncToast('Could not back up to your account. Your data is safe on this device.','red'); }catch(e){} }
+    } else saveCloudData._warned=false;
   }catch(e){console.log('Cloud save:',e);}
 }
 async function checkAuth(){
@@ -5080,17 +5227,13 @@ async function checkAuth(){
     // refreshSession() auto-renews expired tokens — stays signed in across app restarts
     var {data,error}=await sbClient.auth.refreshSession();
     if(!error && data && data.session){
-      currentUser=data.session.user;
-      updateAuthStatus();
-      await loadCloudData();
+      await _adoptSignedInUser(data.session.user);
       return false;
     }
     // Fallback: getSession reads cached token (works offline)
     var {data:d2}=await sbClient.auth.getSession();
     if(d2&&d2.session){
-      currentUser=d2.session.user;
-      updateAuthStatus();
-      await loadCloudData();
+      await _adoptSignedInUser(d2.session.user);
       return false;
     }
   }catch(e){console.log('Auth check:',e);}
@@ -5112,12 +5255,36 @@ function saveSbConfig(){
   }
 }
 async function authLogout(){
-  if(sbClient){await sbClient.auth.signOut();}
-  currentUser=null;
-  updateAuthStatus();
-  showAlert('setAlert','Signed out','ok');
+  if(currentUser && !_cloudReady){
+    if(!confirm('This device could not reach your account, so recent changes are not backed up yet. Sign out anyway? Those changes will be lost on this device.')) return;
+  }
+  _signingOut = true;
+  // Back up the latest changes, then remove this account's data from the device
+  try{ clearTimeout(saveData._t); await saveCloudData(); }catch(e){}
+  try{ if(sbClient) await sbClient.auth.signOut(); }catch(e){}
+  currentUser=null; _cloudReady=false;
+  _wipeLocalUserData();
+  location.reload();
+}
+async function authDeleteAccount(){
+  if(!sbClient||!currentUser){showAlert('setAlert','Sign in first','err');return;}
+  if(!confirm('Delete your GEDYON account?\n\nThis permanently erases your profile, logs and KODA history from our servers. It cannot be undone.')) return;
+  try{
+    var res=await sbClient.functions.invoke('delete-account',{body:{}});
+    if(res.error||!res.data||!res.data.ok) throw new Error((res.data&&res.data.message)||(res.error&&res.error.message)||'Server did not confirm');
+    try{await sbClient.auth.signOut();}catch(_){}
+    currentUser=null;
+    Object.keys(localStorage).filter(function(k){return k.indexOf('gedyon')===0;}).forEach(function(k){localStorage.removeItem(k);});
+    alert('Your account has been deleted.');
+    location.reload();
+  }catch(e){
+    showAlert('setAlert','Could not delete account: '+e.message+'. Email eligedyon@gmail.com and it will be removed within 48 hours.','err');
+  }
 }
 function updateAuthStatus(){
+  try{ document.body.classList.toggle('is-builder', !!(D.settings && D.settings.isBuilder)); }catch(e){}
+  try{ var _ac=document.getElementById('aiConsentToggle'); if(_ac) _ac.checked=hasAIConsent(); }catch(e){}
+  var _db=$('authDeleteBtn'); if(_db) _db.style.display=currentUser?'block':'none';
   var statusEl=$('authStatus');
   var logoutBtn=$('authLogoutBtn');
   var loginBtn=$('authLoginBtn');
@@ -5136,10 +5303,11 @@ function updateAuthStatus(){
   updateUserMenu();
 }
 // Cloud sync is now triggered on every saveData() call — no timer needed
-const DEFAULT_PIN = '042028'; // April 2028 — Trials month/year
+const DEFAULT_PIN = '000000'; // generic default; each user sets their own PIN
 
-let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
-  logs:[], food:[], workouts:[], weights:[],
+// ═══ OWNER SEED — the builder's own history. Applied ONLY to the builder
+// account (isBuilder). Public users start from a clean slate.
+var OWNER_SEED = {
   races:[
     {id:1006,date:'2026-04-26',ev:'10k',time:'37:53',meet:'Pueblo Spring Runoff',location:'Pueblo, CO',pr:true,priority:'A',place:4,ageGroup:'1st/3 AG 30-34'},
     {id:1001,date:'2018-02-10',ev:'mile',time:'4:01.10',meet:'UW Invitational',location:'Seattle, WA',pr:true,priority:'A'},
@@ -5148,7 +5316,6 @@ let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
     {id:1004,date:'2019-04-18',ev:'5k',time:'13:45.66',meet:'Azusa Pacific Invitational',location:'Azusa, CA',pr:true,priority:'A'},
     {id:1005,date:'2019-03-09',ev:'3k',time:'8:05.90',meet:'Pittsburg State Invitational',location:'Pittsburg, KS',pr:true,priority:'A'}
   ],
-  supps:{}, dayScores:{}, lactate:{},
   settings:{name:'Elias Gedyon', start:'2026-02-23', startWt:181, raceWt:148, waCode:'14329251', compDate:'2028-04-04',
     prs:{
       '10k':   {time:'37:53',   date:'2026-04-26', meet:'Pueblo Spring Runoff'},
@@ -5179,17 +5346,40 @@ let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
       note: 'Speed has never been the question. The aerobic base is being built now for the first time properly.'
     }
   }
+};
+let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
+  logs:[], food:[], workouts:[], weights:[], races:[],
+  supps:{}, dayScores:{}, lactate:{},
+  settings:{name:'', start:new Date().toISOString().slice(0,10), compDate:'', prs:{}}
 }));
+// One-time cleanup: earlier builds seeded every new user with the builder's
+// races, PRs and World Athletics code. Strip that from non-builder data.
+(function(){
+  if(D.settings && D.settings.isBuilder) return;
+  if(localStorage.getItem('gedyon_owner_seed_cleaned')) return;
+  var seedIds=[1001,1002,1003,1004,1005,1006];
+  if(Array.isArray(D.races)) D.races=D.races.filter(function(r){return seedIds.indexOf(r.id)===-1;});
+  if(D.settings){
+    if(D.settings.waCode==='14329251') delete D.settings.waCode;
+    if(D.settings.name==='Elias Gedyon') D.settings.name='';
+    if(D.settings.compDate==='2028-04-04' && (!D.settings.compName || /olympic trials/i.test(D.settings.compName))){ delete D.settings.compDate; delete D.settings.compName; }
+    if(D.settings.prs && D.settings.prs['1500m'] && D.settings.prs['1500m'].time==='3:45.25') D.settings.prs={};
+    delete D.settings.athleteProfile;
+    if(D.settings.currentFitness && D.settings.currentFitness.time==='37:53') delete D.settings.currentFitness;
+  }
+  localStorage.setItem('gedyon_owner_seed_cleaned','1');
+  try{ localStorage.setItem(KEY, JSON.stringify(D)); }catch(e){}
+})();
 if(!D.actualMeals) D.actualMeals={};
 if(!D.dayScores) D.dayScores={};
 /// Start date is athlete-adjustable (recalibration + Gap Protocol move it).
 // The old guard here reset anything after Mar 1 back to Feb 23 on every
 // load — silently undoing every recalibration ever applied.
-if(!D.settings.start) D.settings.start = '2026-02-23';
+if(!D.settings.start) D.settings.start = new Date().toISOString().slice(0,10);
 // One-time repositioning (July 2026): athlete confirmed most of the original
 // plan was missed; the data-driven recommendation from his logged mileage
 // was week 13. Reposition once; RECALIBRATE adjusts freely from here.
-if(D.settings.start === '2026-02-23'){
+if(D.settings.isBuilder && D.settings.start === '2026-02-23'){
   // Self-healing (no flag check): any state still carrying the original
   // start — including stale sandboxes where an earlier build set the
   // flag but failed to persist the date — gets repositioned to week 13.
@@ -5199,16 +5389,10 @@ if(D.settings.start === '2026-02-23'){
   try{ localStorage.setItem('gedyon_v5', JSON.stringify(D)); }catch(e){}
   setTimeout(function(){ try{ saveData(); }catch(e){} }, 800);
 }
-// Ensure PR races always exist in race history
+// Ensure the builder's PR races always exist in his race history (builder only)
 (function(){
-  var prRaces=[
-    {id:1006,date:'2026-04-26',ev:'10k',time:'37:53',meet:'Pueblo Spring Runoff',location:'Pueblo, CO',pr:true,priority:'A',place:4,ageGroup:'1st/3 AG 30-34'},
-    {id:1001,date:'2018-02-10',ev:'mile',time:'4:01.10',meet:'UW Invitational',location:'Seattle, WA',pr:true,priority:'A'},
-    {id:1002,date:'2017-04-14',ev:'1500m',time:'3:45.25',meet:'Azusa Pacific Invitational',location:'Azusa, CA',pr:true,priority:'A'},
-    {id:1003,date:'2009-05-23',ev:'800m',time:'1:51.91',meet:'Junior PR — Age 15 · CIF Southern Section',location:'Norwalk, CA',pr:true,priority:'A'},
-    {id:1004,date:'2019-04-18',ev:'5k',time:'13:45.66',meet:'Azusa Pacific Invitational',location:'Azusa, CA',pr:true,priority:'A'},
-    {id:1005,date:'2019-03-09',ev:'3k',time:'8:05.90',meet:'Pittsburg State Invitational',location:'Pittsburg, KS',pr:true,priority:'A'}
-  ];
+  if(!D.settings || !D.settings.isBuilder) return;
+  var prRaces=OWNER_SEED.races;
   if(!D.races) D.races=[];
   prRaces.forEach(function(pr){
     // Deduplicate by canonical id OR by ev+date match (catches manually-injected dupes)
@@ -5322,8 +5506,8 @@ function pickLevel(el,l){
 }
 function setupAdvance(){
   if(setupStep===1){
-    if(!$('setupName').value.trim()){$('setupName').style.borderColor='#C94C4C';return;}
-    if(!_selectedSports.length){$('setupSportSearch').style.borderColor='#C94C4C';return;}
+    if(!$('setupName').value.trim()){$('setupName').style.borderColor='#C94C4C';setupError('Add your name so KODA knows who it\'s coaching.',$('setupName'));return;}
+    if(!_selectedSports.length){$('setupSportSearch').style.borderColor='#C94C4C';setupError('Pick at least one sport — tap it in the list.',$('setupSportSearch'));return;}
   }
   if(setupStep===3){
     // Build review
@@ -5354,6 +5538,7 @@ function setupAdvance(){
     h+='<span style="color:var(--accent,#C9A84C);">DAYS TO GO: '+daysToComp+'</span>';
     r.innerHTML=h;
   }
+  setupError('');
   if(setupStep<4){
     setupStep++;
     showSetupStep();
@@ -5389,7 +5574,7 @@ function completeSetup(){
 
   // Calculate training weeks
   var startDate=td();
-  var raceDate=comp||'2028-04-04';
+  var raceDate=comp||(function(){var _d=new Date();_d.setDate(_d.getDate()+16*7);return _d.toISOString().split('T')[0];})();
   var totalWeeks=Math.max(4,Math.ceil((new Date(raceDate+'T12:00:00')-new Date())/604800000));
 
   // Update D.settings with new user data
@@ -5408,10 +5593,15 @@ function completeSetup(){
   D.settings.age=age;
   D.settings.injuries=injuries;
   D.settings.totalWeeks=Math.min(totalWeeks,110);
+  D.settings.setupDone=true;
 
   // Clear previous user data
   D.logs=[];D.food=[];D.workouts=[];D.weights=[];D.supps={};D.dayScores={};D.lactate={};
   D.races=[];D.actualMeals={};
+  if(!D.settings.isBuilder){
+    D.settings.prs={};
+    delete D.settings.waCode; delete D.settings.athleteProfile; delete D.settings.currentFitness;
+  }
 
   saveData();
   localStorage.setItem(SETUP_KEY,'1');
@@ -6513,7 +6703,7 @@ const PHASES=[
   {n:3,name:'Threshold Construction · Norwegian',wks:[33,60],color:'var(--orange)'},
   {n:4,name:'Kerr–Mackey Specific',wks:[61,84],color:'var(--red)'},
   {n:5,name:'Championship Sharpening',wks:[85,100],color:'var(--purple)'},
-  {n:6,name:'Trials Taper',wks:[101,110],color:'var(--gold)'},
+  {n:6,get name(){return (typeof D!=='undefined'&&D.settings&&D.settings.isBuilder)?'Trials Taper':'Race Taper';},wks:[101,110],color:'var(--gold)'},
 ];
 function getPhase(wk){return PHASES.find(p=>wk>=p.wks[0]&&wk<=p.wks[1])||PHASES[0];}
 
@@ -6522,13 +6712,30 @@ function parseLocalDate(s){
   const p=String(s).split('-');
   return new Date(+p[0],+p[1]-1,+p[2],12,0,0);
 }
-function getWk(date){
+// Calendar weeks since the athlete's start date (1-based, unclamped above).
+function getCalWk(date){
   const start=parseLocalDate(D.settings.start);
   const d=parseLocalDate(date);
   const diffDays=Math.round((d-start)/86400000);
-  return Math.max(1,Math.min(110,Math.floor(diffDays/7)+1));
+  return Math.max(1,Math.floor(diffDays/7)+1);
+}
+// Position on the 110-week training arc. The builder runs the full arc in
+// real time. Everyone else gets the same arc compressed into their own
+// timeline (start date to race day), so the build, sharpening and taper
+// land on THEIR race instead of the original 2028 schedule.
+function getWk(date){
+  const cw=getCalWk(date);
+  if(D.settings.isBuilder) return Math.min(110,cw);
+  const tw=Math.max(4,Math.min(110,+D.settings.totalWeeks||110));
+  if(tw>=110) return Math.min(110,cw);
+  return Math.max(1,Math.min(110,Math.ceil(cw*110/tw)));
 }
 function getWeekTarget(date){
+  if(!D.settings.isBuilder){
+    // ~1 lb/week toward the user's own goal weight (safer default than 2)
+    if(!D.settings.startWt) return 0;
+    return +Math.max(D.settings.raceWt||D.settings.startWt, D.settings.startWt-1*getCalWk(date)).toFixed(1);
+  }
   const wk=getWk(date);
   return +Math.max(D.settings.raceWt, D.settings.startWt-2*wk).toFixed(1);
 }
@@ -6554,8 +6761,10 @@ function formatSteps(steps, totalMi){
   var _prs   = typeof getPRs==='function' ? getPRs() : {};
   var _paces = typeof getTrainingPaces==='function' ? getTrainingPaces(_prs) : {};
   function _toMMSS(s){var m=Math.floor(s/60),sec=Math.round(s%60);return m+':'+(sec<10?'0':'')+sec;}
-  var _thresh = _paces.threshold ? _toMMSS(_paces.threshold) : '6:15';
-  var _vo2    = _paces.vo2max   ? _toMMSS(_paces.vo2max)    : '5:41';
+  var _lvlP = {beginner:['9:45','9:00'], intermediate:['8:15','7:35'], advanced:['7:00','6:25'], elite:['6:15','5:41']};
+  var _fbP = (D.settings && D.settings.isBuilder) ? _lvlP.elite : (_lvlP[(D.settings && D.settings.level) || 'intermediate'] || _lvlP.intermediate);
+  var _thresh = _paces.threshold ? _toMMSS(_paces.threshold) : _fbP[0];
+  var _vo2    = _paces.vo2max   ? _toMMSS(_paces.vo2max)    : _fbP[1];
   // VDOT easy pace is primary — the static band (10:20, etc.) was built for a much lower fitness
   // level. Use the live VDOT-derived easy pace when race data is available.
   var _easyMph = _paces.easy ? Math.round(3600/_paces.easy*10)/10 : parseFloat(_band.mph);
@@ -6681,6 +6890,13 @@ function applyWorkoutPreferences(date, plan){
 // schedule ignores every repositioning.
 function _planRelativeDate(date){
   try{
+    if(!D.settings.isBuilder){
+      // Same weekday, in the arc week this date maps to (plan starts Mon Feb 23 2026)
+      var _orig = parseLocalDate('2026-02-23');
+      var _dow = (parseLocalDate(date).getDay()+6)%7;
+      _orig.setDate(_orig.getDate() + (getWk(date)-1)*7 + _dow);
+      return _orig.toISOString().split('T')[0];
+    }
     var offsetDays = Math.round((parseLocalDate(date) - parseLocalDate(D.settings.start))/86400000);
     var orig = parseLocalDate('2026-02-23');
     orig.setDate(orig.getDate() + offsetDays);
@@ -6809,15 +7025,43 @@ function _getDayPlanRaw(date){
 // of being asked for 42-mile weeks off a 15-mile base. Structure, zones
 // and workout types stay; only volume shrinks.
 var _rawWkSumCache = {};
+// Days kept when an athlete trains fewer than 7 days, most important first
+// (0=Sun ... 6=Sat): long run, two quality days, then easy days.
+var _TRAIN_DAY_PRIORITY = [6,2,5,4,1,3,0];
+function _personalizePlan(date, p){
+  if(!p || !D.settings || D.settings.isBuilder) return p;
+  var st = D.settings, q = Object.assign({}, p);
+  var days = Math.max(1, Math.min(7, +st.trainDays || 5));
+  var dow = parseLocalDate(date).getDay();
+  if(_TRAIN_DAY_PRIORITY.indexOf(dow) >= days){
+    return {mi:0, amMi:0, pmMi:0, name:'REST DAY', zone:'Z1', hr:[0,110], lac:[0,1.5], type:'rest',
+      cal:q.cal, wake:q.wake, bed:q.bed, steps:'Rest or an easy 20–30min walk · Light mobility', sets:'Mobility and stretching', coreNote:''};
+  }
+  // Heart-rate targets: the plan was written for a 188 bpm max; rescale to the athlete's age
+  var age = +st.age || 0;
+  if(age > 0 && Array.isArray(q.hr)){
+    var f = (220 - age) / 188;
+    q.hr = q.hr.map(function(h){ return h ? Math.round(h * f) : h; });
+  }
+  // Calories: the plan was written for a 181 lb athlete; rescale to body weight
+  var wt = +st.startWt || 0;
+  if(wt > 0 && q.cal) q.cal = Math.round(q.cal * wt / 181 / 10) * 10;
+  return q;
+}
 function getDayPlan(date){
+  return _personalizePlan(date, _getDayPlanCore(date));
+}
+function _getDayPlanCore(date){
   var raw = _getDayPlanRaw(date);
   try{
     if(typeof _rampTargetForWeek !== 'function' || typeof RAMP_ANCHOR === 'undefined') return raw;
     var dMs = parseLocalDate(date).getTime();
-    var aMs = parseLocalDate(RAMP_ANCHOR).getTime();
+    var aMs = parseLocalDate(_rampAnchorDate()).getTime();
     if(dMs < aMs - 6*86400000) return raw;
     var rampWk = Math.max(0, Math.floor((dMs - aMs)/(7*86400000)));
     var ramp = _rampTargetForWeek(rampWk);
+    // Other athletes: taper weeks drop to ~65% of their built volume
+    if(D.settings && !D.settings.isBuilder && getWk(date) >= 101) ramp = Math.round(ramp*0.65*10)/10;
     var dow = (parseLocalDate(date).getDay()+6)%7;
     var mondayMs = dMs - dow*86400000;
     var key = mondayMs + '_' + (D.settings&&D.settings.start);
@@ -6825,7 +7069,7 @@ function getDayPlan(date){
       var s = 0;
       for(var i=0;i<7;i++){
         var dd = new Date(mondayMs + i*86400000).toISOString().split('T')[0];
-        var p = _getDayPlanRaw(dd);
+        var p = _personalizePlan(dd, _getDayPlanRaw(dd));
         s += (p && p.mi) || 0;
       }
       _rawWkSumCache[key] = Math.round(s*10)/10;
@@ -6868,7 +7112,8 @@ function renderWtHero(date){
   // Stats
   const ws2=$('wtStats');if(!ws2)return;
   if(w){
-    const pct=Math.max(0,Math.min(100,((D.settings.startWt-w.wt)/(D.settings.startWt-D.settings.raceWt))*100));
+    const _tot=D.settings.startWt-D.settings.raceWt;
+    const pct=_tot>0?Math.max(0,Math.min(100,((D.settings.startWt-w.wt)/_tot)*100)):0;
     const lost=(D.settings.startWt-w.wt).toFixed(1);
     const toGo=(w.wt-D.settings.raceWt).toFixed(1);
     const gained=+lost<0;
@@ -6906,7 +7151,7 @@ function renderWtHero(date){
         actItems2=easyDay2?'Today is '+plan2.type.toUpperCase()+' — 1900 cal cap, 180g protein, 20min fasted walk.':'Today is '+((plan2?plan2.type:'training').toUpperCase())+' — fuel the session, cut 300 from other meals.';
       } else if(trendUp && +trend7>=2){
         alertIcon=''; alertMsg='7-DAY TREND: +'+trend7+' LBS';
-        alertSub='Trending up during '+phN2+'. At this rate you won\'t hit '+D.settings.raceWt+' lbs by Trials.';
+        alertSub='Trending up during '+phN2+'. At this rate you won\'t hit '+D.settings.raceWt+' lbs by '+getCompName()+'.';
         actItems2='Audit: easy-day carbs, post-dinner snacking, alcohol. Add 20min Z1 walks on easy days.';
       } else if(w.wt > tgt + 2){
         alertIcon=''; alertMsg='OFF TARGET BY '+(w.wt-tgt).toFixed(1)+' LBS';
@@ -6934,11 +7179,14 @@ function wtLive(val){
   const tgt=getWeekTarget(d);
   const delta=(wt-tgt).toFixed(1);
   const total=D.settings.startWt-D.settings.raceWt;
-  const pct=Math.max(0,Math.min(100,((D.settings.startWt-wt)/total)*100));
+  const hasGoal=total>0;
+  const pct=hasGoal?Math.max(0,Math.min(100,((D.settings.startWt-wt)/total)*100)):0;
+  const sl=$('wtStartLbl');if(sl)sl.textContent=D.settings.startWt?'Start '+D.settings.startWt+' lbs':'';
+  const gl=$('wtGoalLbl');if(gl)gl.textContent=hasGoal?'Goal '+D.settings.raceWt+' lbs':'';
   const dEl=$('wtDelta');
   if(dEl){dEl.textContent=(delta>0?'+':'')+delta+(+delta<=0?' ':' ▲');dEl.style.color=+delta>2?'var(--red)':+delta>0?'var(--orange)':'var(--green)';}
   const bar=$('wtBar');if(bar)bar.style.width=pct.toFixed(1)+'%';
-  const lbl=$('wtPctLbl');if(lbl)lbl.textContent=pct.toFixed(0)+'% lost';
+  const lbl=$('wtPctLbl');if(lbl)lbl.textContent=hasGoal?pct.toFixed(0)+'% to goal':'No goal weight set';
 }
 function logWeight(){
   const v=parseFloat($('wtInput').value),d=$('docDate').value||td();
@@ -7011,20 +7259,11 @@ function askEliasToday(date){
 
 // ═══ AI ═══
 async function callAI(messages, maxTok=600, sysPrompt=null){
-  const sv=(D.settings?.serverUrl||localStorage.getItem('gedyon_server_url')||'').replace(/\/+$/,'');
-  const isProxy=!!sv;
-  const body=isProxy
-    ?JSON.stringify({messages,max_tokens:maxTok,...(sysPrompt?{system:sysPrompt}:{})})
-    :JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:maxTok,messages,...(sysPrompt?{system:sysPrompt}:{})});
-  const headers={'Content-Type':'application/json'};
-  const url=isProxy?sv+'/api/chat':'https://api.anthropic.com/v1/messages';
   try{
-    const r=await fetch(url,{method:'POST',headers,body});
-    const d=await r.json();
-    if(isProxy) return d.reply||'';
-    return d.content?d.content.map(c=>c.text||'').join(''):'';
+    return await gedyonAI({ messages: messages, maxTokens: maxTok, system: sysPrompt || '' });
   }catch(e){
     console.error('[AI]',e);
+    if (typeof showToast === 'function') showToast(gedyonAIErrorText(e), 'info');
     return '';
   }
 }
@@ -8852,7 +9091,7 @@ function renderHomeWeight(){
     const lost=(startWt-wt).toFixed(1);
     const gained=+lost<0;
     const toGo=(wt-raceWt).toFixed(1);
-    const weeksLeft=Math.ceil((new Date('2028-04-04')-new Date())/86400000/7);
+    const weeksLeft=Math.ceil((new Date(getCompDate()+'T12:00:00')-new Date())/86400000/7);
     const lbsWk=weeksLeft>0?(+toGo/weeksLeft).toFixed(2):'—';
     const mileImp=(+toGo*2).toFixed(0);
     var ph=typeof getPhase==='function'&&typeof getWk==='function'?getPhase(getWk(td())):null;
@@ -8877,7 +9116,7 @@ function renderHomeWeight(){
         ~${mileImp}s/mi extra at 800m-5K pace<br>
          ${phName} · ${dayType} day<br>
         ${isEasy?' Good day to cut: 1900 cal · 180g+ protein':'Fuel the work, cut 300 cal from non-training meals'}<br>
-        ${lbsWk} lbs/wk to reach ${raceWt} by Trials</div>`;
+        ${lbsWk} lbs/wk to reach ${raceWt} by ${getCompName()}</div>`;
     } else if(wt > tgt + 2){
       borderCol='rgba(255,214,0,.25)';bgCol='rgba(255,214,0,.06)';
       summary=`+${(wt-tgt).toFixed(1)} over target (${tgt} lbs) · ${lbsWk}/wk needed`;
@@ -9008,7 +9247,7 @@ function renderDash(){
   $('stWt').textContent=lastWt+'lb'; if($('topWt')) $('topWt').textContent=lastWt+'lb';
   var daysInProgram=Math.max(0,Math.ceil((new Date()-parseLocalDate(D.settings.start||'2026-02-23'))/86400000));
   if($('stDaysIn')) $('stDaysIn').textContent=daysInProgram;
-  if($('dayOfBadge')) $('dayOfBadge').textContent='of 770';
+  if($('dayOfBadge')){ var _tot=Math.max(1,Math.ceil((parseLocalDate(getCompDate())-parseLocalDate(D.settings.start||td()))/86400000)); $('dayOfBadge').textContent='of '+_tot; }
   if($('stDays'))$('stDays').textContent=Math.max(0,getDaysToComp());
   const r7=D.logs.slice(-7);
   if(r7.length&&$('stSl'))$('stSl').textContent=(r7.reduce((a,e)=>a+(parseFloat(e.sleep)||0),0)/r7.length).toFixed(1)+'h';
@@ -9064,7 +9303,7 @@ const WIDGET_DEFS = [
   {id:'dailyBriefingWrap',   name:'Daily Briefing',     desc:'KODA AI intel + nutrition summary'},
   {id:'perfChartsWrap',      name:'Performance Charts', desc:'GPI · HR · Miles · Watts · Weight charts'},
   {id:'whoopDashCard',       name:'WHOOP Recovery',     desc:'Recovery · Strain · Sleep from WHOOP'},
-  {id:'trialsTargetsWrap',   name:'Trials Targets',     desc:'800m · 1500m · Mile · 5K qualifying goals'},
+  {id:'trialsTargetsWrap',   name:'Trials Targets',     desc:'800m · 1500m · Mile · 5K qualifying goals', builderOnly:true},
   {id:'wg-hrv',              name:'HRV Widget',         desc:'Heart rate variability 7-day trend'},
   {id:'wg-sleep',            name:'Sleep Widget',       desc:'7-day sleep average + goal progress bar'},
   {id:'wg-nextRace',         name:'Next Race',          desc:'Countdown to your next competition'},
@@ -9120,6 +9359,9 @@ function applyWidgetLayout() {
     if (target.parentNode !== dash) return;
 
     target.style.order = i;
+
+    var _wdef = WIDGET_DEFS.find(function(d){ return d.id === item.id; });
+    if (_wdef && _wdef.builderOnly && !(D.settings && D.settings.isBuilder)) { target.style.display = 'none'; return; }
 
     if (item.visible) {
       // Only un-hide if we explicitly hid it — never wipe inline display values
@@ -9256,6 +9498,7 @@ function _wgCHL(){
 function _buildWgRows(layout){
   return layout.map(function(item,i){
     var def=WIDGET_DEFS.find(function(d){return d.id===item.id;})||{name:item.id,desc:''};
+    if(def.builderOnly && !(D.settings&&D.settings.isBuilder)) return;
     return '<div class="wg-row" data-idx="'+i+'" draggable="true"'+
       ' ondragstart="wgDS(event,'+i+')" ondragover="wgDO(event,'+i+')" ondrop="wgDP(event,'+i+')" ondragend="wgDE()"'+
       ' ontouchstart="wgTS(event,'+i+')" ontouchmove="wgTM(event,'+i+')" ontouchend="wgTE(event,'+i+')">'+
@@ -9452,6 +9695,14 @@ function renderPlaybook() {
     {n:5, wkLabel:'WK 69–100', color:'var(--red)',    name:'CHAMPIONSHIP',   desc:'90–92 mpw · '+raceWt+' lbs · Race season + altitude WK84–86',           borderColor:'rgba(255,255,255,0.06)'},
     {n:6, wkLabel:'WK 101–110',color:'#c084fc',       name:'TRIALS TAPER',   desc:'40–88 mpw · April 4, 2028 · ALL EVENTS SHARP',                          borderColor:'transparent'},
   ];
+  if(!_isTrialsUser()){
+    // Other athletes: their own race, no elite mileage numbers (volume follows their level)
+    PHASE_DEFS[5].name = 'RACE TAPER';
+    PHASE_DEFS.forEach(function(pd){
+      pd.desc = pd.desc.replace(/^\d+–\d+ mpw · /,'').replace(' · Race season + altitude WK84–86',' · Race season').replace(' · Qualifying attempts WK60+',' · Tune-up races');
+    });
+    PHASE_DEFS[5].desc = getCompName() + ' · ' + getCompDate() + ' · ALL EVENTS SHARP';
+  }
 
   var phaseRowsHtml = PHASE_DEFS.map(function(pd) {
     var active  = pd.n === phase.n;
@@ -9842,7 +10093,7 @@ function recalibrateTrainingPlan(){
   var dataWeeks = activeWeekMiles.length;
 
   // 2. Timeline constraint — count weeks until trials
-  var trialsDateStr = (D.settings&&D.settings.compDate) || '2028-04-04';
+  var trialsDateStr = getCompDate();
   var trialsMs = parseLocalDate(trialsDateStr).getTime();
   var weeksUntilTrials = Math.max(1, Math.ceil((trialsMs - todayMs) / (7*86400000)));
   // Where you MUST be on the plan to finish on time
@@ -10401,7 +10652,21 @@ function renderRaceTests(){
     });
   }
 
-  const html=RACE_TESTS.map(r=>{
+  // Builder: the original 2028 qualifying schedule. Everyone else: fitness
+  // checkpoints spread across their own timeline, with no preset targets.
+  let tests=RACE_TESTS;
+  if(!_isTrialsUser()){
+    const tw=Math.max(4,Math.min(110,+(D.settings&&D.settings.totalWeeks)||16));
+    const ev=((D.settings&&D.settings.event)||'').split(/[\/,]/)[0].trim()||'Time trial';
+    const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const fr=[[0.25,'Baseline test. No expectations, just data.'],[0.5,'Midpoint check on fitness.'],[0.75,'Race-specific tune-up.'],[0.92,'Final tune-up before race day.']];
+    tests=fr.map(function(f){
+      const wk=Math.max(1,Math.round(tw*f[0]));
+      const d=raceDate(wk);
+      return {wk:wk,dt:mo[+d.slice(5,7)-1]+' '+d.slice(0,4),wt:'',ev:[ev],tgt:'Target: set after your baseline',purp:f[1],pri:f[0]===0.92};
+    });
+  }
+  const html=tests.map(r=>{
     const rdate=raceDate(r.wk);
     const isPast=rdate<today;
     const actuals=findActuals(r.wk,r.ev);
@@ -10439,7 +10704,7 @@ function renderRaceTests(){
     return `<div style="background:${isPast&&!actuals.length?'rgba(255,255,255,0.02)':'var(--card)'};border:1px solid ${isPast&&!actuals.length?'rgba(255,255,255,.06)':'var(--border)'};border-radius:10px;padding:12px 14px;margin-bottom:8px;position:relative;overflow:hidden;">
       <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${barColor};border-radius:2px 0 0 2px;"></div>
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
-        <div style="font-size:15px;color:${isPast&&!actuals.length?'rgba(212,175,55,0.45)':'var(--gold)'};">WEEK ${r.wk} &middot; ${r.wt}lbs</div>
+        <div style="font-size:15px;color:${isPast&&!actuals.length?'rgba(212,175,55,0.45)':'var(--gold)'};">WEEK ${r.wk}${r.wt?' &middot; '+r.wt+'lbs':''}</div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
           <div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--grey);">${r.dt}</div>
           ${statusBadge}
@@ -10451,7 +10716,7 @@ function renderRaceTests(){
     </div>`;
   }).join('');
 
-  el.innerHTML='<div class="sh" style="margin-top:0;">RACE SCHEDULE — ROAD TO TRIALS</div>'+html;
+  el.innerHTML='<div class="sh" style="margin-top:0;">RACE SCHEDULE — ROAD TO '+(_isTrialsUser()?'TRIALS':getCompName().toUpperCase())+'</div>'+html;
 }
 
 // ═══ WEIGHT MORE ═══
@@ -11261,7 +11526,8 @@ function importAllRaces(silent) {
 }
 
 function importWorldAthleticsRaces() {
-  var waCode = D.settings.waCode || '14329251'; // Elias's known code as default
+  var waCode = D.settings.waCode || '';
+  if (!waCode) { showToast('Add your World Athletics code in Settings first', 'info'); return; }
   var status = document.getElementById('importRacesStatus');
   if (status) { status.style.display='block'; status.style.color='var(--grey)'; status.textContent='Fetching World Athletics results for code '+waCode+'...'; }
 
@@ -11521,7 +11787,7 @@ function renderAthleteProfile() {
   }
 
   // Name
-  var name = D.settings.name || 'Elias Gedyon';
+  var name = D.settings.name || 'Athlete';
   var nameParts = name.toUpperCase().split(' ');
   var el = document.getElementById('profileName');
   if (el) el.textContent = nameParts.join(' ');
@@ -11541,7 +11807,7 @@ function renderAthleteProfile() {
   // Days to trials
   var dEl = document.getElementById('profileDaysLeft');
   if (dEl) {
-    var trials = new Date('2028-04-04');
+    var trials = new Date(getCompDate()+'T12:00:00');
     var today = new Date();
     var diff = Math.ceil((trials - today) / 86400000);
     dEl.textContent = diff > 0 ? diff + 'd' : 'RACE DAY';
@@ -11763,7 +12029,7 @@ const SLIDES = [
   {
     eye:'WELCOME TO',
     icon:'',
-    head:'GEDYON\n2028 TRIALS',
+    head:'GEDYON',
     sub:'Your personal stock market.\nEvery rep, meal, and hour of sleep moves the ticker.',
     orb1:'orb-gold', orb2:'orb-gold',
     bg:'radial-gradient(ellipse at 30% 20%, #1A1400 0%, #050508 70%)',
@@ -11774,7 +12040,7 @@ const SLIDES = [
     eye:'FEATURE 01',
     icon:'',
     head:'WEIGHT\nHERO',
-    sub:'Type your weight the second you wake up.\nSee real-time delta vs. your weekly target.\n177 → 148 lbs = 52 seconds off your 5K.',
+    sub:'Type your weight the second you wake up.\nSee real-time delta vs. your weekly target.\nEvery pound is tracked against your goal.',
     orb1:'orb-gold', orb2:'orb-gold',
     bg:'radial-gradient(ellipse at 70% 80%, #140F00 0%, #050508 70%)',
     btn:'NEXT FEATURE →',
@@ -11811,7 +12077,7 @@ const SLIDES = [
     snap:'upload'
   },
   {
-    eye:'FEATURE 06',
+    eye:'FEATURE 05',
     icon:'⊞',
     head:'YOUR DASHBOARD\nYOUR RULES',
     sub:'Tap CUSTOMIZE to reorder every card.\nHide what you don\'t need. Unlock HRV,\nSleep, Nutrition, and Next Race widgets.',
@@ -11821,7 +12087,7 @@ const SLIDES = [
     snap:'widgets'
   },
   {
-    eye:'FEATURE 07',
+    eye:'FEATURE 06',
     icon:'⟲',
     head:'CONNECTED\nTO EVERYTHING',
     sub:'Strava · WHOOP · Garmin · Oura\nApple Health · Nutrition.\nOne tap connects. Data flows in automatically.',
@@ -11831,7 +12097,7 @@ const SLIDES = [
     snap:'integrations'
   },
   {
-    eye:'FEATURE 08',
+    eye:'FEATURE 07',
     icon:'',
     head:'SUPPLEMENT\nCHECKLIST',
     sub:'12 protocols. Tap to check off.\nCreatine · Magnesium · Tart Cherry.\nEvery pill is a tick up on the GPI.',
@@ -11841,7 +12107,7 @@ const SLIDES = [
     snap:'supps'
   },
   {
-    eye:'FEATURE 09',
+    eye:'FEATURE 08',
     icon:'',
     head:'GPI STOCK\nCHART',
     sub:'Execute the plan → stock goes up.\nSkip → it drops.\n110 weeks of data. One score. All yours.',
@@ -11854,21 +12120,21 @@ const SLIDES = [
 
 const SNAPS = {
   welcome: () => `<div class="snap-inner" style="background:linear-gradient(135deg,#0F0F1A,#151522);border:1px solid rgba(245,196,0,.2);">
-    <div class="snap-row"><span class="snap-label" style="color:#F5C400;">GPI STOCK</span><span class="snap-val" style="color:#F5C400;">127.4</span></div>
+    <div class="snap-row"><span class="snap-label" style="color:#F5C400;">GPI STOCK</span><span class="snap-val" style="color:#F5C400;">100.0</span></div>
     <div class="snap-bar-wrap"><div class="snap-bar" style="width:63%;background:linear-gradient(90deg,#F5C400,#00E676);"></div></div>
     <div class="snap-grid">
-      <div class="snap-cell" style="background:rgba(245,196,0,.07);"><div class="snap-cv" style="color:#F5C400;">177</div><div class="snap-cl">LBS NOW</div></div>
-      <div class="snap-cell" style="background:rgba(255,61,87,.07);"><div class="snap-cv" style="color:#FF3D57;">803</div><div class="snap-cl">DAYS LEFT</div></div>
-      <div class="snap-cell" style="background:rgba(0,230,118,.07);"><div class="snap-cv" style="color:#00E676;">148</div><div class="snap-cl">RACE WT</div></div>
+      <div class="snap-cell" style="background:rgba(245,196,0,.07);"><div class="snap-cv" style="color:#F5C400;">${(D.settings&&D.settings.startWt)||'—'}</div><div class="snap-cl">LBS NOW</div></div>
+      <div class="snap-cell" style="background:rgba(255,61,87,.07);"><div class="snap-cv" style="color:#FF3D57;">${typeof getDaysToComp==='function'?getDaysToComp():'—'}</div><div class="snap-cl">DAYS LEFT</div></div>
+      <div class="snap-cell" style="background:rgba(0,230,118,.07);"><div class="snap-cv" style="color:#00E676;">${(D.settings&&D.settings.raceWt&&D.settings.raceWt<D.settings.startWt)?D.settings.raceWt:'—'}</div><div class="snap-cl">GOAL WT</div></div>
     </div>
   </div>`,
 
   weight: () => `<div class="snap-inner" style="background:linear-gradient(135deg,#0F0F1A,#151522);border:1px solid rgba(245,196,0,.3);position:relative;">
     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FF3D57,#F5C400,#00E676);"></div>
-    <div style="font-family:Impact,sans-serif;font-size:54px;color:#F5C400;line-height:1;margin-top:6px;">176.2<span style="font-size:14px;color:rgba(255,255,255,.4);"> lbs</span></div>
+    <div style="font-family:Impact,sans-serif;font-size:54px;color:#F5C400;line-height:1;margin-top:6px;">${(D.settings&&D.settings.startWt)||170}<span style="font-size:14px;color:rgba(255,255,255,.4);"> lbs</span></div>
     <div style="font-family:'SF Mono',monospace;font-size:13px;color:#00E676;margin:4px 0 8px;">▼ −0.4 lbs vs target </div>
     <div class="snap-bar-wrap"><div class="snap-bar" style="width:4%;background:linear-gradient(90deg,#FF3D57,#F5C400,#00E676);"></div></div>
-    <div style="display:flex;justify-content:space-between;font-family:'SF Mono',monospace;font-size:11px;opacity:.5;margin-top:3px;"><span>177 lbs</span><span>4% lost</span><span>148 lbs</span></div>
+    <div style="display:flex;justify-content:space-between;font-family:'SF Mono',monospace;font-size:11px;opacity:.5;margin-top:3px;"><span>Start ${(D.settings&&D.settings.startWt)||170} lbs</span><span>Day 1</span><span>${(D.settings&&D.settings.raceWt&&D.settings.raceWt<D.settings.startWt)?'Goal '+D.settings.raceWt+' lbs':'Hold steady'}</span></div>
   </div>`,
 
   plan: () => `<div class="snap-inner" style="background:#0F0F1A;border:1px solid rgba(255,61,87,.25);position:relative;">
@@ -12258,7 +12524,7 @@ const TOUR_KEY = 'gedyon_tour_done_v1';
 var _tourIndex = 0;
 
 const TOUR_STEPS = [
-  {selector:'#pg-dash > div:first-child', title:'YOUR COMMAND CENTER', desc:'GPI score, weight, calories, and countdown to Trials — your daily snapshot updated every time you log.', position:'below'},
+  {selector:'#pg-dash > div:first-child', title:'YOUR COMMAND CENTER', desc:'GPI score, weight, calories, and countdown to race day — your daily snapshot updated every time you log.', position:'below'},
   {selector:'#grsCard', title:'RECOVERY SCORE', desc:'The GRS ring combines sleep, HRV, soreness, and nutrition into one readiness number. Green means go, red means recover.', position:'below'},
   {selector:'#todayPlanCard', title:'TODAY\'S PLAN', desc:'Your prescribed workout from the full 95-week periodization plan. Tap LOG TODAY to record your session.', position:'below'},
   {selector:'.wg-customize-pill', title:'CUSTOMIZE YOUR DASHBOARD', desc:'Tap CUSTOMIZE to reorder every card, hide sections you don\'t need, and unlock 4 new widgets: HRV, Sleep, Next Race, and Nutrition Rings. Your layout saves to the cloud automatically.', position:'below'},
@@ -13874,24 +14140,34 @@ function getServerUrl(){
   return (saved || 'https://gedyon-server-production.up.railway.app').replace(/\/+$/,'');
 }
 
+// Server-side id for the Strava/WHOOP bridge. The builder keeps his
+// original 'mx2028' id so his connections stay linked; every other
+// account gets its own id so no one ever reads another person's data.
+function _ownServerUserId(){
+  if(D.settings && D.settings.isBuilder) return 'mx2028';
+  var id = localStorage.getItem('gedyon_own_server_id');
+  if(!id){
+    id = 'u_' + (window.crypto && crypto.randomUUID ? crypto.randomUUID().replace(/-/g,'') : (Date.now().toString(36) + Math.random().toString(36).slice(2)));
+    localStorage.setItem('gedyon_own_server_id', id);
+  }
+  return id;
+}
 function getUserId(){
-  // Always use a consistent userId - fall back to mx2028
-  return localStorage.getItem('gedyon_user_id') ||
-         localStorage.getItem('gedyon_strava_server_user_id') ||
-         localStorage.getItem('gedyon_whoop_server_user_id') ||
-         'mx2028';
+  var id = localStorage.getItem('gedyon_user_id') ||
+           localStorage.getItem('gedyon_strava_server_user_id') ||
+           localStorage.getItem('gedyon_whoop_server_user_id');
+  if(id === 'mx2028' && !(D.settings && D.settings.isBuilder)) id = null;
+  return id || _ownServerUserId();
 }
 
 function lockConnections(){
   // Pre-seed server URL and userId so they never get lost
   if(!localStorage.getItem('gedyon_server_url'))
     localStorage.setItem('gedyon_server_url','https://gedyon-server-production.up.railway.app');
-  if(!localStorage.getItem('gedyon_user_id'))
-    localStorage.setItem('gedyon_user_id','mx2028');
-  if(!localStorage.getItem('gedyon_strava_server_user_id'))
-    localStorage.setItem('gedyon_strava_server_user_id','mx2028');
-  if(!localStorage.getItem('gedyon_whoop_server_user_id'))
-    localStorage.setItem('gedyon_whoop_server_user_id','mx2028');
+  ['gedyon_user_id','gedyon_strava_server_user_id','gedyon_whoop_server_user_id'].forEach(function(k){
+    var v = localStorage.getItem(k);
+    if(!v || (v === 'mx2028' && !(D.settings && D.settings.isBuilder))) localStorage.setItem(k, _ownServerUserId());
+  });
 }
 
 function saveServerUrl(){
@@ -13901,7 +14177,7 @@ function saveServerUrl(){
   if(!url){ showConnectStatus('Enter your Railway URL','red'); return; }
   if(!url.startsWith('http')) url = 'https://' + url;
   inp.value = url;
-  localStorage.setItem('gedyon_user_id','mx2028');
+  localStorage.setItem('gedyon_user_id', _ownServerUserId());
   localStorage.setItem('gedyon_server_url', url);
   testServerNow();
 }
@@ -18037,7 +18313,7 @@ async function eliasChat(){
   const systemPrompt = `You are KODA — an elite autonomous AI system purpose-built for one athlete. You are not a generic chatbot. You are a specialized intelligence that thinks deeper, remembers more, and reasons harder than any AI assistant. You operate like a world-class performance scientist who has been embedded with this athlete for years.
 
 ## CORE IDENTITY
-You are KODA. You don't say "I'm an AI" or hedge with disclaimers. You speak with authority because you have ALL the data. You think before you speak. You reason through every answer. You never give generic advice — everything is specific to THIS athlete, THIS day, THIS situation.
+You are KODA. You don't pad answers with generic disclaimers, but you never pretend to be human or a medical professional. If the athlete mentions pain, injury, illness, chest symptoms, fainting, or signs of disordered eating, tell them plainly to see a doctor or physio before training through it. You speak with authority because you have ALL the data. You think before you speak. You reason through every answer. You never give generic advice — everything is specific to THIS athlete, THIS day, THIS situation.
 
 ## HOW YOU THINK (chain-of-thought reasoning — every response):
 
@@ -18065,26 +18341,7 @@ ${chizalMem}
 ## LIVE TRAINING DATA:
 ${ctx}
 
-## ATHLETE DOSSIER:
-- **Name**: Elias Gedyon
-- **Events**: 800m / 1500m / Mile — pure speed-endurance specialist
-- **Goal**: 2028 Olympic Trials, April 4, 2028, Eugene OR — 1500m qualifier (3:36 standard)
-- **Race Weight**: 148lb target
-- **System**: Norwegian threshold (4x8min @ LT2) + polarized base (80% easy / 20% hard)
-- **Philosophy**: Anti-bloat, anti-inflammation, fast-digesting foods, nothing that makes him feel heavy
-- **Personality**: Driven, wants direct answers, no BS, responds well to data-backed reasoning
-
-PHYSIOLOGICAL CEILING — CRITICAL CONTEXT:
-- **Junior 800m PR: 1:51.91 at age 15** → VDOT 77.7 as a teenager, before full aerobic development
-- **Adult mile PR: 4:01.10** → VDOT 76.1 (speed ceiling, not aerobic ceiling)
-- **Current 10k VDOT: 55.4** → aerobic base only, NOT a reflection of speed potential
-- **Adult physiological ceiling: VDOT 83–87** (conservative to optimistic, based on junior 800m + adult progression norms)
-- **Ceiling translates to: 3:26–3:18 for 1500m, 3:42–3:33 for mile**
-- The Trials standard (3:36 / VDOT 79) is INSIDE his conservative ceiling — it's the expected outcome if the system executes
-- 3:24 1500m sits at the top of the conservative ceiling — world-class but physiologically within range
-- NEVER calibrate his potential from the 10k VDOT. The 10k measures aerobic base only. His speed ceiling is set by the 800m junior history.
-- The Norwegian plan's entire job is to pull the aerobic base (55.4) up to meet the speed ceiling (77+). Every week of threshold work closes that gap.
-
+${(D.settings && D.settings.isBuilder) ? OWNER_DOSSIER : genericDossier()}
 ## AUTONOMOUS CAPABILITIES:
 You don't just answer questions — you THINK and ACT:
 - Detect problems he hasn't noticed yet ("You've been 300cal over target 4 of the last 5 days")
@@ -18102,7 +18359,7 @@ You don't just answer questions — you THINK and ACT:
 - ALWAYS end with a specific action: **"Here's the move:"** or **"Do this now:"**
 
 ## MEMORY INSTRUCTIONS:
-After each conversation, if you learn something new about Elias (food preference, reaction to a food, pattern, goal update), encode it in your response so the app can save it. Use this format at the end if applicable:
+After each conversation, if you learn something new about the athlete (food preference, reaction to a food, pattern, goal update), encode it in your response so the app can save it. Use this format at the end if applicable:
 [CHIZAL_MEMORY: key observation to remember]
 
 ## VOICE:
@@ -18114,22 +18371,7 @@ After each conversation, if you learn something new about Elias (food preference
 - You are KODA. Own it.`;
 
   try {
-    // Route through YOUR Railway server — no API key needed in the app
-    const serverUrl = (D.settings?.serverUrl || localStorage.getItem('gedyon_server_url') || '').replace(/\/+$/,'');
-    const endpoint = serverUrl ? serverUrl + '/api/chat' : 'https://api.anthropic.com/v1/messages';
-    const isProxy = !!serverUrl;
-
-    const body = isProxy
-      ? JSON.stringify({ system: systemPrompt, messages: ELIAS_HISTORY.slice(-20), max_tokens: 2000, model: 'claude-opus-4-6' })
-      : JSON.stringify({ model: 'claude-opus-4-6', max_tokens: 2000, system: systemPrompt, messages: ELIAS_HISTORY.slice(-20) });
-
-    const headers = isProxy
-      ? { 'Content-Type': 'application/json' }
-      : { 'Content-Type': 'application/json', 'x-api-key': '', 'anthropic-version': '2023-06-01' };
-
-    const resp = await fetch(endpoint, { method: 'POST', headers, body });
-    const data = await resp.json();
-    const reply = isProxy ? (data.reply || '...') : (data.content?.[0]?.text || '...');
+    const reply = (await gedyonAI({ system: systemPrompt, messages: ELIAS_HISTORY.slice(-20), maxTokens: 1500 })) || '...';
 
     // Remove thinking indicator
     const thinkEl = document.getElementById(thinkId);
@@ -18275,7 +18517,7 @@ function buildEliasContext(){
 
   // Build context string
   let ctx = 'DATE: '+today+' | Week '+wk+' of 110 | Phase: '+ph.name+'\n';
-  ctx += 'DAYS TO OLYMPIC TRIALS: '+getDaysToComp()+'\n\n';
+  ctx += 'DAYS TO '+getCompName().toUpperCase()+': '+getDaysToComp()+'\n\n';
 
   ctx += 'TODAY\'S PLAN: '+plan.name+' — '+plan.mi+'mi target\n';
   ctx += '  Type: '+plan.type+' | Zone: '+plan.zone+' | HR target: '+plan.hr[0]+'-'+plan.hr[1]+'bpm\n';
@@ -18336,7 +18578,7 @@ function buildEliasContext(){
 
   // Phase info
   ctx += '\nTRAINING PHASE: Week '+wk+' of 110 — '+ph.name+'\n';
-  ctx += 'Days to Trials: '+getDaysToComp()+'\n';
+  ctx += 'Days to '+getCompName()+': '+getDaysToComp()+'\n';
   // Current training paces derived from plan — no manual input needed
   var autoP = getTrainingPaces(getPRs());
   if(autoP.easy){
@@ -19099,7 +19341,7 @@ async function shareTrainingWeek(){
   try{
     var today = new Date();
     var weekNum = typeof getWk === 'function' ? getWk(today) : '—';
-    var trialsDays = Math.max(0, Math.floor((new Date('2028-04-04') - today)/864e5));
+    var trialsDays = Math.max(0, Math.floor((new Date(getCompDate()+'T12:00:00') - today)/864e5));
     var cutoff = new Date(today.getTime() - 7*864e5).toISOString().slice(0,10);
     var runs = (D.workouts||[]).filter(function(w){ return w.date && w.date >= cutoff && (w.dist||0) > 0; });
     var miles = Math.round(10 * runs.reduce(function(s,w){ return s + (w.dist||0); }, 0)) / 10;
@@ -19119,7 +19361,7 @@ async function shareTrainingWeek(){
     x.fillStyle = '#C9A84C'; x.font = '900 92px Impact, Arial Narrow, sans-serif';
     x.textAlign = 'center'; x.fillText('G E D Y O N', 540, 190);
     x.fillStyle = 'rgba(255,255,255,.45)'; x.font = '600 30px monospace';
-    x.fillText('ROAD TO THE 2028 OLYMPIC TRIALS', 540, 245);
+    x.fillText((D.settings&&D.settings.isBuilder) ? 'ROAD TO THE 2028 OLYMPIC TRIALS' : ('ROAD TO ' + getCompName()).toUpperCase(), 540, 245);
     // Divider
     x.strokeStyle = 'rgba(201,168,76,.3)'; x.lineWidth = 1;
     x.beginPath(); x.moveTo(140, 290); x.lineTo(940, 290); x.stroke();
@@ -19144,7 +19386,7 @@ async function shareTrainingWeek(){
     x.fillStyle = '#FFFFFF'; x.font = '900 110px Impact, Arial Narrow, sans-serif';
     x.fillText(trialsDays + ' DAYS', 540, 1160);
     x.fillStyle = 'rgba(255,255,255,.5)'; x.font = '600 30px monospace';
-    x.fillText('UNTIL THE OLYMPIC TRIALS', 540, 1210);
+    x.fillText((D.settings&&D.settings.isBuilder) ? 'UNTIL THE OLYMPIC TRIALS' : ('UNTIL ' + getCompName()).toUpperCase(), 540, 1210);
     x.fillStyle = 'rgba(255,255,255,.25)'; x.font = '600 24px monospace';
     x.fillText('built with GEDYON · AI-powered training', 540, 1275);
 
@@ -19152,7 +19394,7 @@ async function shareTrainingWeek(){
     if(!blob){ showSyncToast('Could not build the card','red'); return; }
     var file = new File([blob], 'gedyon-week-' + weekNum + '.png', { type: 'image/png' });
     if(navigator.share && navigator.canShare && navigator.canShare({ files: [file] })){
-      await navigator.share({ files: [file], title: 'GEDYON — Week ' + weekNum, text: miles + ' miles this week. ' + trialsDays + ' days to the 2028 Olympic Trials.' });
+      await navigator.share({ files: [file], title: 'GEDYON — Week ' + weekNum, text: miles + ' miles this week. ' + trialsDays + ' days to ' + ((D.settings&&D.settings.isBuilder) ? 'the 2028 Olympic Trials' : getCompName()) + '.' });
     } else {
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -19169,18 +19411,32 @@ async function shareTrainingWeek(){
 // ── MISSION TRACKER — serious, data-backed verdicts ─────────────────
 // Every run judged against its target; every week against the ramp;
 // the whole arc against April 4, 2028. No vibes — evidence.
-var RAMP_ANCHOR = '2026-07-20'; // Monday of Baseline Test Week; ramp = 15mi +2/wk, flat every 3rd
+var RAMP_ANCHOR = '2026-07-20'; // builder: Monday of Baseline Test Week; ramp = 15mi +2/wk, flat every 3rd
+// Other athletes ramp from their own start date, with a starting volume,
+// weekly step and ceiling set by the level they chose in setup.
+var LEVEL_RAMP = {
+  beginner:     {start:6,  step:1, cap:20},
+  intermediate: {start:12, step:2, cap:32},
+  advanced:     {start:20, step:2, cap:45},
+  elite:        {start:30, step:3, cap:70}
+};
+function _rampAnchorDate(){
+  if(D.settings && !D.settings.isBuilder && D.settings.start) return D.settings.start;
+  return RAMP_ANCHOR;
+}
 function _rampTargetForWeek(offsetWeeks){
-  // +2/wk with every 3rd week flat, capped at 35 (end of Base Build merge)
+  var cfg = (D.settings && D.settings.isBuilder) ? {start:15, step:2, cap:35}
+          : (LEVEL_RAMP[(D.settings && D.settings.level) || 'intermediate'] || LEVEL_RAMP.intermediate);
+  // +step/wk with every 3rd week flat, capped at the level ceiling
   var add = 0;
-  for(var i=1;i<=offsetWeeks;i++){ if(i%3!==0) add += 2; }
-  return Math.min(35, 15 + add);
+  for(var i=1;i<=offsetWeeks;i++){ if(i%3!==0) add += cfg.step; }
+  return Math.min(cfg.cap, cfg.start + add);
 }
 
 function missionAssess(){
   var today = td();
   var todayMs = parseLocalDate(today).getTime();
-  var anchorMs = parseLocalDate(RAMP_ANCHOR).getTime();
+  var anchorMs = parseLocalDate(_rampAnchorDate()).getTime();
   var rampWk = Math.max(0, Math.floor((todayMs - anchorMs)/(7*86400000)));
   var target = _rampTargetForWeek(rampWk);
 
@@ -19231,7 +19487,7 @@ function missionAssess(){
 
   // Mission trajectory: VDOT now vs the 79 the Trials standard demands
   var vdotNow = null; try{ var p = getTrainingPaces(getPRs()); if(p && p.vdot) vdotNow = p.vdot; }catch(e){}
-  var weeksLeft = Math.max(1, Math.ceil((parseLocalDate('2028-04-04').getTime()-todayMs)/(7*86400000)));
+  var weeksLeft = Math.max(1, Math.ceil((parseLocalDate(getCompDate()).getTime()-todayMs)/(7*86400000)));
 
   return { rampWk: rampWk, target: target, actualMi: actualMi, pct: pct,
            expectedByNow: expectedByNow, pctOfExpected: pctOfExpected, weekVerdict: weekVerdict,
@@ -19316,7 +19572,7 @@ function showFitnessSummary(){
   var r = null, paces = null;
   try{ r = recalibrateTrainingPlan(); }catch(e){}
   try{ paces = getTrainingPaces(getPRs()); }catch(e){}
-  var trialsDays = Math.max(0, Math.floor((new Date('2028-04-04') - new Date())/864e5));
+  var trialsDays = Math.max(0, Math.floor((new Date(getCompDate()+'T12:00:00') - new Date())/864e5));
 
   // Apple Health vitals (from the imported export / native sync)
   var ah = D.appleHealth || {};
@@ -19379,7 +19635,7 @@ function showFitnessSummary(){
       html += row('Fitness read', 'NO RUN DATA YET', '#FF5252');
     }
   }
-  html += row('Days to Trials', trialsDays + ' days', '#FFB84D');
+  html += row('Days to ' + getCompName(), trialsDays + ' days', '#FFB84D');
 
   // ENGINE
   if(paces && paces.vdot){
@@ -19620,7 +19876,8 @@ window.connectMyFitnessPal=connectMyFitnessPal;
 document.addEventListener('DOMContentLoaded', function() {
   try {
     // Dev bypass: ?dev=1 skips all auth/setup/tour gates
-    if(new URLSearchParams(window.location.search).get('dev') === '1') {
+    var _isLocalDev = ['localhost','127.0.0.1'].indexOf(window.location.hostname) !== -1 && window.location.protocol !== 'capacitor:';
+    if(_isLocalDev && new URLSearchParams(window.location.search).get('dev') === '1') {
       localStorage.setItem(SETUP_KEY,'1');
       localStorage.setItem(TUT_KEY,'1');
       if(!D.settings.isBuilder) Object.assign(D.settings, BUILDER_DEFAULTS);
@@ -20009,7 +20266,7 @@ function eliasScenario(type) {
 
     rough_day: `Rough day. Didn't wake up in time, schedule got away from me. Today's plan: ${plan.name} (${plan.mi}mi, ${plan.type}). I have limited time or energy. Reason through ALL possibilities: full workout, modified workout, one run, just a walk, full rest. Score each option 1-10 for: training value, recovery cost, psychological momentum, 2028 alignment. Tell me exactly what to do and when.`,
 
-    trials_check: `Give me an honest, data-driven assessment of where I am vs where I need to be for the 2028 Olympic Trials (April 4, 2028). I'm in Week ${getWk(td())} of 110. Analyze: weekly mileage trend, workout consistency, phase progression. What's working, what's not, and what ONE thing should I prioritize this week?`,
+    trials_check: `Give me an honest, data-driven assessment of where I am vs where I need to be for ${getCompName()} (${getCompDate()}). I'm in Week ${getWk(td())} of 110. Analyze: weekly mileage trend, workout consistency, phase progression. What's working, what's not, and what ONE thing should I prioritize this week?`,
 
     threshold_pace: `I have a Norwegian threshold session today: ${plan.name}. ${plan.sets || 'Threshold intervals'}. My target HR is ${plan.hr[0]}-${plan.hr[1]}bpm. Explain exactly how to execute this: warm-up pacing, interval pacing by feel and HR, recovery duration, cool-down. What are the most common mistakes people make in threshold sessions and how do I avoid them?`,
 
@@ -20533,7 +20790,7 @@ async function atlasChat(){
   log.scrollTop = log.scrollHeight;
 
   const ctx = (typeof buildEliasContext === 'function') ? buildEliasContext() : '';
-  const systemPrompt = `You are KODA — Elias Gedyon's elite AI performance coach. You have the combined knowledge of:
+  const systemPrompt = `You are KODA — ${athleteName()}'s elite AI performance coach. You have the combined knowledge of:
 - Exercise physiology (Veronique Billat, Stephen Seiler, Tim Noakes — Norwegian threshold method, polarized training)
 - Sports science (HRV, lactate threshold, VO2max, periodization, supercompensation)
 - Elite running coaching (Pete Julian, Alberto Salazar methodology, Jack Daniels VDOT)
@@ -20544,38 +20801,24 @@ async function atlasChat(){
 YOUR REASONING APPROACH:
 1. DIAGNOSE: What's the actual physiological/psychological situation?
 2. ENUMERATE OPTIONS: List every realistic possibility (2-5 options)
-3. RANK BY OUTCOME: Score each for: training adaptation, recovery cost, mental confidence, 2028 goal alignment
+3. RANK BY OUTCOME: Score each for: training adaptation, recovery cost, mental confidence, goal-race alignment
 4. GIVE THE VERDICT: One clear recommendation with WHY
 5. CONTINGENCY: What to do if that doesn't work
 
-ELIAS'S CONTEXT:
+ATHLETE CONTEXT:
 ${ctx}
 
-GOAL: 2028 Olympic Trials (April 4, 2028 — Eugene OR). 800m/1500m specialist. Norwegian threshold system.
+GOAL: ${(D.settings && D.settings.isBuilder) ? '2028 Olympic Trials (April 4, 2028 — Eugene OR). 800m/1500m specialist. Norwegian threshold system.' : (getCompName() + ' (' + getCompDate() + ')' + (D.settings && D.settings.event ? ' · ' + D.settings.event : ''))}
 
 VOICE RULES:
-- Talk like a brilliant coach who also knows Elias personally — direct, no fluff
-- Use real numbers from his data. Never make up data.
+- Talk like a brilliant coach who also knows ${athleteName()} personally — direct, no fluff
+- Use real numbers from their data. Never make up data.
 - Responses: 3-8 sentences normally. For complex decisions, use a brief structured breakdown.
 - Never say "Great question" or "I understand". Just answer.
 - End with a specific action: "Here's exactly what to do right now:"`;
 
   try {
-    const serverUrl = (typeof D !== 'undefined' && D.settings?.serverUrl) ? D.settings.serverUrl : (localStorage.getItem('gedyon_server_url') || '');
-    const cleanUrl = serverUrl.replace(/\/+$/,'');
-    const endpoint = cleanUrl ? cleanUrl + '/api/chat' : 'https://api.anthropic.com/v1/messages';
-    const isProxy = !!cleanUrl;
-
-    const body = isProxy
-      ? JSON.stringify({ system: systemPrompt, messages: ATLAS_HISTORY.slice(-10), max_tokens: 500 })
-      : JSON.stringify({ model:'claude-haiku-4-5-20251001', max_tokens:500, system: systemPrompt, messages: ATLAS_HISTORY.slice(-10) });
-    const headers = isProxy
-      ? {'Content-Type':'application/json'}
-      : {'Content-Type':'application/json','x-api-key':'','anthropic-version':'2023-06-01'};
-
-    const resp = await fetch(endpoint, { method:'POST', headers, body });
-    const data = await resp.json();
-    const reply = isProxy ? (data.reply || '...') : (data.content?.[0]?.text || '...');
+    const reply = (await gedyonAI({ system: systemPrompt, messages: ATLAS_HISTORY.slice(-10), maxTokens: 500 })) || '...';
 
     document.getElementById(thinkId)?.remove();
 
@@ -20637,7 +20880,7 @@ async function analyzeWorkout(workout){
     ? 'WHOOP recovery: ' + (whoopRec.recovery || whoopRec.recoveryScore || '?') + '% · HRV: ' + (whoopRec.hrv || '?') + ' ms · RHR: ' + (whoopRec.rhr || whoopRec.restingHR || '?') + ' bpm'
     : 'No WHOOP recovery data available';
 
-  const systemPrompt = `You are KODA — Elias Gedyon's elite AI performance coach. Respond in exactly 2 sentences. Be direct, specific, data-driven. No fluff, no greetings.`;
+  const systemPrompt = `You are KODA — ${athleteName()}'s elite AI performance coach. Respond in exactly 2 sentences. Be direct, specific, data-driven. No fluff, no greetings.`;
 
   const userMessage = `POST-WORKOUT ANALYSIS for ${workout.name} on ${workout.date}:
 
@@ -20649,30 +20892,7 @@ ${whoopDesc}
 Grade this workout execution and give me exactly 2 sentences of coaching feedback. Reference the actual numbers. End with a concrete recommendation for tomorrow.`;
 
   try {
-    // Primary: KODA edge function (always available). Fallback: Railway proxy.
-    let analysis = '';
-    try {
-      const resp = await fetch(KODA_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': KODA_TOKEN },
-        body: JSON.stringify({ messages: [{ role: 'user', content: systemPrompt + '\n\n' + userMessage }], athleteContext: '' })
-      });
-      if(resp.ok){ const d = await resp.json(); analysis = d.reply || ''; }
-    } catch(e) {}
-    if(!analysis){
-      const serverUrl = (typeof D !== 'undefined' && D.settings?.serverUrl)
-        ? D.settings.serverUrl
-        : (localStorage.getItem('gedyon_server_url') || 'https://gedyon-server-production.up.railway.app');
-      const endpoint = serverUrl.replace(/\/+$/, '') + '/api/chat';
-      const resp2 = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system: systemPrompt, messages: [{ role: 'user', content: userMessage }], max_tokens: 180 })
-      });
-      if(!resp2.ok) throw new Error('Server responded ' + resp2.status);
-      const data = await resp2.json();
-      analysis = data.reply || data.content?.[0]?.text || '';
-    }
+    let analysis = await gedyonAI({ system: systemPrompt, messages: [{ role: 'user', content: userMessage }], maxTokens: 300 });
     if(!analysis) throw new Error('Empty analysis');
 
     localStorage.setItem(cacheKey, '1');
@@ -20781,13 +21001,142 @@ function showPostWorkoutInsight(workout, grade, analysisText){
 // ─── KODA AI COACH ────────────────────────────────────────────────────────────
 const KODA_ENDPOINT = 'https://qfmklkgvobfckcippwyh.supabase.co/functions/v1/koda-chat';
 const KODA_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmbWtsa2d2b2JmY2tjaXBwd3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NjcxMDgsImV4cCI6MjA5MDE0MzEwOH0.VyxUjvWgqljaiixibNnqPtP47mGSNmZH64RsmUO5z5Q';
+// Lightweight toast. Many features call showToast(); it was never defined,
+// so those calls threw. type: 'ok' | 'err' | 'error' | 'info'
+function showToast(msg, type){
+  try {
+    var el = document.getElementById('gedyon-toast');
+    if (!el) {
+      el = document.createElement('div'); el.id = 'gedyon-toast';
+      el.setAttribute('role', 'status');
+      el.style.cssText = "position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:100000;max-width:88vw;padding:10px 16px;border-radius:10px;font-family:'SF Mono',monospace;font-size:12px;line-height:1.6;color:#fff;box-shadow:0 6px 24px rgba(0,0,0,.4);transition:opacity .3s;";
+      document.body.appendChild(el);
+    }
+    el.style.background = (type === 'err' || type === 'error') ? '#8a1c1c' : type === 'ok' ? '#155d3a' : '#1f2a44';
+    el.textContent = msg; el.style.opacity = '1';
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(function(){ el.style.opacity = '0'; }, 3800);
+  } catch(e) {}
+}
+// Hosts allowed to call the KODA cloud function. Add your custom domain here
+// (e.g. 'app.gedyon.com') when you move off GitHub Pages / Netlify.
+const GEDYON_APP_HOSTS = ['eligedyon.github.io', 'localhost', '127.0.0.1'];
+function gedyonHostAllowed(){
+  var h = window.location.hostname;
+  return window.location.protocol === 'capacitor:' || GEDYON_APP_HOSTS.indexOf(h) !== -1 || h.endsWith('.netlify.app');
+}
+const OWNER_DOSSIER = `## ATHLETE DOSSIER:
+- **Name**: Elias Gedyon
+- **Events**: 800m / 1500m / Mile — pure speed-endurance specialist
+- **Goal**: 2028 Olympic Trials, April 4, 2028, Eugene OR — 1500m qualifier (3:36 standard)
+- **Race Weight**: 148lb target
+- **System**: Norwegian threshold (4x8min @ LT2) + polarized base (80% easy / 20% hard)
+- **Philosophy**: Anti-bloat, anti-inflammation, fast-digesting foods, nothing that makes him feel heavy
+- **Personality**: Driven, wants direct answers, no BS, responds well to data-backed reasoning
+
+PHYSIOLOGICAL CEILING — CRITICAL CONTEXT:
+- **Junior 800m PR: 1:51.91 at age 15** → VDOT 77.7 as a teenager, before full aerobic development
+- **Adult mile PR: 4:01.10** → VDOT 76.1 (speed ceiling, not aerobic ceiling)
+- **Current 10k VDOT: 55.4** → aerobic base only, NOT a reflection of speed potential
+- **Adult physiological ceiling: VDOT 83–87** (conservative to optimistic, based on junior 800m + adult progression norms)
+- **Ceiling translates to: 3:26–3:18 for 1500m, 3:42–3:33 for mile**
+- The Trials standard (3:36 / VDOT 79) is INSIDE his conservative ceiling — it's the expected outcome if the system executes
+- 3:24 1500m sits at the top of the conservative ceiling — world-class but physiologically within range
+- NEVER calibrate his potential from the 10k VDOT. The 10k measures aerobic base only. His speed ceiling is set by the 800m junior history.
+- The Norwegian plan's entire job is to pull the aerobic base (55.4) up to meet the speed ceiling (77+). Every week of threshold work closes that gap.
+`;
+function genericDossier(){
+  var st = (typeof D !== 'undefined' && D.settings) ? D.settings : {};
+  return '## ATHLETE DOSSIER:\n- **Name**: ' + (st.name || 'Athlete') +
+    '\n- **Sport**: ' + (st.sport || 'not set') + (st.event ? ' — ' + st.event : '') +
+    '\n- **Goal**: ' + (st.compName || st.goal || 'not set') + (st.compDate ? ', ' + st.compDate : '') +
+    '\n- **Level**: ' + (st.level || 'not set') + (st.age ? ', age ' + st.age : '') +
+    (st.injuries ? '\n- **Injuries / limits**: ' + st.injuries : '') +
+    '\nOnly use facts from this dossier and the live data. Never invent PRs, history or goals.\n';
+}
+function athleteName(){
+  return (typeof D !== 'undefined' && D.settings && D.settings.name) ? D.settings.name : 'the athlete';
+}
+// Apple guideline 5.1.2(i): explicit permission before personal data goes to a
+// third-party AI. Asked once; the answer can be changed in Settings.
+var AI_CONSENT_KEY = 'gedyon_ai_consent_v1';
+function hasAIConsent(){ try { return localStorage.getItem(AI_CONSENT_KEY) === 'yes'; } catch(e) { return false; } }
+function setAIConsent(v){ try { localStorage.setItem(AI_CONSENT_KEY, v ? 'yes' : 'no'); } catch(e) {} }
+function ensureAIConsent(){
+  if (hasAIConsent()) return Promise.resolve(true);
+  return new Promise(function(resolve){
+    var old = document.getElementById('ai-consent-modal'); if (old) old.remove();
+    var o = document.createElement('div');
+    o.id = 'ai-consent-modal';
+    o.style.cssText = 'position:fixed;inset:0;z-index:100001;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px;';
+    var mono = "font-family:'SF Mono',monospace;";
+    o.innerHTML = '<div role="dialog" aria-modal="true" style="background:#0d0d1a;border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:22px;max-width:440px;width:100%;color:#e8f4ff;">'
+      + '<div style="font-family:Impact,sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:10px;">Allow KODA to use AI?</div>'
+      + '<div style="' + mono + 'font-size:12px;line-height:1.8;color:rgba(255,255,255,.8);">KODA is powered by Claude, an AI model from Anthropic. When you use KODA or other AI features, GEDYON sends Anthropic:'
+      + '<ul style="margin:8px 0 8px 18px;padding:0;"><li>your messages and any photos you attach</li><li>your profile and the training, nutrition, sleep and heart data you have logged or synced from Apple Health</li></ul>'
+      + 'Anthropic processes it only to generate KODA\'s reply and does not use it to train its models. Nothing is sent until you allow it. You can turn this off in Settings, and the rest of the app keeps working without AI. '
+      + '<a href="privacy.html" target="_blank" rel="noopener" style="color:#7fb8ff;">Privacy Policy</a></div>'
+      + '<div style="display:flex;gap:10px;margin-top:16px;">'
+      + '<button id="ai-consent-no" style="flex:1;padding:12px;background:transparent;border:1px solid rgba(255,255,255,.25);color:#ddd;border-radius:10px;' + mono + 'font-size:12px;">NOT NOW</button>'
+      + '<button id="ai-consent-yes" style="flex:1;padding:12px;background:linear-gradient(135deg,#4A9EFF,#7C4DFF);border:none;color:#fff;border-radius:10px;' + mono + 'font-size:12px;font-weight:700;">ALLOW</button>'
+      + '</div></div>';
+    document.body.appendChild(o);
+    document.getElementById('ai-consent-yes').onclick = function(){ setAIConsent(true); o.remove(); resolve(true); };
+    document.getElementById('ai-consent-no').onclick = function(){ setAIConsent(false); o.remove(); resolve(false); };
+  });
+}
+// ONE path for every AI feature: the koda-chat edge function, with the signed-in
+// user's token. The Anthropic key lives only on the server; usage is metered
+// per user and capped globally. Returns the reply text, or throws an Error with
+// .kodaCode = AUTH_REQUIRED | LIMIT_REACHED | CAPACITY | PREVIEW.
+async function gedyonAI(opts){
+  opts = opts || {};
+  if (!gedyonHostAllowed()) { var pe = new Error('preview'); pe.kodaCode = 'PREVIEW'; throw pe; }
+  if (!(await ensureAIConsent())) { var ne = new Error('AI not allowed'); ne.kodaCode = 'NO_CONSENT'; throw ne; }
+  var token = null;
+  try {
+    if (typeof sbClient !== 'undefined' && sbClient) {
+      var sess = await sbClient.auth.getSession();
+      if (sess && sess.data && sess.data.session) token = sess.data.session.access_token;
+    }
+  } catch(e) {}
+  if (!token) { var ae = new Error('Sign in to use KODA'); ae.kodaCode = 'AUTH_REQUIRED'; throw ae; }
+  var res = await fetch(KODA_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify({
+      messages: opts.messages || [],
+      athleteContext: opts.context || '',
+      task: opts.system || '',
+      max_tokens: opts.maxTokens || 800
+    })
+  });
+  var data = await res.json().catch(function(){ return {}; });
+  if (data.code === 'LIMIT_REACHED' || data.code === 'CAPACITY' || data.code === 'AUTH_REQUIRED') {
+    var ce = new Error(data.code); ce.kodaCode = data.code; ce.used = data.used; ce.limit = data.limit;
+    if (data.code === 'LIMIT_REACHED' && typeof showKodaPaywall === 'function') showKodaPaywall(data.used, data.limit);
+    throw ce;
+  }
+  if (!res.ok) throw new Error('koda_' + res.status);
+  if (typeof kodaUpdateFreeCounter === 'function' && typeof data.used === 'number') kodaUpdateFreeCounter(data.used, data.limit);
+  return data.reply || '';
+}
+function gedyonAIErrorText(e){
+  var c = e && e.kodaCode;
+  if (c === 'AUTH_REQUIRED') return 'Sign in (Settings → Account) to use KODA.';
+  if (c === 'LIMIT_REACHED') return 'You have used this month\'s free KODA messages.';
+  if (c === 'CAPACITY') return 'KODA is at capacity right now. Try again later.';
+  if (c === 'PREVIEW') return 'KODA is only available in the GEDYON app.';
+  if (c === 'NO_CONSENT') return 'AI features are off. Turn them on in Settings → Legal & Support.';
+  return 'KODA could not respond. Check your connection and try again.';
+}
 let kodaHistory = [];
 let kodaReady = false;
 
 // ── KODA TOOLS — actions KODA can execute directly in the app ──────────────
 const KODA_TOOLS = [{
   name: 'log_pr',
-  description: 'Log a new race result or personal record for Elias. Automatically recalibrates all training zones via VDOT. Use whenever the athlete mentions a new race time or PR.',
+  description: 'Log a new race result or personal record for the athlete. Automatically recalibrates all training zones via VDOT. Use whenever the athlete mentions a new race time or PR.',
   input_schema: {
     type: 'object',
     properties: {
@@ -20891,7 +21240,18 @@ function analyzeRacePerformance(race) {
   });
 
   // Trials targets (seconds)
-  var TRIAL = { 1500: timeToSecs('3:36'), 1609: timeToSecs('3:52'), 5000: timeToSecs('13:00'), 3000: timeToSecs('8:10'), 800: timeToSecs('1:45') };
+  // Builder: Olympic Trials standards. Everyone else: goal times for the
+  // level they chose in setup (a sensible default until they set their own).
+  var _LVL_TGT = {
+    beginner:     { 1500:'6:30', 1609:'7:00', 5000:'25:00', 3000:'14:15', 800:'3:00' },
+    intermediate: { 1500:'5:15', 1609:'5:40', 5000:'20:00', 3000:'11:20', 800:'2:25' },
+    advanced:     { 1500:'4:20', 1609:'4:40', 5000:'16:30', 3000:'9:20',  800:'2:02' },
+    elite:        { 1500:'3:50', 1609:'4:08', 5000:'14:30', 3000:'8:15',  800:'1:52' }
+  };
+  var _isB = D.settings && D.settings.isBuilder;
+  var _tg = _isB ? { 1500:'3:36', 1609:'3:52', 5000:'13:00', 3000:'8:10', 800:'1:45' }
+                 : ((D.settings && D.settings.raceTargets) || _LVL_TGT[(D.settings && D.settings.level) || 'intermediate'] || _LVL_TGT.intermediate);
+  var TRIAL = { 1500: timeToSecs(_tg[1500]), 1609: timeToSecs(_tg[1609]), 5000: timeToSecs(_tg[5000]), 3000: timeToSecs(_tg[3000]), 800: timeToSecs(_tg[800]) };
 
   // % of Trials target — higher = closer to goal
   function pctOfTarget(predSec, targetSec) {
@@ -20934,11 +21294,11 @@ function analyzeRacePerformance(race) {
   // 1. Race fitness vs Trials target (40 pts)
   var racePct = pct5000 || pct1500 || null;
   if (racePct !== null) {
-    if (racePct >= 95)      { score += 40; factors.push('Race fitness: AT or ABOVE Trials target level (' + racePct + '%)'); }
-    else if (racePct >= 85) { score += 32; factors.push('Race fitness: APPROACHING target — ' + racePct + '% of Trials pace'); }
-    else if (racePct >= 75) { score += 22; factors.push('Race fitness: BUILDING — ' + racePct + '% of Trials pace (on track for building phase)'); }
-    else if (racePct >= 65) { score += 14; factors.push('Race fitness: EARLY BASE — ' + racePct + '% of Trials pace'); }
-    else                    { score += 6;  factors.push('Race fitness: FAR from Trials target (' + racePct + '%)'); }
+    if (racePct >= 95)      { score += 40; factors.push('Race fitness: AT or ABOVE ' + (_isTrialsUser() ? 'Trials' : 'goal') + ' target level (' + racePct + '%)'); }
+    else if (racePct >= 85) { score += 32; factors.push('Race fitness: APPROACHING target — ' + racePct + '% of ' + (_isTrialsUser() ? 'Trials' : 'goal') + ' pace'); }
+    else if (racePct >= 75) { score += 22; factors.push('Race fitness: BUILDING — ' + racePct + '% of ' + (_isTrialsUser() ? 'Trials' : 'goal') + ' pace (on track for building phase)'); }
+    else if (racePct >= 65) { score += 14; factors.push('Race fitness: EARLY BASE — ' + racePct + '% of ' + (_isTrialsUser() ? 'Trials' : 'goal') + ' pace'); }
+    else                    { score += 6;  factors.push('Race fitness: FAR from ' + (_isTrialsUser() ? 'Trials' : 'goal') + ' target (' + racePct + '%)'); }
   }
 
   // 2. WHOOP Recovery (25 pts)
@@ -20988,7 +21348,7 @@ function analyzeRacePerformance(race) {
 
   // Was the race "planned" in RACE_TESTS?
   var raceDate2 = race.date;
-  var planned = typeof RACE_TESTS !== 'undefined' && RACE_TESTS.some(function(rt) {
+  var planned = typeof RACE_TESTS !== 'undefined' && _isTrialsUser() && RACE_TESTS.some(function(rt) {
     if (!rt.ev || !rt.dt) return false;
     var diff = Math.abs(new Date(raceDate2) - new Date(rt.dt + 'T12:00:00')) / 86400000;
     return diff <= 10 && rt.ev.toLowerCase().indexOf(ev.split(' ')[0]) !== -1;
@@ -21119,9 +21479,9 @@ function buildKodaContext() {
             lines.push('\n📊 KODA RACE ANALYSIS — ' + ra.event + ' ' + ra.time + (ra.planned ? ' [PLANNED RACE]' : ' [UNSCHEDULED RACE]'));
             lines.push('EQUIVALENT PERFORMANCES (Riegel formula):');
             lines.push('  800m equiv:  ' + ra.equiv['800m']);
-            lines.push('  1500m equiv: ' + ra.equiv['1500m'] + '  (Trials target: ' + ra.trialsTargets['1500m'] + ' → ' + (ra.pct1500 !== null ? ra.pct1500 + '% of target pace' : '—') + ')');
+            lines.push('  1500m equiv: ' + ra.equiv['1500m'] + '  (' + _targetWord() + ' target: ' + ra.trialsTargets['1500m'] + ' → ' + (ra.pct1500 !== null ? ra.pct1500 + '% of target pace' : '—') + ')');
             lines.push('  Mile equiv:  ' + ra.equiv['Mile']);
-            lines.push('  5000m equiv: ' + ra.equiv['5000m'] + '  (Trials target: ' + ra.trialsTargets['5000m'] + ' → ' + (ra.pct5000 !== null ? ra.pct5000 + '% of target pace' : '—') + ')');
+            lines.push('  5000m equiv: ' + ra.equiv['5000m'] + '  (' + _targetWord() + ' target: ' + ra.trialsTargets['5000m'] + ' → ' + (ra.pct5000 !== null ? ra.pct5000 + '% of target pace' : '—') + ')');
             lines.push('\nTRAINING LOAD (14 days pre-race): ' + ra.trainingLoad14d.sessions + ' sessions · ' + ra.trainingLoad14d.miles + ' mi · ' + ra.trainingLoad14d.quality + ' quality sessions');
             lines.push('\nREADINESS ASSESSMENT (score: ' + ra.readinessScore + '/100):');
             ra.factors.forEach(function(f){ lines.push('  · ' + f); });
@@ -21204,12 +21564,13 @@ function buildKodaContext() {
           } else {
             lines.push('  STATUS: Baseline building — need 2+ weeks of data to show trend.');
           }
-          lines.push('  KODA NOTE: As base builds over 8–12 weeks, the same 7:51/mi pace should drop HR from ~151 to ~135-140. Track this monthly.');
+          lines.push('  KODA NOTE: As base builds over 8–12 weeks, the same pace should produce a lower HR (often 10-15 bpm lower). Track this monthly.');
         }
       } catch(e) {}
 
       // ── RACE TACTICAL PROFILE ────────────────────────────────────
       // Hard-coded athlete race intelligence — always injected so KODA can coach tactically.
+      if (D.settings && D.settings.isBuilder) {
       lines.push('\nRACE TACTICAL PROFILE (Elias Gedyon — Mile/1500m specialist):');
       lines.push('  PRIMARY WEAKNESS: Laps 2–3 of the mile/1500m — loses gear-change ability and fades mid-race');
       lines.push('  CLOSING SPEED GOAL: Sub-48 second last lap (4:00/mi closing pace) — this closer is the weapon');
@@ -21233,6 +21594,7 @@ function buildKodaContext() {
       lines.push('  RUN-COMMUTE PROTOCOL (athlete-discovered July 2026, encouraged): He run-commutes home from work with a backpack — this is a PRIMARY mileage tool for his 8-5 schedule. Rules: pack inflates HR 15-25bpm (easy ceiling becomes ~150 with load, judge accordingly and never call these runs "too hard" off raw HR); commute runs are ALWAYS easy — never prescribe quality with a pack; encourage keeping shoes/clothes stashed at work to lighten the load. First instance: 6.43mi @ 8:29 in 91F heat with loaded pack, day after the 400 test — strong aerobic evidence, HR context-adjusted.');
       lines.push('  NO JOURNALING (athlete-stated): He does not and will not keep journals, checklists, or daily forms — never suggest them. Context arrives conversationally ("worked late", "legs heavy") — capture it when offered, infer the rest from automatic data (sleep, HRV, RHR). Design every habit ask around: one sentence in chat, or nothing.');
       lines.push('  ATHLETE SELF-DIAGNOSIS (July 2026, correct per the data): "I am really weak aerobically." The aerobic engine is THE limiter — speed is intact, base is not. Coaching priority order during Base Build: (1) run FREQUENCY (5-6 days, even 20-30min counts) beats any single big day; (2) ruthless easy-pace discipline — easy means HR under ~135-140, ego stays home; (3) grow the long run by ~1mi every 2 weeks; (4) aerobic progress is measured by the HR-at-pace trend and the 20-min test, not by workout heroics. Remind him: for a 4:01 miler, every easy aerobic mile is the highest-value training dollar he can spend right now.');
+      }
 
       // ── RACE READINESS STATUS ─────────────────────────────────────
       // This is what the RACE READY? and OVERTRAINING MONITOR cards display.
@@ -21283,9 +21645,9 @@ function buildKodaContext() {
     lines.push('\nKODA CAPABILITIES:');
     lines.push('  DATA ACCESS: 110-week plan, all workout history, WHOOP/Oura/Apple Health recovery, weight trend, race history, PRs, GPI score');
     lines.push('  APP SECTIONS: HOME · TODAY · TRAIN (log+charts) · PLAN (110wk calendar) · KODA (this chat) · MORE (races, weight, protocol, integrations)');
-    lines.push('  RACE INTELLIGENCE: Riegel equivalent performance calculator, Trials target % assessment, readiness gate (HRV+recovery+sleep+weight), training load analysis, verdict: READY TO LEVEL UP / MAINTAIN / PROTECT BASE');
-    lines.push('  KODA CAN: analyze any race result, compare to Trials targets, assess if athlete can increase training load, flag overtraining early, give specific actionable recommendations');
-    lines.push('  KODA TRAINING ADJUSTMENT PROTOCOL: (1) get race result → compute equivalents → % of Trials target, (2) check recovery score (need GREEN), (3) check HRV (need non-suppressed), (4) check sleep + weight, (5) THEN give ONE verdict with specific action — never vague, never just "good job", always data-driven');
+    lines.push('  RACE INTELLIGENCE: Riegel equivalent performance calculator, ' + _targetWord() + ' target % assessment, readiness gate (HRV+recovery+sleep+weight), training load analysis, verdict: READY TO LEVEL UP / MAINTAIN / PROTECT BASE');
+    lines.push('  KODA CAN: analyze any race result, compare to ' + _targetWord() + ' targets, assess if athlete can increase training load, flag overtraining early, give specific actionable recommendations');
+    lines.push('  KODA TRAINING ADJUSTMENT PROTOCOL: (1) get race result → compute equivalents → % of ' + _targetWord() + ' target, (2) check recovery score (need GREEN), (3) check HRV (need non-suppressed), (4) check sleep + weight, (5) THEN give ONE verdict with specific action — never vague, never just "good job", always data-driven');
     lines.push('  KODA CAN LOG: use log_pr tool to log race PRs and auto-recalibrate all training zones — DO THIS when athlete mentions a new race time, do not redirect them to a tab');
   lines.push('  KODA CANNOT: edit the training plan calendar or log food/workouts — direct athlete to TODAY tab for those');
     lines.push('  KODA VOICE: reads data first, asks how race felt, gives one clear verdict. Never says "level up" without checking ALL metrics first.');
@@ -21299,8 +21661,8 @@ function buildKodaContext() {
       var _sl = sleepAssess();
       var _slLine = '\nSLEEP PILLAR (target ' + _sl.target + 'h in bed, Kerr-style): ';
       _slLine += _sl.lastNight ? ('last night ' + _sl.lastNight.hours + 'h (' + _sl.verdict + ')' + (_sl.avg7!=null ? ', 7-night avg ' + _sl.avg7 + 'h' : '')) : 'no sleep data flowing yet';
-      _slLine += '. Tonight: lights out ' + _sl.lightsOut + (_sl.protectedNight ? ' — PROTECTED NIGHT (quality day tomorrow: ' + _sl.tomorrowType + '); if he mentions staying up, push back warmly but firmly.' : '.');
-      _slLine += ' Remember: he builds no routines — the WHOOP bedtime buzz and this number are the whole system; never assign sleep homework.';
+      _slLine += '. Tonight: lights out ' + _sl.lightsOut + (_sl.protectedNight ? ' — PROTECTED NIGHT (quality day tomorrow: ' + _sl.tomorrowType + '); if they mention staying up, push back warmly but firmly.' : '.');
+      if (_isTrialsUser()) _slLine += ' Remember: he builds no routines — the WHOOP bedtime buzz and this number are the whole system; never assign sleep homework.';
       lines.push(_slLine);
     }
   } catch(e) {}
@@ -21310,10 +21672,10 @@ function buildKodaContext() {
       var _m = missionAssess();
       lines.push('\nMISSION TRACK (ramp week ' + (_m.rampWk+1) + '): ' + _m.weekVerdict
         + ' — ' + _m.actualMi + ' of ' + _m.target + ' mi this week ('
-        + _m.pctOfExpected + '% of where he should be by today). Last 4 weeks: '
+        + _m.pctOfExpected + '% of where they should be by today). Last 4 weeks: '
         + _m.hitWeeks + '/4 hit >=85% of ramp target.'
-        + (_m.vdotNow ? ' Engine: VDOT ' + _m.vdotNow + ' vs 79 mission requirement, ' + _m.weeksLeft + ' weeks to Trials.' : '')
-        + ' KODA RULE: reference these exact numbers when assessing whether he is on plan; praise only what the data supports; name the gap when behind, plainly and without guilt, then prescribe the fix.');
+        + (_m.vdotNow ? ' Engine: VDOT ' + _m.vdotNow + ' vs ' + (_isTrialsUser() ? '79 mission requirement' : 'goal') + ', ' + _m.weeksLeft + ' weeks to ' + getCompName() + '.' : '')
+        + ' KODA RULE: reference these exact numbers when assessing whether they are on plan; praise only what the data supports; name the gap when behind, plainly and without guilt, then prescribe the fix.');
     }
   } catch(e) {}
   // ADAPTIVE LEARNING: athlete-model package (retrieved, not doctrine)
@@ -21487,7 +21849,8 @@ async function kodaSend() {
   // Smart routing: if key stored, skip Supabase 404 roundtrip entirely
   async function tryDirectAnthropic() {
     const key = localStorage.getItem('gedyon_anthropic_key');
-    if (!key) throw new Error('no_key');
+    // Owner-only developer path; every other account goes through the secure cloud function
+    if (!key || !(D.settings && D.settings.isBuilder)) throw new Error('no_key');
     const sysPrompt = `You are KODA — elite AI performance coach, neural core of the GEDYON system. Athlete: Elias Gedyon, World Athletics code 14329251. Middle-distance specialist (Mile/1500m/800m) targeting 2028 Olympic Trials. You are surgical, data-driven, and elite. Reference exact numbers from context. Never hedge — give the answer, then the reasoning. Never say "great job" without citing data. Keep responses under 250 words but make every sentence count.
 
 TRAINING METHODOLOGY — GEDYON MULTI-SYSTEM SYNTHESIS:
@@ -21651,10 +22014,10 @@ Athlete context:\n${ctx}`;
   }
 
   async function trySupabase() {
-    const host = window.location.hostname;
-    if (!(host === 'eligedyon.github.io' || host.endsWith('.netlify.app') || host === 'localhost' || host === '127.0.0.1')) {
+    if (!gedyonHostAllowed()) {
       const err = new Error('preview'); err.kodaCode = 'PREVIEW'; throw err;
     }
+    if (!(await ensureAIConsent())) { const err = new Error('AI not allowed'); err.kodaCode = 'NO_CONSENT'; throw err; }
     const headers = { 'Content-Type': 'application/json', 'Authorization': KODA_TOKEN };
     // Prefer the signed-in user's JWT so the server can meter per-user
     try {
@@ -21718,8 +22081,10 @@ Athlete context:\n${ctx}`;
     if (e.kodaCode === 'PREVIEW') {
       kodaAppendMsg('assistant', 'This preview window can\'t reach my brain — it blocks all outside connections. Open the real app in Safari: eligedyon.github.io/gedyon — I\'ll be there.');
     } else if (e.kodaCode === 'LIMIT_REACHED') {
-      kodaAppendMsg('assistant', "You've used your " + (e.limit || 25) + " free KODA sessions this month. Unlimited coaching — $9.99/mo.");
+      kodaAppendMsg('assistant', "You've used your " + (e.limit || 25) + " free KODA messages this month. They reset on the 1st.");
       showKodaPaywall(e.used, e.limit);
+    } else if (e.kodaCode === 'NO_CONSENT') {
+      kodaAppendMsg('assistant', 'AI is off, so nothing was sent. Turn it on in Settings → Legal & Support whenever you want coaching.');
     } else if (e.kodaCode === 'CAPACITY') {
       kodaAppendMsg('assistant', 'KODA is at capacity today — back tomorrow.');
     } else if (e.kodaCode === 'AUTH_REQUIRED') {
@@ -21742,31 +22107,103 @@ function kodaUpdateFreeCounter(used, limit) {
   else el.style.display = 'none';
 }
 
+// ── IN-APP PURCHASE (iOS, RevenueCat → StoreKit) ─────────────────
+// Paste the PUBLIC Apple API key from RevenueCat (Project → API keys, starts
+// with "appl_"). It is safe to ship in the app. Leave empty to hide purchasing.
+var REVENUECAT_IOS_KEY = '';
+var KODA_ENTITLEMENT = 'koda_unlimited'; // must match the entitlement id in RevenueCat
+var _rcReady = false;
+function rcPlugin(){
+  try { return window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() && window.Capacitor.Plugins && window.Capacitor.Plugins.Purchases; } catch(e) { return null; }
+}
+async function rcEnsure(){
+  var P = rcPlugin();
+  if (!P || !REVENUECAT_IOS_KEY) return null;
+  if (!_rcReady) {
+    // app_user_id = Supabase user id, so the revenuecat-webhook can match the subscriber
+    await P.configure({ apiKey: REVENUECAT_IOS_KEY, appUserID: (typeof currentUser !== 'undefined' && currentUser) ? currentUser.id : undefined });
+    _rcReady = true;
+  } else if (typeof currentUser !== 'undefined' && currentUser) {
+    try { await P.logIn({ appUserID: currentUser.id }); } catch(e) {}
+  }
+  return P;
+}
+async function rcCurrentPackage(){
+  var P = await rcEnsure(); if (!P) return null;
+  var o = await P.getOfferings();
+  var cur = o && o.current;
+  return (cur && cur.availablePackages && cur.availablePackages[0]) || null;
+}
+function rcHasEntitlement(info){
+  try { return !!(info && info.entitlements && info.entitlements.active && info.entitlements.active[KODA_ENTITLEMENT]); } catch(e) { return false; }
+}
+
 function showKodaPaywall(used, limit) {
   if (document.getElementById('koda-paywall-modal')) return;
+  var canBuy = !!(rcPlugin() && REVENUECAT_IOS_KEY);
   var overlay = document.createElement('div');
   overlay.id = 'koda-paywall-modal';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.85);display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);';
+  var mono = "font-family:'SF Mono',monospace;";
   overlay.innerHTML = '<div style="background:#0d0d1a;border:1.5px solid rgba(74,158,255,0.4);border-radius:20px 20px 0 0;padding:28px 24px 40px;width:100%;max-width:480px;box-sizing:border-box;">'
     + '<div style="font-family:Impact,sans-serif;font-size:22px;letter-spacing:2px;color:#e8f4ff;margin-bottom:8px;">KODA UNLIMITED</div>'
-    + '<div style="font-family:\'SF Mono\',monospace;font-size:12px;color:rgba(255,255,255,.55);line-height:1.9;margin-bottom:18px;">You\'ve used your ' + (limit||25) + ' free KODA sessions this month.<br>Unlimited coaching — <strong style="color:#FFB84D;">$9.99/mo</strong>.</div>'
-    + '<div style="background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.18);border-radius:12px;padding:14px;margin-bottom:18px;font-family:\'SF Mono\',monospace;font-size:11px;color:rgba(255,255,255,.5);line-height:2;">'
+    + '<div style="' + mono + 'font-size:12px;color:rgba(255,255,255,.65);line-height:1.9;margin-bottom:18px;">You\'ve used your ' + (limit||25) + ' free KODA messages this month. Free messages reset on the 1st.</div>'
+    + '<div style="background:rgba(74,158,255,.06);border:1px solid rgba(74,158,255,.18);border-radius:12px;padding:14px;margin-bottom:14px;' + mono + 'font-size:11px;color:rgba(255,255,255,.75);line-height:2;">'
     + '✓ Unlimited KODA conversations<br>✓ Morning check-ins &amp; race analysis<br>✓ Gap Protocol re-placement<br>✓ Food–performance intelligence</div>'
-    + '<button onclick="kodaStartSubscribe()" style="width:100%;padding:15px;background:linear-gradient(135deg,#4A9EFF,#7C4DFF);color:#fff;font-family:Impact,sans-serif;font-size:17px;letter-spacing:2px;border:none;border-radius:12px;cursor:pointer;margin-bottom:8px;">GO UNLIMITED — $9.99/MO</button>'
-    + '<button onclick="document.getElementById(\'koda-paywall-modal\').remove()" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,.1);color:#555;font-family:\'SF Mono\',monospace;font-size:11px;border-radius:10px;cursor:pointer;">Not now</button>'
+    + (canBuy
+      ? '<div id="koda-pw-price" style="' + mono + 'font-size:13px;color:#e8f4ff;margin-bottom:12px;">Loading price…</div>'
+        + '<button id="koda-pw-buy" onclick="kodaStartSubscribe()" disabled style="width:100%;padding:15px;background:linear-gradient(135deg,#4A9EFF,#7C4DFF);color:#fff;font-family:Impact,sans-serif;font-size:17px;letter-spacing:2px;border:none;border-radius:12px;margin-bottom:10px;opacity:.6;">SUBSCRIBE</button>'
+        + '<button onclick="kodaRestorePurchases()" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.75);' + mono + 'font-size:12px;border-radius:10px;margin-bottom:10px;">RESTORE PURCHASES</button>'
+        + '<div style="' + mono + 'font-size:10px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:10px;">Payment is charged to your Apple ID at confirmation. The subscription renews automatically at the same price each period unless cancelled at least 24 hours before the period ends. Manage or cancel any time in Settings → Apple ID → Subscriptions.</div>'
+      : '<div style="' + mono + 'font-size:12px;color:rgba(255,255,255,.65);line-height:1.8;margin-bottom:12px;">Upgrades are available in the GEDYON iPhone app.</div>')
+    + '<div style="' + mono + 'font-size:11px;margin-bottom:12px;"><a href="terms.html" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);">Terms of Use</a> · <a href="privacy.html" target="_blank" rel="noopener" style="color:rgba(255,255,255,.7);">Privacy Policy</a></div>'
+    + '<button onclick="document.getElementById(\'koda-paywall-modal\').remove()" style="width:100%;padding:10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);' + mono + 'font-size:12px;border-radius:10px;">NOT NOW</button>'
     + '</div>';
   document.body.appendChild(overlay);
   overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
+  if (canBuy) {
+    rcCurrentPackage().then(function(pkg){
+      var el = document.getElementById('koda-pw-price'); var btn = document.getElementById('koda-pw-buy');
+      if (!el) return;
+      if (!pkg) { el.textContent = 'Subscriptions are unavailable right now.'; return; }
+      var per = pkg.packageType === 'ANNUAL' ? 'year' : pkg.packageType === 'MONTHLY' ? 'month' : pkg.packageType === 'WEEKLY' ? 'week' : 'period';
+      el.textContent = (pkg.product.title || 'KODA Unlimited') + ' · ' + pkg.product.priceString + ' per ' + per + ', auto-renews';
+      if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+    }).catch(function(){ var el = document.getElementById('koda-pw-price'); if (el) el.textContent = 'Subscriptions are unavailable right now.'; });
+  }
 }
 
-function kodaStartSubscribe() {
-  // On iOS this hands off to RevenueCat/StoreKit via the Capacitor purchases
-  // plugin when present; on web there is no purchase flow yet.
+async function kodaStartSubscribe() {
+  if (typeof currentUser === 'undefined' || !currentUser) { showToast('Create an account or sign in first so your subscription follows you', 'info'); return; }
   try {
-    var P = window.Capacitor && window.Capacitor.Plugins && (window.Capacitor.Plugins.Purchases || window.Capacitor.Plugins.RevenueCat);
-    if (P && P.purchasePackage) { showToast('Opening subscription...', 'ok'); return; }
-  } catch(e) {}
-  showToast('Subscriptions are coming to the iOS app — for now KODA resets on the 1st of each month', 'info');
+    var pkg = await rcCurrentPackage();
+    if (!pkg) { showToast('Subscriptions are available in the GEDYON iPhone app', 'info'); return; }
+    var P = rcPlugin();
+    var r = await P.purchasePackage({ aPackage: pkg });
+    if (rcHasEntitlement(r && r.customerInfo)) {
+      var m = document.getElementById('koda-paywall-modal'); if (m) m.remove();
+      showToast('KODA Unlimited is active', 'ok');
+    }
+  } catch(e) {
+    if (e && (e.userCancelled || /cancel/i.test(e.message || ''))) return;
+    showToast('Purchase did not complete: ' + ((e && e.message) || 'unknown error'), 'err');
+  }
+}
+
+async function kodaRestorePurchases() {
+  try {
+    var P = await rcEnsure();
+    if (!P) { showToast('Restore is available in the GEDYON iPhone app', 'info'); return; }
+    var r = await P.restorePurchases();
+    if (rcHasEntitlement(r && r.customerInfo)) {
+      var m = document.getElementById('koda-paywall-modal'); if (m) m.remove();
+      showToast('Purchases restored: KODA Unlimited is active', 'ok');
+    } else {
+      showToast('No active subscription found for this Apple ID', 'info');
+    }
+  } catch(e) {
+    showToast('Restore failed: ' + ((e && e.message) || 'unknown error'), 'err');
+  }
 }
 
 function kodaAppendMsg(role, text) {
@@ -22552,10 +22989,9 @@ function kodaPopulatePanels() {
     if (uc && uc.month === new Date().toISOString().slice(0,7)) kodaUpdateFreeCounter(uc.used, uc.limit);
   } catch(e) {}
   // Populate trials counter in header
-  const trialsMs = new Date('2028-04-04') - new Date();
-  const trialsDays = Math.max(0, Math.floor(trialsMs / 86400000));
+  const trialsDays = typeof getDaysToComp==='function' ? getDaysToComp() : 0;
   const tc = document.getElementById('koda-trials-counter');
-  if (tc) tc.innerHTML = `TRIALS<br>${trialsDays}D`;
+  if (tc) tc.innerHTML = `TO GO<br>${trialsDays}D`;
 
   // Calculate week stats for left meta
   const startMs2 = new Date('2026-02-23').getTime();
@@ -22744,7 +23180,7 @@ function kodaPopulatePanels() {
   }
 
   // ── Upcoming race: D.races first, fallback to RACE_TESTS schedule ──────────
-  const planRaces = typeof RACE_TESTS !== 'undefined' ? RACE_TESTS : [];
+  const planRaces = (typeof RACE_TESTS !== 'undefined' && _isTrialsUser()) ? RACE_TESTS : [];
   if (!races.length && planRaces.length) {
     // Use planned schedule to compute countdown
     const startBase = new Date('2026-02-23').getTime();
@@ -23305,7 +23741,7 @@ async function kodaInit() {
     if (hero) hero.classList.add('intro-mode');
   }
 
-  const name = (typeof D !== 'undefined' && D.settings && D.settings.name) ? D.settings.name.split(' ')[0] : 'Elias';
+  const name = (typeof D !== 'undefined' && D.settings && D.settings.name) ? D.settings.name.split(' ')[0] : 'Athlete';
   // GAP PROTOCOL: assess (and auto-apply re-placement, once per gap) before building context
   try { await assessTrainingGap(); } catch(e) { console.warn('[GapProtocol] assess:', e && e.message); }
   // ADAPTIVE LEARNING: fetch the athlete-model package (one RPC) so
@@ -23334,8 +23770,8 @@ async function kodaInit() {
       if (ra) {
         raBlock = `\n\nRACE INTELLIGENCE REPORT:\n`
           + `  Event: ${ra.event} ${ra.time} (${ra.planned ? 'PLANNED race' : 'UNSCHEDULED race'})\n`
-          + `  Predicted 1500m: ${ra.equiv['1500m']} (Trials target ${ra.trialsTargets['1500m']} — ${ra.pct1500}% of target pace)\n`
-          + `  Predicted 5000m: ${ra.equiv['5000m']} (Trials target ${ra.trialsTargets['5000m']} — ${ra.pct5000}% of target pace)\n`
+          + `  Predicted 1500m: ${ra.equiv['1500m']} (${_targetWord()} target ${ra.trialsTargets['1500m']} — ${ra.pct1500}% of target pace)\n`
+          + `  Predicted 5000m: ${ra.equiv['5000m']} (${_targetWord()} target ${ra.trialsTargets['5000m']} — ${ra.pct5000}% of target pace)\n`
           + `  14-day pre-race load: ${ra.trainingLoad14d.sessions} sessions, ${ra.trainingLoad14d.miles} mi, ${ra.trainingLoad14d.quality} quality sessions\n`
           + `  Readiness score: ${ra.readinessScore}/100\n`
           + ra.factors.map(f => '  · ' + f).join('\n')
@@ -23353,7 +23789,7 @@ async function kodaInit() {
 You have a full RACE INTELLIGENCE REPORT in the athlete context. Your job:
 1. Open with ONE line specifically naming the time and event — not generic. Was this the time they were targeting?
 2. Reference the Riegel equivalent performance — what does this 10k time predict for their 1500m or 5000m?
-3. State the VERDICT clearly (${raBlock ? 'see verdict in context' : 'assess from available data'}): are they ahead, on schedule, or behind Trials pace?
+3. State the VERDICT clearly (${raBlock ? 'see verdict in context' : 'assess from available data'}): are they ahead, on schedule, or behind ${_isTrialsUser() ? 'Trials' : 'goal'} pace?
 4. If the readiness score is high and no hard blocks exist, you CAN tell them they may be ready to increase training intensity — but NAME the specific metrics that support it.
 5. If recovery is RED or HRV is suppressed, do NOT recommend increasing load — say exactly why.
 6. End with ONE direct question: ask how the race FELT — was it effort-limited (lungs/legs gave out) or fitness-limited (couldn't push pace)?
@@ -23472,5 +23908,53 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </div>
 
+<!-- ═══ BETA POLISH — layout + readability fixes for tester build ═══ -->
+<style id="beta-polish">
+/* Theme picker lives behind one palette button instead of 11 dots in the header */
+#themeDots{display:none;position:fixed;top:56px;right:12px;z-index:10000;flex-wrap:wrap;gap:12px;width:196px;padding:14px;
+  background:var(--card,#0D1018);border:1px solid var(--border-hi,rgba(255,255,255,.14));border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.55);}
+#themeDots.open{display:flex;}
+#themeDots .th-dot{width:24px!important;height:24px!important;}
+#themeToggleBtn{width:28px;height:28px;border-radius:50%;border:1px solid var(--border-hi,rgba(255,255,255,.14));background:transparent;
+  color:var(--accent,#C9A84C);display:flex;align-items:center;justify-content:center;padding:0;margin-right:6px;cursor:pointer;flex-shrink:0;}
+.topbar .tb-sub{white-space:nowrap;}
+/* Selected options must stay readable on the accent color */
+.setup-chip.active,.setup-chip:hover,.sport-btn.active,.sport-btn:hover{color:#000!important;font-weight:700;}
+.setup-chip:not(.active){color:rgba(255,255,255,.75)!important;}
+/* Setup wizard: inline error message */
+#setupErr{display:none;margin:14px 0 0;padding:10px 12px;border-radius:8px;background:rgba(232,88,88,.12);border:1px solid rgba(232,88,88,.4);
+  color:#FF8A8A;font-family:'SF Mono',monospace;font-size:12px;line-height:1.5;}
+#setupErr.show{display:block;}
+/* Sign-in: guest link must be findable */
+#authLogin button[onclick="authSkip()"]{color:rgba(255,255,255,.55)!important;font-size:12px!important;padding:8px!important;}
+/* Bottom nav labels: legible on a phone */
+.bnav .nl{font-size:9.5px!important;letter-spacing:.8px!important;color:rgba(255,255,255,.55)!important;}
+.bnav .nb.on .nl{color:var(--accent,#C9A84C)!important;}
+.bnav .nb{min-width:0;}
+/* KODA header: fit on a 390px phone */
+#koda-appbar{gap:8px;}
+#koda-appbar > div:last-child{gap:6px!important;flex-shrink:1;min-width:0;}
+#koda-status-wrap{display:none!important;}
+#koda-appbar-sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;}
+/* Respect the iPhone home indicator */
+.bnav{padding-bottom:max(6px,env(safe-area-inset-bottom))!important;}
+</style>
+<script>
+function toggleThemeDots(e){
+  if(e) e.stopPropagation();
+  var d=document.getElementById('themeDots'); if(!d) return;
+  d.classList.toggle('open');
+  if(d.classList.contains('open')){
+    setTimeout(function(){document.addEventListener('click',function c(ev){ if(!d.contains(ev.target)){d.classList.remove('open');} else {setTimeout(function(){d.classList.remove('open');},250);} },{once:true});},10);
+  }
+}
+function setupError(msg,focusEl){
+  var nav=document.getElementById('setupNav'); if(!nav) return;
+  var el=document.getElementById('setupErr');
+  if(!el){ el=document.createElement('div'); el.id='setupErr'; el.setAttribute('role','alert'); nav.parentNode.insertBefore(el,nav); }
+  el.textContent=msg||''; el.classList.toggle('show',!!msg);
+  if(msg&&focusEl){ try{focusEl.scrollIntoView({block:'center',behavior:'smooth'});}catch(_){} }
+}
+</script>
 </body>
 </html>

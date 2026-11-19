@@ -1,7 +1,17 @@
+# Netlify: publish only the built web app (www/), not the whole repo
+# (supabase/, reload/ and docs stay private to the repo).
 [build]
-  publish = "."
+  command = "npm run build"
+  publish = "www"
 
 [[redirects]]
   from = "/*"
   to = "/200.html"
   status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"
