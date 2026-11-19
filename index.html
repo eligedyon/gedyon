@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#050508">
   <link rel="manifest" href="data:application/json,{%22name%22:%22GEDYON%22,%22short_name%22:%22GEDYON%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23050508%22,%22theme_color%22:%22%23050508%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23050508'/><text y='.9em' font-size='90'></text></svg>%22,%22sizes%22:%22any%22,%22type%22:%22image/svg+xml%22}]}">
-<title>GEDYON 2028 TRIALS</title>
+<title>GEDYON</title>
 <!--
   ╔══════════════════════════════════════════════════════════════════════╗
   ║  GEDYON 2028 OLYMPIC TRIALS TRAINING SYSTEM                         ║
@@ -3005,7 +3005,7 @@ body.is-builder .builder-only{display:block!important}
         <div style="background:var(--card);border:1px solid rgba(245,196,0,.25);border-radius:10px;padding:8px 10px;text-align:center;display:flex;flex-direction:column;justify-content:center;min-width:80px;">
           <div style="font-family:'SF Mono',Consolas,monospace;font-size:10px;color:var(--grey);letter-spacing:1.5px;margin-bottom:2px;">DAYS<br>TO GO</div>
           <div style="font-family:Impact,'Arial Narrow',Arial,sans-serif;font-size:44px;color:var(--gold);line-height:1;" id="cdNum">—</div>
-          <div id="compDateLabel" style="font-family:'SF Mono',Consolas,monospace;font-size:10px;color:var(--grey);margin-top:3px;letter-spacing:1px;">APR 4 2028<br>EUGENE OR</div>
+          <div id="compDateLabel" style="font-family:'SF Mono',Consolas,monospace;font-size:10px;color:var(--grey);margin-top:3px;letter-spacing:1px;">RACE DAY</div>
         </div>
 
       </div>
@@ -3379,7 +3379,7 @@ body.is-builder .builder-only{display:block!important}
             <div style="font-size:20px;">⚡</div>
             <div style="text-align:left;">
               <div style="font-family:Impact,'Arial Narrow',sans-serif;font-size:16px;letter-spacing:2px;color:var(--gold);">RECALIBRATE TRAINING</div>
-              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:1px;">Find your true week based on fitness + time to Trials</div>
+              <div style="font-family:'SF Mono',monospace;font-size:10px;color:var(--grey);margin-top:1px;">Find your true week based on fitness + time to race day</div>
             </div>
           </div>
           <div style="font-family:'SF Mono',monospace;font-size:18px;color:var(--gold);opacity:.6;">›</div>
@@ -3461,8 +3461,8 @@ body.is-builder .builder-only{display:block!important}
       <div id="ms-race" class="msec"><div id="raceTestList"></div></div>
       <div id="ms-wt" class="msec">
         <div id="weightAttackCard"></div>
-        <div class="sh" style="margin-top:0;">PERFORMANCE AT EACH WEIGHT</div>
-        <div class="card" style="overflow-x:auto;"><table id="perfTable" style="width:100%;border-collapse:collapse;font-family:'SF Mono',Consolas,monospace;font-size:13px;"></table></div>
+        <div class="sh builder-only" style="margin-top:0;">PERFORMANCE AT EACH WEIGHT</div>
+        <div class="card builder-only" style="overflow-x:auto;"><table id="perfTable" style="width:100%;border-collapse:collapse;font-family:'SF Mono',Consolas,monospace;font-size:13px;"></table></div>
         <div class="sh">WEIGHT PROJECTION</div>
         <div class="card"><div class="cb" style="padding:10px 14px;"><canvas id="wtProjChart" style="max-height:160px;"></canvas></div></div>
         <div class="sh">LOG PAST WEIGHT</div>
@@ -3634,7 +3634,7 @@ body.is-builder .builder-only{display:block!important}
 
       <!-- BOTTOM FOOTER -->
       <div style="margin-top:12px;text-align:center;font-family:'SF Mono',monospace;font-size:8px;color:rgba(255,255,255,0.4);letter-spacing:2px;">
-        GEDYON · 2028 OLYMPIC TRIALS · AI-POWERED TRAINING
+        GEDYON · AI-POWERED TRAINING
       </div>
 
     </div><!-- /content -->
@@ -4120,7 +4120,7 @@ body.is-builder .builder-only{display:block!important}
             </div>
             <div class="fr">
               <div class="fl">ATHLETE CODE</div>
-              <input type="text" id="waCodeInput" placeholder="e.g. 14329251"
+              <input type="text" id="waCodeInput" placeholder="Your World Athletics athlete ID"
                 style="width:100%;font-family:'SF Mono',monospace;font-size:12px;"
                 oninput="D.settings.waCode=this.value.trim();save()">
             </div>
@@ -4234,7 +4234,7 @@ body.is-builder .builder-only{display:block!important}
         <!-- Header -->
         <div style="padding:14px 16px 10px;border-bottom:1px solid rgba(255,255,255,0.10);">
           <div style="font-family:Impact,sans-serif;font-size:26px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;"> PLAYBOOK</div>
-          <div style="font-family:'SF Mono',monospace;font-size:12px;color:var(--grey);margin-top:2px;">1500m · MILE · 800m &nbsp;·&nbsp; TRIALS 2028 · 110 WEEKS &nbsp;·&nbsp; <span style="color:var(--gold);">FINAL BUILD</span></div>
+          <div style="font-family:'SF Mono',monospace;font-size:12px;color:var(--grey);margin-top:2px;"><span id="playbookSub">YOUR PLAN · BUILD TO RACE DAY</span></div>
         </div>
 
         <div style="padding:12px 14px 80px;">
@@ -4322,7 +4322,7 @@ body.is-builder .builder-only{display:block!important}
               <div style="display:flex;gap:5px;flex-wrap:wrap;">
                 <button onclick="atlasQuick('What should my easy pace be right now based on my current fitness?')" style="background:rgba(255,150,0,0.08);border:1px solid rgba(255,150,0,0.2);border-radius:20px;padding:5px 11px;font-size:12px;color:rgba(255,150,0,0.9);cursor:pointer;font-family:monospace;">Current pace zones</button>
                 <button onclick="atlasQuick('How should I adjust training this week based on my recovery data?')" style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);border-radius:20px;padding:5px 11px;font-size:12px;color:rgba(0,230,118,0.9);cursor:pointer;font-family:monospace;">Recovery check</button>
-                <button onclick="atlasQuick('Am I on track for the 2028 Olympic Trials? What are my biggest limiters right now?')" style="background:rgba(245,196,0,0.08);border:1px solid rgba(245,196,0,0.2);border-radius:20px;padding:5px 11px;font-size:12px;color:rgba(245,196,0,0.9);cursor:pointer;font-family:monospace;">Trials readiness</button>
+                <button onclick="atlasQuick('Am I on track for my goal race? What are my biggest limiters right now?')" style="background:rgba(245,196,0,0.08);border:1px solid rgba(245,196,0,0.2);border-radius:20px;padding:5px 11px;font-size:12px;color:rgba(245,196,0,0.9);cursor:pointer;font-family:monospace;">Trials readiness</button>
                 <button onclick="atlasQuick('Explain the Norwegian threshold method and how it applies to my current phase.')" style="background:rgba(100,100,255,0.08);border:1px solid rgba(100,100,255,0.2);border-radius:20px;padding:5px 11px;font-size:12px;color:rgba(150,150,255,0.9);cursor:pointer;font-family:monospace;">Norwegian method</button>
                 <button onclick="atlasQuick('What is the optimal race strategy for 800m given my current fitness?')" style="background:rgba(255,45,85,0.08);border:1px solid rgba(255,45,85,0.2);border-radius:20px;padding:5px 11px;font-size:12px;color:rgba(255,45,85,0.9);cursor:pointer;font-family:monospace;"> 800m race strategy</button>
                 <button onclick="atlasQuick('Should I do a double today or consolidate into one run? Walk me through the physiology.')" style="background:rgba(0,180,255,0.08);border:1px solid rgba(0,180,255,0.2);border-radius:20px;padding:5px 11px;font-size:12px;color:rgba(0,180,255,0.9);cursor:pointer;font-family:monospace;"> Double vs single</button>
@@ -4713,7 +4713,7 @@ body.is-builder .builder-only{display:block!important}
       <div style="display:flex;gap:6px;">
         <button class="koda-chip" onclick="kodaQuick('What should my current pace zones be?')">PACE ZONES</button>
         <button class="koda-chip" onclick="kodaQuick('How should I adjust training this week based on my recovery?')">RECOVERY</button>
-        <button class="koda-chip" onclick="kodaQuick('Am I on track for the 2028 Olympic Trials? What are my biggest limiters?')">TRIALS 2028</button>
+        <button class="koda-chip" onclick="kodaQuick('Am I on track for my goal race? What are my biggest limiters?')">ON TRACK?</button>
         <button class="koda-chip" onclick="kodaQuick('What should I eat today to optimize my training?')">NUTRITION</button>
         <button class="koda-chip" onclick="kodaQuick('What is the optimal race strategy for my upcoming race given my current fitness?')">RACE PLAN</button>
         <button class="koda-chip" onclick="kodaQuick('Should I do a double today or one run? Walk me through the decision.')">DOUBLE?</button>
@@ -4987,8 +4987,15 @@ var BUILDER_DEFAULTS = {
   isBuilder:true
 };
 function isBuilder(email){ return email && email.toLowerCase()===BUILDER_EMAIL; }
-function getCompDate(){ return D.settings.compDate || '2028-04-04'; }
-function getCompName(){ return D.settings.compName || 'Competition'; }
+function _isTrialsUser(){ return !!(typeof D!=='undefined' && D.settings && D.settings.isBuilder); }
+function _targetWord(){ return _isTrialsUser() ? 'Trials' : 'Goal'; }
+function getCompDate(){
+  if(D.settings.compDate) return D.settings.compDate;
+  if(D.settings.isBuilder) return '2028-04-04';
+  // No race set: aim at the end of the user's own plan length (default 16 weeks)
+  try{ var _s=parseLocalDate(D.settings.start||td()); _s.setDate(_s.getDate()+7*(D.settings.totalWeeks||16)); return _s.toISOString().split('T')[0]; }catch(e){ return td(); }
+}
+function getCompName(){ return D.settings.compName || (D.settings.isBuilder ? '2028 US Olympic Trials' : 'Race Day'); }
 function getDaysToComp(){ return Math.max(0,Math.ceil((new Date(getCompDate()+'T12:00:00')-new Date())/86400000)); }
 function loadBuilderData(){
   // Only set defaults if this is a fresh account (no existing data)
@@ -5186,7 +5193,7 @@ function updateAuthStatus(){
   updateUserMenu();
 }
 // Cloud sync is now triggered on every saveData() call — no timer needed
-const DEFAULT_PIN = '042028'; // April 2028 — Trials month/year
+const DEFAULT_PIN = '000000'; // generic default; each user sets their own PIN
 
 // ═══ OWNER SEED — the builder's own history. Applied ONLY to the builder
 // account (isBuilder). Public users start from a clean slate.
@@ -5245,6 +5252,7 @@ let D = JSON.parse(localStorage.getItem(KEY) || JSON.stringify({
   if(D.settings){
     if(D.settings.waCode==='14329251') delete D.settings.waCode;
     if(D.settings.name==='Elias Gedyon') D.settings.name='';
+    if(D.settings.compDate==='2028-04-04' && (!D.settings.compName || /olympic trials/i.test(D.settings.compName))){ delete D.settings.compDate; delete D.settings.compName; }
     if(D.settings.prs && D.settings.prs['1500m'] && D.settings.prs['1500m'].time==='3:45.25') D.settings.prs={};
     delete D.settings.athleteProfile;
     if(D.settings.currentFitness && D.settings.currentFitness.time==='37:53') delete D.settings.currentFitness;
@@ -5456,7 +5464,7 @@ function completeSetup(){
 
   // Calculate training weeks
   var startDate=td();
-  var raceDate=comp||'2028-04-04';
+  var raceDate=comp||(function(){var _d=new Date();_d.setDate(_d.getDate()+16*7);return _d.toISOString().split('T')[0];})();
   var totalWeeks=Math.max(4,Math.ceil((new Date(raceDate+'T12:00:00')-new Date())/604800000));
 
   // Update D.settings with new user data
@@ -6584,7 +6592,7 @@ const PHASES=[
   {n:3,name:'Threshold Construction · Norwegian',wks:[33,60],color:'var(--orange)'},
   {n:4,name:'Kerr–Mackey Specific',wks:[61,84],color:'var(--red)'},
   {n:5,name:'Championship Sharpening',wks:[85,100],color:'var(--purple)'},
-  {n:6,name:'Trials Taper',wks:[101,110],color:'var(--gold)'},
+  {n:6,get name(){return (typeof D!=='undefined'&&D.settings&&D.settings.isBuilder)?'Trials Taper':'Race Taper';},wks:[101,110],color:'var(--gold)'},
 ];
 function getPhase(wk){return PHASES.find(p=>wk>=p.wks[0]&&wk<=p.wks[1])||PHASES[0];}
 
@@ -6593,13 +6601,30 @@ function parseLocalDate(s){
   const p=String(s).split('-');
   return new Date(+p[0],+p[1]-1,+p[2],12,0,0);
 }
-function getWk(date){
+// Calendar weeks since the athlete's start date (1-based, unclamped above).
+function getCalWk(date){
   const start=parseLocalDate(D.settings.start);
   const d=parseLocalDate(date);
   const diffDays=Math.round((d-start)/86400000);
-  return Math.max(1,Math.min(110,Math.floor(diffDays/7)+1));
+  return Math.max(1,Math.floor(diffDays/7)+1);
+}
+// Position on the 110-week training arc. The builder runs the full arc in
+// real time. Everyone else gets the same arc compressed into their own
+// timeline (start date to race day), so the build, sharpening and taper
+// land on THEIR race instead of the original 2028 schedule.
+function getWk(date){
+  const cw=getCalWk(date);
+  if(D.settings.isBuilder) return Math.min(110,cw);
+  const tw=Math.max(4,Math.min(110,+D.settings.totalWeeks||110));
+  if(tw>=110) return Math.min(110,cw);
+  return Math.max(1,Math.min(110,Math.ceil(cw*110/tw)));
 }
 function getWeekTarget(date){
+  if(!D.settings.isBuilder){
+    // ~1 lb/week toward the user's own goal weight (safer default than 2)
+    if(!D.settings.startWt) return 0;
+    return +Math.max(D.settings.raceWt||D.settings.startWt, D.settings.startWt-1*getCalWk(date)).toFixed(1);
+  }
   const wk=getWk(date);
   return +Math.max(D.settings.raceWt, D.settings.startWt-2*wk).toFixed(1);
 }
@@ -6625,8 +6650,10 @@ function formatSteps(steps, totalMi){
   var _prs   = typeof getPRs==='function' ? getPRs() : {};
   var _paces = typeof getTrainingPaces==='function' ? getTrainingPaces(_prs) : {};
   function _toMMSS(s){var m=Math.floor(s/60),sec=Math.round(s%60);return m+':'+(sec<10?'0':'')+sec;}
-  var _thresh = _paces.threshold ? _toMMSS(_paces.threshold) : '6:15';
-  var _vo2    = _paces.vo2max   ? _toMMSS(_paces.vo2max)    : '5:41';
+  var _lvlP = {beginner:['9:45','9:00'], intermediate:['8:15','7:35'], advanced:['7:00','6:25'], elite:['6:15','5:41']};
+  var _fbP = (D.settings && D.settings.isBuilder) ? _lvlP.elite : (_lvlP[(D.settings && D.settings.level) || 'intermediate'] || _lvlP.intermediate);
+  var _thresh = _paces.threshold ? _toMMSS(_paces.threshold) : _fbP[0];
+  var _vo2    = _paces.vo2max   ? _toMMSS(_paces.vo2max)    : _fbP[1];
   // VDOT easy pace is primary — the static band (10:20, etc.) was built for a much lower fitness
   // level. Use the live VDOT-derived easy pace when race data is available.
   var _easyMph = _paces.easy ? Math.round(3600/_paces.easy*10)/10 : parseFloat(_band.mph);
@@ -6752,6 +6779,13 @@ function applyWorkoutPreferences(date, plan){
 // schedule ignores every repositioning.
 function _planRelativeDate(date){
   try{
+    if(!D.settings.isBuilder){
+      // Same weekday, in the arc week this date maps to (plan starts Mon Feb 23 2026)
+      var _orig = parseLocalDate('2026-02-23');
+      var _dow = (parseLocalDate(date).getDay()+6)%7;
+      _orig.setDate(_orig.getDate() + (getWk(date)-1)*7 + _dow);
+      return _orig.toISOString().split('T')[0];
+    }
     var offsetDays = Math.round((parseLocalDate(date) - parseLocalDate(D.settings.start))/86400000);
     var orig = parseLocalDate('2026-02-23');
     orig.setDate(orig.getDate() + offsetDays);
@@ -6880,15 +6914,43 @@ function _getDayPlanRaw(date){
 // of being asked for 42-mile weeks off a 15-mile base. Structure, zones
 // and workout types stay; only volume shrinks.
 var _rawWkSumCache = {};
+// Days kept when an athlete trains fewer than 7 days, most important first
+// (0=Sun ... 6=Sat): long run, two quality days, then easy days.
+var _TRAIN_DAY_PRIORITY = [6,2,5,4,1,3,0];
+function _personalizePlan(date, p){
+  if(!p || !D.settings || D.settings.isBuilder) return p;
+  var st = D.settings, q = Object.assign({}, p);
+  var days = Math.max(1, Math.min(7, +st.trainDays || 5));
+  var dow = parseLocalDate(date).getDay();
+  if(_TRAIN_DAY_PRIORITY.indexOf(dow) >= days){
+    return {mi:0, amMi:0, pmMi:0, name:'REST DAY', zone:'Z1', hr:[0,110], lac:[0,1.5], type:'rest',
+      cal:q.cal, wake:q.wake, bed:q.bed, steps:'Rest or an easy 20–30min walk · Light mobility', sets:'Mobility and stretching', coreNote:''};
+  }
+  // Heart-rate targets: the plan was written for a 188 bpm max; rescale to the athlete's age
+  var age = +st.age || 0;
+  if(age > 0 && Array.isArray(q.hr)){
+    var f = (220 - age) / 188;
+    q.hr = q.hr.map(function(h){ return h ? Math.round(h * f) : h; });
+  }
+  // Calories: the plan was written for a 181 lb athlete; rescale to body weight
+  var wt = +st.startWt || 0;
+  if(wt > 0 && q.cal) q.cal = Math.round(q.cal * wt / 181 / 10) * 10;
+  return q;
+}
 function getDayPlan(date){
+  return _personalizePlan(date, _getDayPlanCore(date));
+}
+function _getDayPlanCore(date){
   var raw = _getDayPlanRaw(date);
   try{
     if(typeof _rampTargetForWeek !== 'function' || typeof RAMP_ANCHOR === 'undefined') return raw;
     var dMs = parseLocalDate(date).getTime();
-    var aMs = parseLocalDate(RAMP_ANCHOR).getTime();
+    var aMs = parseLocalDate(_rampAnchorDate()).getTime();
     if(dMs < aMs - 6*86400000) return raw;
     var rampWk = Math.max(0, Math.floor((dMs - aMs)/(7*86400000)));
     var ramp = _rampTargetForWeek(rampWk);
+    // Other athletes: taper weeks drop to ~65% of their built volume
+    if(D.settings && !D.settings.isBuilder && getWk(date) >= 101) ramp = Math.round(ramp*0.65*10)/10;
     var dow = (parseLocalDate(date).getDay()+6)%7;
     var mondayMs = dMs - dow*86400000;
     var key = mondayMs + '_' + (D.settings&&D.settings.start);
@@ -6896,7 +6958,7 @@ function getDayPlan(date){
       var s = 0;
       for(var i=0;i<7;i++){
         var dd = new Date(mondayMs + i*86400000).toISOString().split('T')[0];
-        var p = _getDayPlanRaw(dd);
+        var p = _personalizePlan(dd, _getDayPlanRaw(dd));
         s += (p && p.mi) || 0;
       }
       _rawWkSumCache[key] = Math.round(s*10)/10;
@@ -6978,7 +7040,7 @@ function renderWtHero(date){
         actItems2=easyDay2?'Today is '+plan2.type.toUpperCase()+' — 1900 cal cap, 180g protein, 20min fasted walk.':'Today is '+((plan2?plan2.type:'training').toUpperCase())+' — fuel the session, cut 300 from other meals.';
       } else if(trendUp && +trend7>=2){
         alertIcon=''; alertMsg='7-DAY TREND: +'+trend7+' LBS';
-        alertSub='Trending up during '+phN2+'. At this rate you won\'t hit '+D.settings.raceWt+' lbs by Trials.';
+        alertSub='Trending up during '+phN2+'. At this rate you won\'t hit '+D.settings.raceWt+' lbs by '+getCompName()+'.';
         actItems2='Audit: easy-day carbs, post-dinner snacking, alcohol. Add 20min Z1 walks on easy days.';
       } else if(w.wt > tgt + 2){
         alertIcon=''; alertMsg='OFF TARGET BY '+(w.wt-tgt).toFixed(1)+' LBS';
@@ -8918,7 +8980,7 @@ function renderHomeWeight(){
     const lost=(startWt-wt).toFixed(1);
     const gained=+lost<0;
     const toGo=(wt-raceWt).toFixed(1);
-    const weeksLeft=Math.ceil((new Date('2028-04-04')-new Date())/86400000/7);
+    const weeksLeft=Math.ceil((new Date(getCompDate()+'T12:00:00')-new Date())/86400000/7);
     const lbsWk=weeksLeft>0?(+toGo/weeksLeft).toFixed(2):'—';
     const mileImp=(+toGo*2).toFixed(0);
     var ph=typeof getPhase==='function'&&typeof getWk==='function'?getPhase(getWk(td())):null;
@@ -8943,7 +9005,7 @@ function renderHomeWeight(){
         ~${mileImp}s/mi extra at 800m-5K pace<br>
          ${phName} · ${dayType} day<br>
         ${isEasy?' Good day to cut: 1900 cal · 180g+ protein':'Fuel the work, cut 300 cal from non-training meals'}<br>
-        ${lbsWk} lbs/wk to reach ${raceWt} by Trials</div>`;
+        ${lbsWk} lbs/wk to reach ${raceWt} by ${getCompName()}</div>`;
     } else if(wt > tgt + 2){
       borderCol='rgba(255,214,0,.25)';bgCol='rgba(255,214,0,.06)';
       summary=`+${(wt-tgt).toFixed(1)} over target (${tgt} lbs) · ${lbsWk}/wk needed`;
@@ -9130,7 +9192,7 @@ const WIDGET_DEFS = [
   {id:'dailyBriefingWrap',   name:'Daily Briefing',     desc:'KODA AI intel + nutrition summary'},
   {id:'perfChartsWrap',      name:'Performance Charts', desc:'GPI · HR · Miles · Watts · Weight charts'},
   {id:'whoopDashCard',       name:'WHOOP Recovery',     desc:'Recovery · Strain · Sleep from WHOOP'},
-  {id:'trialsTargetsWrap',   name:'Trials Targets',     desc:'800m · 1500m · Mile · 5K qualifying goals'},
+  {id:'trialsTargetsWrap',   name:'Trials Targets',     desc:'800m · 1500m · Mile · 5K qualifying goals', builderOnly:true},
   {id:'wg-hrv',              name:'HRV Widget',         desc:'Heart rate variability 7-day trend'},
   {id:'wg-sleep',            name:'Sleep Widget',       desc:'7-day sleep average + goal progress bar'},
   {id:'wg-nextRace',         name:'Next Race',          desc:'Countdown to your next competition'},
@@ -9186,6 +9248,9 @@ function applyWidgetLayout() {
     if (target.parentNode !== dash) return;
 
     target.style.order = i;
+
+    var _wdef = WIDGET_DEFS.find(function(d){ return d.id === item.id; });
+    if (_wdef && _wdef.builderOnly && !(D.settings && D.settings.isBuilder)) { target.style.display = 'none'; return; }
 
     if (item.visible) {
       // Only un-hide if we explicitly hid it — never wipe inline display values
@@ -9322,6 +9387,7 @@ function _wgCHL(){
 function _buildWgRows(layout){
   return layout.map(function(item,i){
     var def=WIDGET_DEFS.find(function(d){return d.id===item.id;})||{name:item.id,desc:''};
+    if(def.builderOnly && !(D.settings&&D.settings.isBuilder)) return;
     return '<div class="wg-row" data-idx="'+i+'" draggable="true"'+
       ' ondragstart="wgDS(event,'+i+')" ondragover="wgDO(event,'+i+')" ondrop="wgDP(event,'+i+')" ondragend="wgDE()"'+
       ' ontouchstart="wgTS(event,'+i+')" ontouchmove="wgTM(event,'+i+')" ontouchend="wgTE(event,'+i+')">'+
@@ -9518,6 +9584,14 @@ function renderPlaybook() {
     {n:5, wkLabel:'WK 69–100', color:'var(--red)',    name:'CHAMPIONSHIP',   desc:'90–92 mpw · '+raceWt+' lbs · Race season + altitude WK84–86',           borderColor:'rgba(255,255,255,0.06)'},
     {n:6, wkLabel:'WK 101–110',color:'#c084fc',       name:'TRIALS TAPER',   desc:'40–88 mpw · April 4, 2028 · ALL EVENTS SHARP',                          borderColor:'transparent'},
   ];
+  if(!_isTrialsUser()){
+    // Other athletes: their own race, no elite mileage numbers (volume follows their level)
+    PHASE_DEFS[5].name = 'RACE TAPER';
+    PHASE_DEFS.forEach(function(pd){
+      pd.desc = pd.desc.replace(/^\d+–\d+ mpw · /,'').replace(' · Race season + altitude WK84–86',' · Race season').replace(' · Qualifying attempts WK60+',' · Tune-up races');
+    });
+    PHASE_DEFS[5].desc = getCompName() + ' · ' + getCompDate() + ' · ALL EVENTS SHARP';
+  }
 
   var phaseRowsHtml = PHASE_DEFS.map(function(pd) {
     var active  = pd.n === phase.n;
@@ -9908,7 +9982,7 @@ function recalibrateTrainingPlan(){
   var dataWeeks = activeWeekMiles.length;
 
   // 2. Timeline constraint — count weeks until trials
-  var trialsDateStr = (D.settings&&D.settings.compDate) || '2028-04-04';
+  var trialsDateStr = getCompDate();
   var trialsMs = parseLocalDate(trialsDateStr).getTime();
   var weeksUntilTrials = Math.max(1, Math.ceil((trialsMs - todayMs) / (7*86400000)));
   // Where you MUST be on the plan to finish on time
@@ -10467,7 +10541,21 @@ function renderRaceTests(){
     });
   }
 
-  const html=RACE_TESTS.map(r=>{
+  // Builder: the original 2028 qualifying schedule. Everyone else: fitness
+  // checkpoints spread across their own timeline, with no preset targets.
+  let tests=RACE_TESTS;
+  if(!_isTrialsUser()){
+    const tw=Math.max(4,Math.min(110,+(D.settings&&D.settings.totalWeeks)||16));
+    const ev=((D.settings&&D.settings.event)||'').split(/[\/,]/)[0].trim()||'Time trial';
+    const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const fr=[[0.25,'Baseline test. No expectations, just data.'],[0.5,'Midpoint check on fitness.'],[0.75,'Race-specific tune-up.'],[0.92,'Final tune-up before race day.']];
+    tests=fr.map(function(f){
+      const wk=Math.max(1,Math.round(tw*f[0]));
+      const d=raceDate(wk);
+      return {wk:wk,dt:mo[+d.slice(5,7)-1]+' '+d.slice(0,4),wt:'',ev:[ev],tgt:'Target: set after your baseline',purp:f[1],pri:f[0]===0.92};
+    });
+  }
+  const html=tests.map(r=>{
     const rdate=raceDate(r.wk);
     const isPast=rdate<today;
     const actuals=findActuals(r.wk,r.ev);
@@ -10505,7 +10593,7 @@ function renderRaceTests(){
     return `<div style="background:${isPast&&!actuals.length?'rgba(255,255,255,0.02)':'var(--card)'};border:1px solid ${isPast&&!actuals.length?'rgba(255,255,255,.06)':'var(--border)'};border-radius:10px;padding:12px 14px;margin-bottom:8px;position:relative;overflow:hidden;">
       <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${barColor};border-radius:2px 0 0 2px;"></div>
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
-        <div style="font-size:15px;color:${isPast&&!actuals.length?'rgba(212,175,55,0.45)':'var(--gold)'};">WEEK ${r.wk} &middot; ${r.wt}lbs</div>
+        <div style="font-size:15px;color:${isPast&&!actuals.length?'rgba(212,175,55,0.45)':'var(--gold)'};">WEEK ${r.wk}${r.wt?' &middot; '+r.wt+'lbs':''}</div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
           <div style="font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--grey);">${r.dt}</div>
           ${statusBadge}
@@ -10517,7 +10605,7 @@ function renderRaceTests(){
     </div>`;
   }).join('');
 
-  el.innerHTML='<div class="sh" style="margin-top:0;">RACE SCHEDULE — ROAD TO TRIALS</div>'+html;
+  el.innerHTML='<div class="sh" style="margin-top:0;">RACE SCHEDULE — ROAD TO '+(_isTrialsUser()?'TRIALS':getCompName().toUpperCase())+'</div>'+html;
 }
 
 // ═══ WEIGHT MORE ═══
@@ -11608,7 +11696,7 @@ function renderAthleteProfile() {
   // Days to trials
   var dEl = document.getElementById('profileDaysLeft');
   if (dEl) {
-    var trials = new Date('2028-04-04');
+    var trials = new Date(getCompDate()+'T12:00:00');
     var today = new Date();
     var diff = Math.ceil((trials - today) / 86400000);
     dEl.textContent = diff > 0 ? diff + 'd' : 'RACE DAY';
@@ -11830,7 +11918,7 @@ const SLIDES = [
   {
     eye:'WELCOME TO',
     icon:'',
-    head:'GEDYON\n2028 TRIALS',
+    head:'GEDYON',
     sub:'Your personal stock market.\nEvery rep, meal, and hour of sleep moves the ticker.',
     orb1:'orb-gold', orb2:'orb-gold',
     bg:'radial-gradient(ellipse at 30% 20%, #1A1400 0%, #050508 70%)',
@@ -12325,7 +12413,7 @@ const TOUR_KEY = 'gedyon_tour_done_v1';
 var _tourIndex = 0;
 
 const TOUR_STEPS = [
-  {selector:'#pg-dash > div:first-child', title:'YOUR COMMAND CENTER', desc:'GPI score, weight, calories, and countdown to Trials — your daily snapshot updated every time you log.', position:'below'},
+  {selector:'#pg-dash > div:first-child', title:'YOUR COMMAND CENTER', desc:'GPI score, weight, calories, and countdown to race day — your daily snapshot updated every time you log.', position:'below'},
   {selector:'#grsCard', title:'RECOVERY SCORE', desc:'The GRS ring combines sleep, HRV, soreness, and nutrition into one readiness number. Green means go, red means recover.', position:'below'},
   {selector:'#todayPlanCard', title:'TODAY\'S PLAN', desc:'Your prescribed workout from the full 95-week periodization plan. Tap LOG TODAY to record your session.', position:'below'},
   {selector:'.wg-customize-pill', title:'CUSTOMIZE YOUR DASHBOARD', desc:'Tap CUSTOMIZE to reorder every card, hide sections you don\'t need, and unlock 4 new widgets: HRV, Sleep, Next Race, and Nutrition Rings. Your layout saves to the cloud automatically.', position:'below'},
@@ -13941,24 +14029,34 @@ function getServerUrl(){
   return (saved || 'https://gedyon-server-production.up.railway.app').replace(/\/+$/,'');
 }
 
+// Server-side id for the Strava/WHOOP bridge. The builder keeps his
+// original 'mx2028' id so his connections stay linked; every other
+// account gets its own id so no one ever reads another person's data.
+function _ownServerUserId(){
+  if(D.settings && D.settings.isBuilder) return 'mx2028';
+  var id = localStorage.getItem('gedyon_own_server_id');
+  if(!id){
+    id = 'u_' + (window.crypto && crypto.randomUUID ? crypto.randomUUID().replace(/-/g,'') : (Date.now().toString(36) + Math.random().toString(36).slice(2)));
+    localStorage.setItem('gedyon_own_server_id', id);
+  }
+  return id;
+}
 function getUserId(){
-  // Always use a consistent userId - fall back to mx2028
-  return localStorage.getItem('gedyon_user_id') ||
-         localStorage.getItem('gedyon_strava_server_user_id') ||
-         localStorage.getItem('gedyon_whoop_server_user_id') ||
-         'mx2028';
+  var id = localStorage.getItem('gedyon_user_id') ||
+           localStorage.getItem('gedyon_strava_server_user_id') ||
+           localStorage.getItem('gedyon_whoop_server_user_id');
+  if(id === 'mx2028' && !(D.settings && D.settings.isBuilder)) id = null;
+  return id || _ownServerUserId();
 }
 
 function lockConnections(){
   // Pre-seed server URL and userId so they never get lost
   if(!localStorage.getItem('gedyon_server_url'))
     localStorage.setItem('gedyon_server_url','https://gedyon-server-production.up.railway.app');
-  if(!localStorage.getItem('gedyon_user_id'))
-    localStorage.setItem('gedyon_user_id','mx2028');
-  if(!localStorage.getItem('gedyon_strava_server_user_id'))
-    localStorage.setItem('gedyon_strava_server_user_id','mx2028');
-  if(!localStorage.getItem('gedyon_whoop_server_user_id'))
-    localStorage.setItem('gedyon_whoop_server_user_id','mx2028');
+  ['gedyon_user_id','gedyon_strava_server_user_id','gedyon_whoop_server_user_id'].forEach(function(k){
+    var v = localStorage.getItem(k);
+    if(!v || (v === 'mx2028' && !(D.settings && D.settings.isBuilder))) localStorage.setItem(k, _ownServerUserId());
+  });
 }
 
 function saveServerUrl(){
@@ -13968,7 +14066,7 @@ function saveServerUrl(){
   if(!url){ showConnectStatus('Enter your Railway URL','red'); return; }
   if(!url.startsWith('http')) url = 'https://' + url;
   inp.value = url;
-  localStorage.setItem('gedyon_user_id','mx2028');
+  localStorage.setItem('gedyon_user_id', _ownServerUserId());
   localStorage.setItem('gedyon_server_url', url);
   testServerNow();
 }
@@ -18150,7 +18248,7 @@ You don't just answer questions — you THINK and ACT:
 - ALWAYS end with a specific action: **"Here's the move:"** or **"Do this now:"**
 
 ## MEMORY INSTRUCTIONS:
-After each conversation, if you learn something new about Elias (food preference, reaction to a food, pattern, goal update), encode it in your response so the app can save it. Use this format at the end if applicable:
+After each conversation, if you learn something new about the athlete (food preference, reaction to a food, pattern, goal update), encode it in your response so the app can save it. Use this format at the end if applicable:
 [CHIZAL_MEMORY: key observation to remember]
 
 ## VOICE:
@@ -18308,7 +18406,7 @@ function buildEliasContext(){
 
   // Build context string
   let ctx = 'DATE: '+today+' | Week '+wk+' of 110 | Phase: '+ph.name+'\n';
-  ctx += 'DAYS TO OLYMPIC TRIALS: '+getDaysToComp()+'\n\n';
+  ctx += 'DAYS TO '+getCompName().toUpperCase()+': '+getDaysToComp()+'\n\n';
 
   ctx += 'TODAY\'S PLAN: '+plan.name+' — '+plan.mi+'mi target\n';
   ctx += '  Type: '+plan.type+' | Zone: '+plan.zone+' | HR target: '+plan.hr[0]+'-'+plan.hr[1]+'bpm\n';
@@ -18369,7 +18467,7 @@ function buildEliasContext(){
 
   // Phase info
   ctx += '\nTRAINING PHASE: Week '+wk+' of 110 — '+ph.name+'\n';
-  ctx += 'Days to Trials: '+getDaysToComp()+'\n';
+  ctx += 'Days to '+getCompName()+': '+getDaysToComp()+'\n';
   // Current training paces derived from plan — no manual input needed
   var autoP = getTrainingPaces(getPRs());
   if(autoP.easy){
@@ -19132,7 +19230,7 @@ async function shareTrainingWeek(){
   try{
     var today = new Date();
     var weekNum = typeof getWk === 'function' ? getWk(today) : '—';
-    var trialsDays = Math.max(0, Math.floor((new Date('2028-04-04') - today)/864e5));
+    var trialsDays = Math.max(0, Math.floor((new Date(getCompDate()+'T12:00:00') - today)/864e5));
     var cutoff = new Date(today.getTime() - 7*864e5).toISOString().slice(0,10);
     var runs = (D.workouts||[]).filter(function(w){ return w.date && w.date >= cutoff && (w.dist||0) > 0; });
     var miles = Math.round(10 * runs.reduce(function(s,w){ return s + (w.dist||0); }, 0)) / 10;
@@ -19152,7 +19250,7 @@ async function shareTrainingWeek(){
     x.fillStyle = '#C9A84C'; x.font = '900 92px Impact, Arial Narrow, sans-serif';
     x.textAlign = 'center'; x.fillText('G E D Y O N', 540, 190);
     x.fillStyle = 'rgba(255,255,255,.45)'; x.font = '600 30px monospace';
-    x.fillText('ROAD TO THE 2028 OLYMPIC TRIALS', 540, 245);
+    x.fillText((D.settings&&D.settings.isBuilder) ? 'ROAD TO THE 2028 OLYMPIC TRIALS' : ('ROAD TO ' + getCompName()).toUpperCase(), 540, 245);
     // Divider
     x.strokeStyle = 'rgba(201,168,76,.3)'; x.lineWidth = 1;
     x.beginPath(); x.moveTo(140, 290); x.lineTo(940, 290); x.stroke();
@@ -19177,7 +19275,7 @@ async function shareTrainingWeek(){
     x.fillStyle = '#FFFFFF'; x.font = '900 110px Impact, Arial Narrow, sans-serif';
     x.fillText(trialsDays + ' DAYS', 540, 1160);
     x.fillStyle = 'rgba(255,255,255,.5)'; x.font = '600 30px monospace';
-    x.fillText('UNTIL THE OLYMPIC TRIALS', 540, 1210);
+    x.fillText((D.settings&&D.settings.isBuilder) ? 'UNTIL THE OLYMPIC TRIALS' : ('UNTIL ' + getCompName()).toUpperCase(), 540, 1210);
     x.fillStyle = 'rgba(255,255,255,.25)'; x.font = '600 24px monospace';
     x.fillText('built with GEDYON · AI-powered training', 540, 1275);
 
@@ -19185,7 +19283,7 @@ async function shareTrainingWeek(){
     if(!blob){ showSyncToast('Could not build the card','red'); return; }
     var file = new File([blob], 'gedyon-week-' + weekNum + '.png', { type: 'image/png' });
     if(navigator.share && navigator.canShare && navigator.canShare({ files: [file] })){
-      await navigator.share({ files: [file], title: 'GEDYON — Week ' + weekNum, text: miles + ' miles this week. ' + trialsDays + ' days to the 2028 Olympic Trials.' });
+      await navigator.share({ files: [file], title: 'GEDYON — Week ' + weekNum, text: miles + ' miles this week. ' + trialsDays + ' days to ' + ((D.settings&&D.settings.isBuilder) ? 'the 2028 Olympic Trials' : getCompName()) + '.' });
     } else {
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -19202,18 +19300,32 @@ async function shareTrainingWeek(){
 // ── MISSION TRACKER — serious, data-backed verdicts ─────────────────
 // Every run judged against its target; every week against the ramp;
 // the whole arc against April 4, 2028. No vibes — evidence.
-var RAMP_ANCHOR = '2026-07-20'; // Monday of Baseline Test Week; ramp = 15mi +2/wk, flat every 3rd
+var RAMP_ANCHOR = '2026-07-20'; // builder: Monday of Baseline Test Week; ramp = 15mi +2/wk, flat every 3rd
+// Other athletes ramp from their own start date, with a starting volume,
+// weekly step and ceiling set by the level they chose in setup.
+var LEVEL_RAMP = {
+  beginner:     {start:6,  step:1, cap:20},
+  intermediate: {start:12, step:2, cap:32},
+  advanced:     {start:20, step:2, cap:45},
+  elite:        {start:30, step:3, cap:70}
+};
+function _rampAnchorDate(){
+  if(D.settings && !D.settings.isBuilder && D.settings.start) return D.settings.start;
+  return RAMP_ANCHOR;
+}
 function _rampTargetForWeek(offsetWeeks){
-  // +2/wk with every 3rd week flat, capped at 35 (end of Base Build merge)
+  var cfg = (D.settings && D.settings.isBuilder) ? {start:15, step:2, cap:35}
+          : (LEVEL_RAMP[(D.settings && D.settings.level) || 'intermediate'] || LEVEL_RAMP.intermediate);
+  // +step/wk with every 3rd week flat, capped at the level ceiling
   var add = 0;
-  for(var i=1;i<=offsetWeeks;i++){ if(i%3!==0) add += 2; }
-  return Math.min(35, 15 + add);
+  for(var i=1;i<=offsetWeeks;i++){ if(i%3!==0) add += cfg.step; }
+  return Math.min(cfg.cap, cfg.start + add);
 }
 
 function missionAssess(){
   var today = td();
   var todayMs = parseLocalDate(today).getTime();
-  var anchorMs = parseLocalDate(RAMP_ANCHOR).getTime();
+  var anchorMs = parseLocalDate(_rampAnchorDate()).getTime();
   var rampWk = Math.max(0, Math.floor((todayMs - anchorMs)/(7*86400000)));
   var target = _rampTargetForWeek(rampWk);
 
@@ -19264,7 +19376,7 @@ function missionAssess(){
 
   // Mission trajectory: VDOT now vs the 79 the Trials standard demands
   var vdotNow = null; try{ var p = getTrainingPaces(getPRs()); if(p && p.vdot) vdotNow = p.vdot; }catch(e){}
-  var weeksLeft = Math.max(1, Math.ceil((parseLocalDate('2028-04-04').getTime()-todayMs)/(7*86400000)));
+  var weeksLeft = Math.max(1, Math.ceil((parseLocalDate(getCompDate()).getTime()-todayMs)/(7*86400000)));
 
   return { rampWk: rampWk, target: target, actualMi: actualMi, pct: pct,
            expectedByNow: expectedByNow, pctOfExpected: pctOfExpected, weekVerdict: weekVerdict,
@@ -19349,7 +19461,7 @@ function showFitnessSummary(){
   var r = null, paces = null;
   try{ r = recalibrateTrainingPlan(); }catch(e){}
   try{ paces = getTrainingPaces(getPRs()); }catch(e){}
-  var trialsDays = Math.max(0, Math.floor((new Date('2028-04-04') - new Date())/864e5));
+  var trialsDays = Math.max(0, Math.floor((new Date(getCompDate()+'T12:00:00') - new Date())/864e5));
 
   // Apple Health vitals (from the imported export / native sync)
   var ah = D.appleHealth || {};
@@ -19412,7 +19524,7 @@ function showFitnessSummary(){
       html += row('Fitness read', 'NO RUN DATA YET', '#FF5252');
     }
   }
-  html += row('Days to Trials', trialsDays + ' days', '#FFB84D');
+  html += row('Days to ' + getCompName(), trialsDays + ' days', '#FFB84D');
 
   // ENGINE
   if(paces && paces.vdot){
@@ -20042,7 +20154,7 @@ function eliasScenario(type) {
 
     rough_day: `Rough day. Didn't wake up in time, schedule got away from me. Today's plan: ${plan.name} (${plan.mi}mi, ${plan.type}). I have limited time or energy. Reason through ALL possibilities: full workout, modified workout, one run, just a walk, full rest. Score each option 1-10 for: training value, recovery cost, psychological momentum, 2028 alignment. Tell me exactly what to do and when.`,
 
-    trials_check: `Give me an honest, data-driven assessment of where I am vs where I need to be for the 2028 Olympic Trials (April 4, 2028). I'm in Week ${getWk(td())} of 110. Analyze: weekly mileage trend, workout consistency, phase progression. What's working, what's not, and what ONE thing should I prioritize this week?`,
+    trials_check: `Give me an honest, data-driven assessment of where I am vs where I need to be for ${getCompName()} (${getCompDate()}). I'm in Week ${getWk(td())} of 110. Analyze: weekly mileage trend, workout consistency, phase progression. What's working, what's not, and what ONE thing should I prioritize this week?`,
 
     threshold_pace: `I have a Norwegian threshold session today: ${plan.name}. ${plan.sets || 'Threshold intervals'}. My target HR is ${plan.hr[0]}-${plan.hr[1]}bpm. Explain exactly how to execute this: warm-up pacing, interval pacing by feel and HR, recovery duration, cool-down. What are the most common mistakes people make in threshold sessions and how do I avoid them?`,
 
@@ -20577,18 +20689,18 @@ async function atlasChat(){
 YOUR REASONING APPROACH:
 1. DIAGNOSE: What's the actual physiological/psychological situation?
 2. ENUMERATE OPTIONS: List every realistic possibility (2-5 options)
-3. RANK BY OUTCOME: Score each for: training adaptation, recovery cost, mental confidence, 2028 goal alignment
+3. RANK BY OUTCOME: Score each for: training adaptation, recovery cost, mental confidence, goal-race alignment
 4. GIVE THE VERDICT: One clear recommendation with WHY
 5. CONTINGENCY: What to do if that doesn't work
 
-ELIAS'S CONTEXT:
+ATHLETE CONTEXT:
 ${ctx}
 
-GOAL: 2028 Olympic Trials (April 4, 2028 — Eugene OR). 800m/1500m specialist. Norwegian threshold system.
+GOAL: ${(D.settings && D.settings.isBuilder) ? '2028 Olympic Trials (April 4, 2028 — Eugene OR). 800m/1500m specialist. Norwegian threshold system.' : (getCompName() + ' (' + getCompDate() + ')' + (D.settings && D.settings.event ? ' · ' + D.settings.event : ''))}
 
 VOICE RULES:
 - Talk like a brilliant coach who also knows ${athleteName()} personally — direct, no fluff
-- Use real numbers from his data. Never make up data.
+- Use real numbers from their data. Never make up data.
 - Responses: 3-8 sentences normally. For complex decisions, use a brief structured breakdown.
 - Never say "Great question" or "I understand". Just answer.
 - End with a specific action: "Here's exactly what to do right now:"`;
@@ -21016,7 +21128,18 @@ function analyzeRacePerformance(race) {
   });
 
   // Trials targets (seconds)
-  var TRIAL = { 1500: timeToSecs('3:36'), 1609: timeToSecs('3:52'), 5000: timeToSecs('13:00'), 3000: timeToSecs('8:10'), 800: timeToSecs('1:45') };
+  // Builder: Olympic Trials standards. Everyone else: goal times for the
+  // level they chose in setup (a sensible default until they set their own).
+  var _LVL_TGT = {
+    beginner:     { 1500:'6:30', 1609:'7:00', 5000:'25:00', 3000:'14:15', 800:'3:00' },
+    intermediate: { 1500:'5:15', 1609:'5:40', 5000:'20:00', 3000:'11:20', 800:'2:25' },
+    advanced:     { 1500:'4:20', 1609:'4:40', 5000:'16:30', 3000:'9:20',  800:'2:02' },
+    elite:        { 1500:'3:50', 1609:'4:08', 5000:'14:30', 3000:'8:15',  800:'1:52' }
+  };
+  var _isB = D.settings && D.settings.isBuilder;
+  var _tg = _isB ? { 1500:'3:36', 1609:'3:52', 5000:'13:00', 3000:'8:10', 800:'1:45' }
+                 : ((D.settings && D.settings.raceTargets) || _LVL_TGT[(D.settings && D.settings.level) || 'intermediate'] || _LVL_TGT.intermediate);
+  var TRIAL = { 1500: timeToSecs(_tg[1500]), 1609: timeToSecs(_tg[1609]), 5000: timeToSecs(_tg[5000]), 3000: timeToSecs(_tg[3000]), 800: timeToSecs(_tg[800]) };
 
   // % of Trials target — higher = closer to goal
   function pctOfTarget(predSec, targetSec) {
@@ -21059,11 +21182,11 @@ function analyzeRacePerformance(race) {
   // 1. Race fitness vs Trials target (40 pts)
   var racePct = pct5000 || pct1500 || null;
   if (racePct !== null) {
-    if (racePct >= 95)      { score += 40; factors.push('Race fitness: AT or ABOVE Trials target level (' + racePct + '%)'); }
-    else if (racePct >= 85) { score += 32; factors.push('Race fitness: APPROACHING target — ' + racePct + '% of Trials pace'); }
-    else if (racePct >= 75) { score += 22; factors.push('Race fitness: BUILDING — ' + racePct + '% of Trials pace (on track for building phase)'); }
-    else if (racePct >= 65) { score += 14; factors.push('Race fitness: EARLY BASE — ' + racePct + '% of Trials pace'); }
-    else                    { score += 6;  factors.push('Race fitness: FAR from Trials target (' + racePct + '%)'); }
+    if (racePct >= 95)      { score += 40; factors.push('Race fitness: AT or ABOVE ' + (_isTrialsUser() ? 'Trials' : 'goal') + ' target level (' + racePct + '%)'); }
+    else if (racePct >= 85) { score += 32; factors.push('Race fitness: APPROACHING target — ' + racePct + '% of ' + (_isTrialsUser() ? 'Trials' : 'goal') + ' pace'); }
+    else if (racePct >= 75) { score += 22; factors.push('Race fitness: BUILDING — ' + racePct + '% of ' + (_isTrialsUser() ? 'Trials' : 'goal') + ' pace (on track for building phase)'); }
+    else if (racePct >= 65) { score += 14; factors.push('Race fitness: EARLY BASE — ' + racePct + '% of ' + (_isTrialsUser() ? 'Trials' : 'goal') + ' pace'); }
+    else                    { score += 6;  factors.push('Race fitness: FAR from ' + (_isTrialsUser() ? 'Trials' : 'goal') + ' target (' + racePct + '%)'); }
   }
 
   // 2. WHOOP Recovery (25 pts)
@@ -21113,7 +21236,7 @@ function analyzeRacePerformance(race) {
 
   // Was the race "planned" in RACE_TESTS?
   var raceDate2 = race.date;
-  var planned = typeof RACE_TESTS !== 'undefined' && RACE_TESTS.some(function(rt) {
+  var planned = typeof RACE_TESTS !== 'undefined' && _isTrialsUser() && RACE_TESTS.some(function(rt) {
     if (!rt.ev || !rt.dt) return false;
     var diff = Math.abs(new Date(raceDate2) - new Date(rt.dt + 'T12:00:00')) / 86400000;
     return diff <= 10 && rt.ev.toLowerCase().indexOf(ev.split(' ')[0]) !== -1;
@@ -21244,9 +21367,9 @@ function buildKodaContext() {
             lines.push('\n📊 KODA RACE ANALYSIS — ' + ra.event + ' ' + ra.time + (ra.planned ? ' [PLANNED RACE]' : ' [UNSCHEDULED RACE]'));
             lines.push('EQUIVALENT PERFORMANCES (Riegel formula):');
             lines.push('  800m equiv:  ' + ra.equiv['800m']);
-            lines.push('  1500m equiv: ' + ra.equiv['1500m'] + '  (Trials target: ' + ra.trialsTargets['1500m'] + ' → ' + (ra.pct1500 !== null ? ra.pct1500 + '% of target pace' : '—') + ')');
+            lines.push('  1500m equiv: ' + ra.equiv['1500m'] + '  (' + _targetWord() + ' target: ' + ra.trialsTargets['1500m'] + ' → ' + (ra.pct1500 !== null ? ra.pct1500 + '% of target pace' : '—') + ')');
             lines.push('  Mile equiv:  ' + ra.equiv['Mile']);
-            lines.push('  5000m equiv: ' + ra.equiv['5000m'] + '  (Trials target: ' + ra.trialsTargets['5000m'] + ' → ' + (ra.pct5000 !== null ? ra.pct5000 + '% of target pace' : '—') + ')');
+            lines.push('  5000m equiv: ' + ra.equiv['5000m'] + '  (' + _targetWord() + ' target: ' + ra.trialsTargets['5000m'] + ' → ' + (ra.pct5000 !== null ? ra.pct5000 + '% of target pace' : '—') + ')');
             lines.push('\nTRAINING LOAD (14 days pre-race): ' + ra.trainingLoad14d.sessions + ' sessions · ' + ra.trainingLoad14d.miles + ' mi · ' + ra.trainingLoad14d.quality + ' quality sessions');
             lines.push('\nREADINESS ASSESSMENT (score: ' + ra.readinessScore + '/100):');
             ra.factors.forEach(function(f){ lines.push('  · ' + f); });
@@ -21329,12 +21452,13 @@ function buildKodaContext() {
           } else {
             lines.push('  STATUS: Baseline building — need 2+ weeks of data to show trend.');
           }
-          lines.push('  KODA NOTE: As base builds over 8–12 weeks, the same 7:51/mi pace should drop HR from ~151 to ~135-140. Track this monthly.');
+          lines.push('  KODA NOTE: As base builds over 8–12 weeks, the same pace should produce a lower HR (often 10-15 bpm lower). Track this monthly.');
         }
       } catch(e) {}
 
       // ── RACE TACTICAL PROFILE ────────────────────────────────────
       // Hard-coded athlete race intelligence — always injected so KODA can coach tactically.
+      if (D.settings && D.settings.isBuilder) {
       lines.push('\nRACE TACTICAL PROFILE (Elias Gedyon — Mile/1500m specialist):');
       lines.push('  PRIMARY WEAKNESS: Laps 2–3 of the mile/1500m — loses gear-change ability and fades mid-race');
       lines.push('  CLOSING SPEED GOAL: Sub-48 second last lap (4:00/mi closing pace) — this closer is the weapon');
@@ -21358,6 +21482,7 @@ function buildKodaContext() {
       lines.push('  RUN-COMMUTE PROTOCOL (athlete-discovered July 2026, encouraged): He run-commutes home from work with a backpack — this is a PRIMARY mileage tool for his 8-5 schedule. Rules: pack inflates HR 15-25bpm (easy ceiling becomes ~150 with load, judge accordingly and never call these runs "too hard" off raw HR); commute runs are ALWAYS easy — never prescribe quality with a pack; encourage keeping shoes/clothes stashed at work to lighten the load. First instance: 6.43mi @ 8:29 in 91F heat with loaded pack, day after the 400 test — strong aerobic evidence, HR context-adjusted.');
       lines.push('  NO JOURNALING (athlete-stated): He does not and will not keep journals, checklists, or daily forms — never suggest them. Context arrives conversationally ("worked late", "legs heavy") — capture it when offered, infer the rest from automatic data (sleep, HRV, RHR). Design every habit ask around: one sentence in chat, or nothing.');
       lines.push('  ATHLETE SELF-DIAGNOSIS (July 2026, correct per the data): "I am really weak aerobically." The aerobic engine is THE limiter — speed is intact, base is not. Coaching priority order during Base Build: (1) run FREQUENCY (5-6 days, even 20-30min counts) beats any single big day; (2) ruthless easy-pace discipline — easy means HR under ~135-140, ego stays home; (3) grow the long run by ~1mi every 2 weeks; (4) aerobic progress is measured by the HR-at-pace trend and the 20-min test, not by workout heroics. Remind him: for a 4:01 miler, every easy aerobic mile is the highest-value training dollar he can spend right now.');
+      }
 
       // ── RACE READINESS STATUS ─────────────────────────────────────
       // This is what the RACE READY? and OVERTRAINING MONITOR cards display.
@@ -21408,9 +21533,9 @@ function buildKodaContext() {
     lines.push('\nKODA CAPABILITIES:');
     lines.push('  DATA ACCESS: 110-week plan, all workout history, WHOOP/Oura/Apple Health recovery, weight trend, race history, PRs, GPI score');
     lines.push('  APP SECTIONS: HOME · TODAY · TRAIN (log+charts) · PLAN (110wk calendar) · KODA (this chat) · MORE (races, weight, protocol, integrations)');
-    lines.push('  RACE INTELLIGENCE: Riegel equivalent performance calculator, Trials target % assessment, readiness gate (HRV+recovery+sleep+weight), training load analysis, verdict: READY TO LEVEL UP / MAINTAIN / PROTECT BASE');
-    lines.push('  KODA CAN: analyze any race result, compare to Trials targets, assess if athlete can increase training load, flag overtraining early, give specific actionable recommendations');
-    lines.push('  KODA TRAINING ADJUSTMENT PROTOCOL: (1) get race result → compute equivalents → % of Trials target, (2) check recovery score (need GREEN), (3) check HRV (need non-suppressed), (4) check sleep + weight, (5) THEN give ONE verdict with specific action — never vague, never just "good job", always data-driven');
+    lines.push('  RACE INTELLIGENCE: Riegel equivalent performance calculator, ' + _targetWord() + ' target % assessment, readiness gate (HRV+recovery+sleep+weight), training load analysis, verdict: READY TO LEVEL UP / MAINTAIN / PROTECT BASE');
+    lines.push('  KODA CAN: analyze any race result, compare to ' + _targetWord() + ' targets, assess if athlete can increase training load, flag overtraining early, give specific actionable recommendations');
+    lines.push('  KODA TRAINING ADJUSTMENT PROTOCOL: (1) get race result → compute equivalents → % of ' + _targetWord() + ' target, (2) check recovery score (need GREEN), (3) check HRV (need non-suppressed), (4) check sleep + weight, (5) THEN give ONE verdict with specific action — never vague, never just "good job", always data-driven');
     lines.push('  KODA CAN LOG: use log_pr tool to log race PRs and auto-recalibrate all training zones — DO THIS when athlete mentions a new race time, do not redirect them to a tab');
   lines.push('  KODA CANNOT: edit the training plan calendar or log food/workouts — direct athlete to TODAY tab for those');
     lines.push('  KODA VOICE: reads data first, asks how race felt, gives one clear verdict. Never says "level up" without checking ALL metrics first.');
@@ -21424,8 +21549,8 @@ function buildKodaContext() {
       var _sl = sleepAssess();
       var _slLine = '\nSLEEP PILLAR (target ' + _sl.target + 'h in bed, Kerr-style): ';
       _slLine += _sl.lastNight ? ('last night ' + _sl.lastNight.hours + 'h (' + _sl.verdict + ')' + (_sl.avg7!=null ? ', 7-night avg ' + _sl.avg7 + 'h' : '')) : 'no sleep data flowing yet';
-      _slLine += '. Tonight: lights out ' + _sl.lightsOut + (_sl.protectedNight ? ' — PROTECTED NIGHT (quality day tomorrow: ' + _sl.tomorrowType + '); if he mentions staying up, push back warmly but firmly.' : '.');
-      _slLine += ' Remember: he builds no routines — the WHOOP bedtime buzz and this number are the whole system; never assign sleep homework.';
+      _slLine += '. Tonight: lights out ' + _sl.lightsOut + (_sl.protectedNight ? ' — PROTECTED NIGHT (quality day tomorrow: ' + _sl.tomorrowType + '); if they mention staying up, push back warmly but firmly.' : '.');
+      if (_isTrialsUser()) _slLine += ' Remember: he builds no routines — the WHOOP bedtime buzz and this number are the whole system; never assign sleep homework.';
       lines.push(_slLine);
     }
   } catch(e) {}
@@ -21435,10 +21560,10 @@ function buildKodaContext() {
       var _m = missionAssess();
       lines.push('\nMISSION TRACK (ramp week ' + (_m.rampWk+1) + '): ' + _m.weekVerdict
         + ' — ' + _m.actualMi + ' of ' + _m.target + ' mi this week ('
-        + _m.pctOfExpected + '% of where he should be by today). Last 4 weeks: '
+        + _m.pctOfExpected + '% of where they should be by today). Last 4 weeks: '
         + _m.hitWeeks + '/4 hit >=85% of ramp target.'
-        + (_m.vdotNow ? ' Engine: VDOT ' + _m.vdotNow + ' vs 79 mission requirement, ' + _m.weeksLeft + ' weeks to Trials.' : '')
-        + ' KODA RULE: reference these exact numbers when assessing whether he is on plan; praise only what the data supports; name the gap when behind, plainly and without guilt, then prescribe the fix.');
+        + (_m.vdotNow ? ' Engine: VDOT ' + _m.vdotNow + ' vs ' + (_isTrialsUser() ? '79 mission requirement' : 'goal') + ', ' + _m.weeksLeft + ' weeks to ' + getCompName() + '.' : '')
+        + ' KODA RULE: reference these exact numbers when assessing whether they are on plan; praise only what the data supports; name the gap when behind, plainly and without guilt, then prescribe the fix.');
     }
   } catch(e) {}
   // ADAPTIVE LEARNING: athlete-model package (retrieved, not doctrine)
@@ -21612,7 +21737,8 @@ async function kodaSend() {
   // Smart routing: if key stored, skip Supabase 404 roundtrip entirely
   async function tryDirectAnthropic() {
     const key = localStorage.getItem('gedyon_anthropic_key');
-    if (!key) throw new Error('no_key');
+    // Owner-only developer path; every other account goes through the secure cloud function
+    if (!key || !(D.settings && D.settings.isBuilder)) throw new Error('no_key');
     const sysPrompt = `You are KODA — elite AI performance coach, neural core of the GEDYON system. Athlete: Elias Gedyon, World Athletics code 14329251. Middle-distance specialist (Mile/1500m/800m) targeting 2028 Olympic Trials. You are surgical, data-driven, and elite. Reference exact numbers from context. Never hedge — give the answer, then the reasoning. Never say "great job" without citing data. Keep responses under 250 words but make every sentence count.
 
 TRAINING METHODOLOGY — GEDYON MULTI-SYSTEM SYNTHESIS:
@@ -22942,7 +23068,7 @@ function kodaPopulatePanels() {
   }
 
   // ── Upcoming race: D.races first, fallback to RACE_TESTS schedule ──────────
-  const planRaces = typeof RACE_TESTS !== 'undefined' ? RACE_TESTS : [];
+  const planRaces = (typeof RACE_TESTS !== 'undefined' && _isTrialsUser()) ? RACE_TESTS : [];
   if (!races.length && planRaces.length) {
     // Use planned schedule to compute countdown
     const startBase = new Date('2026-02-23').getTime();
@@ -23532,8 +23658,8 @@ async function kodaInit() {
       if (ra) {
         raBlock = `\n\nRACE INTELLIGENCE REPORT:\n`
           + `  Event: ${ra.event} ${ra.time} (${ra.planned ? 'PLANNED race' : 'UNSCHEDULED race'})\n`
-          + `  Predicted 1500m: ${ra.equiv['1500m']} (Trials target ${ra.trialsTargets['1500m']} — ${ra.pct1500}% of target pace)\n`
-          + `  Predicted 5000m: ${ra.equiv['5000m']} (Trials target ${ra.trialsTargets['5000m']} — ${ra.pct5000}% of target pace)\n`
+          + `  Predicted 1500m: ${ra.equiv['1500m']} (${_targetWord()} target ${ra.trialsTargets['1500m']} — ${ra.pct1500}% of target pace)\n`
+          + `  Predicted 5000m: ${ra.equiv['5000m']} (${_targetWord()} target ${ra.trialsTargets['5000m']} — ${ra.pct5000}% of target pace)\n`
           + `  14-day pre-race load: ${ra.trainingLoad14d.sessions} sessions, ${ra.trainingLoad14d.miles} mi, ${ra.trainingLoad14d.quality} quality sessions\n`
           + `  Readiness score: ${ra.readinessScore}/100\n`
           + ra.factors.map(f => '  · ' + f).join('\n')
@@ -23551,7 +23677,7 @@ async function kodaInit() {
 You have a full RACE INTELLIGENCE REPORT in the athlete context. Your job:
 1. Open with ONE line specifically naming the time and event — not generic. Was this the time they were targeting?
 2. Reference the Riegel equivalent performance — what does this 10k time predict for their 1500m or 5000m?
-3. State the VERDICT clearly (${raBlock ? 'see verdict in context' : 'assess from available data'}): are they ahead, on schedule, or behind Trials pace?
+3. State the VERDICT clearly (${raBlock ? 'see verdict in context' : 'assess from available data'}): are they ahead, on schedule, or behind ${_isTrialsUser() ? 'Trials' : 'goal'} pace?
 4. If the readiness score is high and no hard blocks exist, you CAN tell them they may be ready to increase training intensity — but NAME the specific metrics that support it.
 5. If recovery is RED or HRV is suppressed, do NOT recommend increasing load — say exactly why.
 6. End with ONE direct question: ask how the race FELT — was it effort-limited (lungs/legs gave out) or fitness-limited (couldn't push pace)?
